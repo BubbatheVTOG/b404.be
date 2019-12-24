@@ -1,0 +1,2 @@
+FROM jboss/wildfly
+ADD target/b404.war /opt/jboss/wildfly/standalone/deployments/
