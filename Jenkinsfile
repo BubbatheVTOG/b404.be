@@ -19,13 +19,25 @@ pipeline {
         }
       }
     }
+
+    stage ('Stage 3: Build Docker Image'){
+      steps {
+        app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
+      }
+    }
+
+    stage ('Stage 4: Publish Docker Image'){
+      steps {
+        docker.withRegistry("https://registry.hub.docker.com", "dockerhub") {
+          app.push(env.BRANCH_NAME)
+        }
+      }
+    }
   }
 
   post {
     success {
       archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-      sh "docker build -f Dockerfile -t znl2181/b404.be:"+env.BRANCH_NAME+" ."
-      sh "docker push znl2181/b404.be:"+env.BRANCH_NAME
     }
   }
 }
