@@ -23,13 +23,13 @@ pipeline {
     stage ('Stage X: Docker'){
       stages {
         stage ('Stage X.1: Build') {
-          step {
+          steps {
             def app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
           }
         }
 
         stage ('Stage X.2: Publish') {
-          step {
+          steps {
             docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
               app.push(env.BRANCH_NAME)
             }
