@@ -24,7 +24,7 @@ pipeline {
   post {
     success {
       archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-      sh "docker build -f Dockerfile -t znl2181/blink-404.be:"+env.BRANCH_NAME
+      sh "docker build -f Dockerfile -t znl2181/blink-404.be:"+env.BRANCH_NAME+" ."
       sh "docker push znl2181/blink-404.be:"+env.BRANCH_NAME
     }
   }
