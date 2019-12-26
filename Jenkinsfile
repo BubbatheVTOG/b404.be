@@ -21,13 +21,18 @@ pipeline {
     }
 
     stage ('Stage X: Docker'){
-      steps {
-        step ('Stage X.1: Build') {
+      stages {
+        stage ('Stage X.1: Build') {
+          step {
             def app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
+          }
         }
-        step ('Stage X.2: Publish') {
-          docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-            app.push(env.BRANCH_NAME)
+
+        stage ('Stage X.2: Publish') {
+          step {
+            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+              app.push(env.BRANCH_NAME)
+            }
           }
         }
       }
