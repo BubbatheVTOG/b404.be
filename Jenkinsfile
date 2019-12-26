@@ -23,7 +23,6 @@ pipeline {
     post {
       always {
         archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-        # junit 'build/reports/**/*.xml'
       }
     }
   }
