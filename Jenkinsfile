@@ -21,7 +21,7 @@ pipeline {
     }
 
     post {
-      always {
+      success {
         archiveArtifacts artifacts: 'target/*.war', fingerprint: true
       }
     }
