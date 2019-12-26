@@ -26,7 +26,7 @@ pipeline {
             def app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
         }
         step ('Stage X.2: Publish') {
-          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+          docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
             app.push(env.BRANCH_NAME)
           }
         }
