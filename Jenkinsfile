@@ -20,7 +20,7 @@ pipeline {
       }
     }
 
-    stage ('Stage X: Docker'){
+    stage ('Stage 3: Build and Publish Docker Image'){
       steps {
         script {
           docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
