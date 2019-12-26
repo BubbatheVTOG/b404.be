@@ -15,7 +15,7 @@ pipeline {
       steps {
         withMaven {
             sh "mvn -v"
-            sh "mvn clean build test verify package"
+            sh "mvn clean compile test verify package"
         }
       }
     }
