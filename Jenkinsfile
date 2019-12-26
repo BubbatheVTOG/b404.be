@@ -14,17 +14,17 @@ pipeline {
     stage ('Stage 2: Build Software') {
       steps {
         withMaven {
-            sh "mvn -v"
-            sh "mvn clean compile test verify package"
+          sh "mvn -v"
+          sh "mvn clean compile test verify package"
         }
       }
     }
 
     post {
-        always {
-            archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
-            junit 'build/reports/**/*.xml'
-        }
+      always {
+        archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+        # junit 'build/reports/**/*.xml'
+      }
     }
   }
 }
