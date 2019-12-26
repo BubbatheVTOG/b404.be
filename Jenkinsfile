@@ -19,11 +19,11 @@ pipeline {
         }
       }
     }
+  }
 
-    post {
-      success {
-        archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-      }
+  post {
+    success {
+      archiveArtifacts artifacts: 'target/*.war', fingerprint: true
     }
   }
 }
