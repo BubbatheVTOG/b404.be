@@ -20,16 +20,15 @@ pipeline {
       }
     }
 
-    stage ('Stage 3: Build Docker Image'){
+    stage ('Stage X: Docker'){
       steps {
-        app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
-      }
-    }
-
-    stage ('Stage 4: Publish Docker Image'){
-      steps {
-        docker.withRegistry("https://registry.hub.docker.com", "dockerhub") {
-          app.push(env.BRANCH_NAME)
+        step ('Stage X.1: Build') {
+            def app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
+        }
+        step ('Stage X.2: Publish') {
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+            app.push(env.BRANCH_NAME)
+          }
         }
       }
     }
