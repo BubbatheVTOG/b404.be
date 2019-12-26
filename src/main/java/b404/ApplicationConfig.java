@@ -14,6 +14,7 @@ public class ApplicationConfig extends Application {
     private Set<Class<?>> getRestResourceClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
         resources.add(Login.class);
+        resources.add(BasicHealthCheck.class);
         return resources;
     }
 }
