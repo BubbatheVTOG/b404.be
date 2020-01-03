@@ -13,12 +13,17 @@ import io.jsonwebtoken.security.Keys;
 @Path("login")
 public class Login {
 
-
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public void submit(@FormParam("value") String value) {
-
+    public Response submit(@FormParam("user") String user, @FormParam("password") String password) {
+        try {
+            Validator.validateString("username", user);
+            Validator.validateString("password", password);
+        }
+        catch(InvalidFormatException e){
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"message\"}");
+        }
         /*
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         String jws = Jwts.builder().setSubject("Joe").signWith(SignatureAlgorithm.HS256, key).compact();
