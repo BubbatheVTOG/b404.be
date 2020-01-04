@@ -1,18 +1,17 @@
-package main.java.b404.servicelayer;
+package b404.servicelayer;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-import main.java.b404.businesslayer.PersonBusiness;
-import main.java.b404.utility.*;
-import main.java.b404.utility.BadRequestException;
-import main.java.b404.utility.InternalServerErrorException;
+import b404.businesslayer.PersonBusiness;
+import b404.utility.BadRequestException;
+import b404.utility.InternalServerErrorException;
 
 /**
  * Service layer entity responsible only for fielding login attempts
  */
 @Path("login")
-public class Login {
+public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
 
     @POST

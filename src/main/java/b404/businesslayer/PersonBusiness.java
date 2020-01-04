@@ -1,7 +1,10 @@
-package main.java.b404.businesslayer;
+package b404.businesslayer;
 
-import main.java.b404.datalayer.PersonDB;
-import main.java.b404.utility.*;
+import b404.datalayer.PersonDB;
+import b404.utility.BadRequestException;
+import b404.utility.InternalServerErrorException;
+import b404.utility.PasswordEncryption;
+import b404.utility.Person;
 
 import java.sql.SQLException;
 

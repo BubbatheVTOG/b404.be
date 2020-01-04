@@ -1,4 +1,4 @@
-package main.java.b404.utility;
+package b404.utility;
 
 /**
  * Represents a singular Person instance

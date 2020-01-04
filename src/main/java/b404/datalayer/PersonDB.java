@@ -1,6 +1,6 @@
-package main.java.b404.datalayer;
+package b404.datalayer;
 
-import main.java.b404.utility.Person;
+import b404.utility.Person;
 
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ public class PersonDB {
         //TODO: communicate on what these values should be and how best to store them
         String userName = "b404";
         String password = "b404";
-        String url = null;
+        String url = "jdbc:mysql://db:3306:b404";
 
         try{
             conn = DriverManager.getConnection(url, userName, password);

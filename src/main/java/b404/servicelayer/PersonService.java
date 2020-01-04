@@ -1,4 +1,4 @@
-package main.java.b404.servicelayer;
+package b404.servicelayer;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
