@@ -2,7 +2,7 @@ package main.java.b404.utility;
 
 public class Person {
     private Integer userID;
-    private char passwordHash;
+    private String passwordHash;
     private String name;
     private String email;
     private String title;
@@ -17,11 +17,11 @@ public class Person {
         this.userID = userID;
     }
 
-    public char getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(char passwordHash) {
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
 
