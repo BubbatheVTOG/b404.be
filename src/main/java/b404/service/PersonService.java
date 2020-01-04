@@ -13,6 +13,9 @@ import java.util.IllegalFormatException;
 // https://github.com/jwtk/jjwt
 // https://dennis-xlc.gitbooks.io/restful-java-with-jax-rs-2-0-2rd-edition/en/part1/chapter15/securing_jax_rs.html
 
+/**
+ * Service Layer entity responsible for receiving requests having to do with person information
+ */
 @Path("person")
 public class PersonService {
 

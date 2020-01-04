@@ -1,17 +1,18 @@
 package main.java.b404.business;
 
-public class PersonBusiness {
-    Validator validator = new Validator();
+import main.java.b404.utility.BadRequestException;
 
-    //TODO: decide how to return response type and response message
-    public String[] login(String user, String password){
-        try {
-            Validator.validateString("username", user);
-            Validator.validateString("password", password);
-        }
-        catch(IllegalArgumentException e){
-            return null;
-        }
+/**
+ * Business layer for functionality related to person
+ * Includes login as well as business operations for people
+ */
+public class PersonBusiness {
+
+    public String[] login(String user, String password) throws BadRequestException{
+        if(user == "" || user == null){ throw new BadRequestException("Invalid username"); }
+        if(password == "" || password == null){ throw new BadRequestException("Invalid password"); }
+
+
         /*
         SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         String jws = Jwts.builder().setSubject("Joe").signWith(SignatureAlgorithm.HS256, key).compact();
