@@ -1,8 +1,10 @@
 package main.java.b404.service;
 
+import main.java.b404.business.PersonBusiness;
+
 @Path("login")
 public class Login {
-    private UserBusiness userBusiness = new UserBusiness();
+    private PersonBusiness userBusiness = new PersonBusiness();
 
     @POST
     @Consumes("application/json")
