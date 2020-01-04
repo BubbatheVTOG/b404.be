@@ -1,5 +1,8 @@
 package main.java.b404.utility;
 
+/**
+ * Represents a singular Person instance
+ */
 public class Person {
     private Integer userID;
     private String passwordHash;
@@ -8,6 +11,30 @@ public class Person {
     private String title;
     private Integer companyID;
     private Integer accessLevelID;
+
+    //Basic constructor
+    public Person() {
+    }
+
+    //Constructor for all necessary information
+    public Person(Integer userID, String passwordHash, String name, Integer companyID, Integer accessLevelID) {
+        this.userID = userID;
+        this.passwordHash = passwordHash;
+        this.name = name;
+        this.companyID = companyID;
+        this.accessLevelID = accessLevelID;
+    }
+
+    //Constructor for all information a Person can contain
+    public Person(Integer userID, String passwordHash, String name, String email, String title, Integer companyID, Integer accessLevelID) {
+        this.userID = userID;
+        this.passwordHash = passwordHash;
+        this.name = name;
+        this.email = email;
+        this.title = title;
+        this.companyID = companyID;
+        this.accessLevelID = accessLevelID;
+    }
 
     public Integer getUserID() {
         return userID;

@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class PersonBusiness {
     PersonDB personDB = new PersonDB();
 
-    public String login(String user, String password) throws BadRequestException{
+    public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
         if(user == "" || user == null){ throw new BadRequestException("Invalid username"); }
         if(password == "" || password == null){ throw new BadRequestException("Invalid password"); }
 
@@ -30,12 +30,5 @@ public class PersonBusiness {
         }
 
         return "You have logged in!";
-
-        /*
-        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-        String jws = Jwts.builder().setSubject("Joe").signWith(SignatureAlgorithm.HS256, key).compact();
-
-        assert Jwts.parser().setSigningKey(key).parseClaimsJws(jws).getBody().getSubject().equals("Joe");
-        */
     }
 }
