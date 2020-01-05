@@ -42,6 +42,8 @@ public class PersonDB {
     }
 
     public Person getPersonByName(String name) throws SQLException {
+        //TODO uncomment connect and close once Database connectivity is resolved
+        /*
         this.connect();
 
         //Prepare sql statement
@@ -53,7 +55,6 @@ public class PersonDB {
         ResultSet resultset = preparedStatement.executeQuery();
 
         //Pull response content and map into a Person object
-        //TODO: map database response to a Person object
         Person person = new Person(resultset.getInt("userID"),
                                    resultset.getString("name"),
                                    resultset.getString("passwordHash"),
@@ -61,7 +62,8 @@ public class PersonDB {
                                    resultset.getInt("accessLevelID"));
 
         //Close the database
-        this.close();
+        //this.close();
+        */
 
         //return person;
         //TODO: This returns a dummy person with admin and password for front-end testing; remove once DB connectivity is functional
