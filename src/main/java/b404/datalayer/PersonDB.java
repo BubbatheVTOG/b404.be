@@ -63,7 +63,9 @@ public class PersonDB {
         //Close the database
         this.close();
 
-        return person;
+        //return person;
+        //TODO: This returns a dummy person with admin and password for front-end testing; remove once DB connectivity is functional
+        return new Person(1, "admin", "password", 1, 1);
 
     }
 }
