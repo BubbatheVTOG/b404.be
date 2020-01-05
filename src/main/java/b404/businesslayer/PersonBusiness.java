@@ -3,7 +3,7 @@ package b404.businesslayer;
 import b404.datalayer.VentureCreationsDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
-import b404.utility.PasswordEncryption;
+import b404.security.PasswordEncryption;
 import b404.utility.Person;
 
 import java.sql.SQLException;
