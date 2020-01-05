@@ -4,20 +4,20 @@ package b404.utility;
  * Represents a singular Person instance
  */
 public class Person {
-    private Integer userID;
+    private int userID;
     private String passwordHash;
     private String name;
     private String email;
     private String title;
-    private Integer companyID;
-    private Integer accessLevelID;
+    private int companyID;
+    private int accessLevelID;
 
     //Basic constructor
     public Person() {
     }
 
     //Constructor for all necessary information
-    public Person(Integer userID, String passwordHash, String name, Integer companyID, Integer accessLevelID) {
+    public Person(int userID, String passwordHash, String name, int companyID, int accessLevelID) {
         this.userID = userID;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -26,7 +26,7 @@ public class Person {
     }
 
     //Constructor for all information a Person can contain
-    public Person(Integer userID, String passwordHash, String name, String email, String title, Integer companyID, Integer accessLevelID) {
+    public Person(int userID, String passwordHash, String name, String email, String title, int companyID, int accessLevelID) {
         this.userID = userID;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -36,11 +36,11 @@ public class Person {
         this.accessLevelID = accessLevelID;
     }
 
-    public Integer getUserID() {
+    public int getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(int userID) {
         this.userID = userID;
     }
 
@@ -76,19 +76,19 @@ public class Person {
         this.title = title;
     }
 
-    public Integer getCompanyID() {
+    public int getCompanyID() {
         return companyID;
     }
 
-    public void setCompanyID(Integer companyID) {
+    public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
 
-    public Integer getAccessLevelID() {
+    public int getAccessLevelID() {
         return accessLevelID;
     }
 
-    public void setAccessLevelID(Integer accessLevelID) {
+    public void setAccessLevelID(int accessLevelID) {
         this.accessLevelID = accessLevelID;
     }
 }

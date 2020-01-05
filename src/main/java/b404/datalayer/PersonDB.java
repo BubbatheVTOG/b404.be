@@ -2,20 +2,16 @@ package b404.datalayer;
 
 import b404.utility.Person;
 
-import javax.ws.rs.InternalServerErrorException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class PersonDB {
     private Connection conn;
 
     /**
-     * Connect to the database
-     * @return status Returns true if connected to the database, otherwise false.
+     * Opens a connection to the database
+     * Throws a custom SQLException on error
      */
-    public boolean connect(){
+    public void connect() throws SQLException{
         conn = null;
 
         //TODO: communicate on what these values should be and how best to store them
@@ -28,26 +24,46 @@ public class PersonDB {
         }
         //return false on error connecting
         catch(SQLException sqle){
-            return false;
+            throw new SQLException("Error opening connection to the database");
         }
+    }
 
-        //return true or false based on whether a connection was successfully established
-        return (conn != null);
+    /**
+     * Closes the database connection
+     * Throws a custom SQLException on error
+     */
+    public void close() throws SQLException{
+        try{
+            this.conn.close();
+        }
+        catch(SQLException e){
+            throw new SQLException("Error closing the database connection");
+        }
     }
 
     public Person getPersonByName(String name) throws SQLException {
-        if(!this.connect()){
-            throw new SQLException("Error connecting to database");
-        }
+        this.connect();
 
+        //Prepare sql statement
         String query = "SELECT * FROM person WHERE person.name = ?";
         PreparedStatement preparedStatement = this.conn.prepareStatement(query);
 
+        //Set parameters and execute query
         preparedStatement.setString(1, name);
-        preparedStatement.executeQuery();
+        ResultSet resultset = preparedStatement.executeQuery();
 
+        //Pull response content and map into a Person object
         //TODO: map database response to a Person object
+        Person person = new Person(resultset.getInt("userID"),
+                                   resultset.getString("name"),
+                                   resultset.getString("passwordHash"),
+                                   resultset.getInt("companyID"),
+                                   resultset.getInt("accessLevelID"));
 
-        return new Person();
+        //Close the database
+        this.close();
+
+        return person;
+
     }
 }
