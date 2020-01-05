@@ -1,9 +1,9 @@
 package b404.datalayer;
 
-import b404.utility.Person;
-
 import java.sql.*;
 import java.util.Properties;
+
+import b404.utility.Person;
 
 public class VentureCreationsDB {
     private Connection conn;
