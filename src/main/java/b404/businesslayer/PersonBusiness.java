@@ -17,12 +17,9 @@ public class PersonBusiness {
 
     public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
 
-        return user + ":" + password;
-
-        /*
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username"); }
-        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password"); }
+        if(user.isEmpty()){ throw new BadRequestException("Invalid username"); }
+        if(password.isEmpty()){ throw new BadRequestException("Invalid password"); }
 
         try{
             //Retrieve the person from the database by name
@@ -43,6 +40,5 @@ public class PersonBusiness {
 
         //Reaching this indicates no issues have been met and a success message can be returned
         return "You have logged in!";
-        */
     }
 }
