@@ -1,6 +1,6 @@
 package b404.businesslayer;
 
-import b404.datalayer.PersonDB;
+import b404.datalayer.VentureCreationsDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
 import b404.utility.PasswordEncryption;
@@ -13,22 +13,23 @@ import java.sql.SQLException;
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    PersonDB personDB = new PersonDB();
+    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB();
 
     public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user == "" || user == null){ throw new BadRequestException("Invalid username"); }
-        if(password == "" || password == null){ throw new BadRequestException("Invalid password"); }
+        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username"); }
+        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password"); }
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByName(user);
+            Person person = ventureCreationsDB.getPersonByName(user);
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
-            password = PasswordEncryption.encrypt(password);
-            if(!person.getPasswordHash().equals(password)){
+            String encryptedPassword = PasswordEncryption.encrypt(password);
+
+            if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new BadRequestException("Invalid login credentials");
             }
         }
