@@ -1,5 +1,6 @@
 package main.java.b404.securitylayer;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -24,17 +25,17 @@ public class JWTUtility {
         this.issuer = "venture_creations";
 
         //Tokens will be valid for 5 minutes
-        this.JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 60;
+        this.JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 60 * 1000;
     }
 
     private String generateToken(String userID){
         Map<String, Object> claims = new HashMap<>();
-        return constructToken(claims, userID);
+        return this.constructToken(claims, userID);
     }
 
     private String constructToken(Map<String, Object> claims, String subject) {
         Date currDate = new Date(System.currentTimeMillis());
-        Date expirationDate = new Date(System.currentTimeMillis() + this.JWT_TOKEN_VALIDITY_DURATION * 1000);
+        Date expirationDate = new Date(System.currentTimeMillis() + this.JWT_TOKEN_VALIDITY_DURATION);
 
         return Jwts.builder().setClaims(claims)
                              .setSubject(subject)
@@ -43,6 +44,38 @@ public class JWTUtility {
                              .setExpiration(expirationDate)
                              .signWith(SignatureAlgorithm.HS512, this.SECRET_KEY)
                              .compact();
+    }
+
+
+    //Retrieves all claims from token body
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser().setSigningKey(this.SECRET_KEY).parseClaimsJws(token).getBody();
+    }
+
+    //Get userID from token
+    public String getUserIDFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.getSubject();
+    }
+
+    //Get Expiration date from token
+    public Date getExpirationDateFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.getExpiration();
+    }
+
+    //Check if the token has expired
+    private Boolean isTokenExpired(String token) {
+        Date expiration = getExpirationDateFromToken(token);
+        Date currDate = new Date();
+
+        return expiration.before(currDate);
+    }
+
+    //Validate that token has not expired and is for desired userID
+    public Boolean validateToken(String token, String userID) {
+        String tokenUsername = getUserIDFromToken(token);
+        return (tokenUsername.equals(userID) && !isTokenExpired(token));
     }
 
 }

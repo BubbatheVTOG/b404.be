@@ -16,15 +16,15 @@ import java.sql.SQLException;
 public class PersonBusiness {
     private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB();
 
-    public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
+    public String login(String username, String password) throws BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty()){ throw new BadRequestException("Invalid username"); }
+        if(username.isEmpty()){ throw new BadRequestException("Invalid username"); }
         if(password.isEmpty()){ throw new BadRequestException("Invalid password"); }
 
         try{
             //Retrieve the person from the database by name
-            Person person = ventureCreationsDB.getPersonByName(user);
+            Person person = ventureCreationsDB.getPersonByName(username);
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
