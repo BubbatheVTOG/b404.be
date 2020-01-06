@@ -13,8 +13,8 @@ public class VentureCreationsDB {
 
     public VentureCreationsDB(){
 
-        String url = "jdbc:mariadb://db:3306/venture_creations";
-        Properties properties = new Properties();
+        this.url = "jdbc:mariadb://db:3306/venture_creations";
+        this.properties = new Properties();
 
         //TODO: communicate on what these values should be and how best to store them
         properties.put( "user", "b404" );
