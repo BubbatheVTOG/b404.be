@@ -17,6 +17,8 @@ public class PersonBusiness {
     private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB();
 
     public String login(String username, String password) throws BadRequestException, InternalServerErrorException{
+        //prepare person object for return values
+        Person person;
 
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(username.isEmpty()){ throw new BadRequestException("Invalid username"); }
@@ -24,7 +26,7 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = ventureCreationsDB.getPersonByName(username);
+            person = ventureCreationsDB.getPersonByName(username);
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
@@ -39,7 +41,7 @@ public class PersonBusiness {
             throw new InternalServerErrorException("Sorry, could not process your request at this time");
         }
 
-        //Reaching this indicates no issues have been met and a success message can be returned
-        return "You have logged in!";
+        //Reaching this indicates no issues have been met and the userID is returned in string format
+        return String.valueOf(person.getUserID());
     }
 }

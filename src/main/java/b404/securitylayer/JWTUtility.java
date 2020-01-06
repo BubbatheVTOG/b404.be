@@ -28,7 +28,8 @@ public class JWTUtility {
         this.JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 60 * 1000;
     }
 
-    private String generateToken(String userID){
+    //Externally accessible function for creating a JWT using a userID
+    public String generateToken(String userID){
         Map<String, Object> claims = new HashMap<>();
         return this.constructToken(claims, userID);
     }
@@ -42,7 +43,8 @@ public class JWTUtility {
                              .setIssuer(this.issuer)
                              .setIssuedAt(currDate)
                              .setExpiration(expirationDate)
-                             .signWith(SignatureAlgorithm.HS512, this.SECRET_KEY)
+                             //using HMAC-SHA256 for signature hashing algorithm
+                             .signWith(SignatureAlgorithm.HS256, this.SECRET_KEY)
                              .compact();
     }
 
