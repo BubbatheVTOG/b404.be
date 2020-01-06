@@ -1,13 +1,13 @@
 package b404.businesslayer;
 
+import java.sql.SQLException;
+
 import b404.datalayer.VentureCreationsDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
 import b404.security.PasswordEncryption;
 import b404.utility.Person;
 import b404.utility.env.EnvManager;
-
-import java.sql.SQLException;
 
 /**
  * Business layer for functionality related to person
