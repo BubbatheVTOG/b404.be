@@ -5,6 +5,7 @@ import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
 import b404.security.PasswordEncryption;
 import b404.utility.Person;
+import b404.utility.env.EnvManager;
 
 import java.sql.SQLException;
 
@@ -13,16 +14,14 @@ import java.sql.SQLException;
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB();
+    private EnvManager env = new EnvManager();
+    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB(env);
 
     public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
 
-        return user + ":" + password;
-
-        /*
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username"); }
-        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password"); }
+        if(user.isEmpty()){ throw new BadRequestException("Invalid username"); }
+        if(password.isEmpty()){ throw new BadRequestException("Invalid password"); }
 
         try{
             //Retrieve the person from the database by name
@@ -43,6 +42,5 @@ public class PersonBusiness {
 
         //Reaching this indicates no issues have been met and a success message can be returned
         return "You have logged in!";
-        */
     }
 }
