@@ -1,24 +1,28 @@
 package b404.datalayer;
 
-import b404.utility.Person;
-
 import java.sql.*;
-import java.util.Properties;
+
+import b404.utility.Person;
+import b404.utility.env.EnvManager;
 
 public class VentureCreationsDB {
+
     private Connection conn;
-
+    private String driver;
     private String url;
-    private Properties properties;
+    private String user;
+    private String password;
 
-    public VentureCreationsDB(){
 
-        String url = "jdbc:mariadb://db:3306/venture_creations";
-        Properties properties = new Properties();
+    public VentureCreationsDB(EnvManager env){
+
+        // Get the db host name from the environment.
+        this.url = "jdbc:mariadb://"+env.getValue("DB_NAME")+":3306/venture_creations";
+        this.driver = "org.mariadb.jdbc.Driver";
 
         //TODO: communicate on what these values should be and how best to store them
-        properties.put( "user", "b404" );
-        properties.put( "password", "b404" );
+        this.user = "b404";
+        this.password = "b404";
     }
 
     /**
@@ -29,10 +33,14 @@ public class VentureCreationsDB {
         conn = null;
 
         try{
-            conn = DriverManager.getConnection(this.url, this.properties);
+            Class.forName(this.driver);
+            conn = DriverManager.getConnection(this.url, this.user, this.password);
         }
         //return false on error connecting
         catch(SQLException sqle){
+            throw new SQLException("Error opening connection to the database");
+        }
+        catch(ClassNotFoundException cnfe){
             throw new SQLException("Error opening connection to the database");
         }
     }
@@ -78,6 +86,5 @@ public class VentureCreationsDB {
 
         //return person;
         return person;
-
     }
 }

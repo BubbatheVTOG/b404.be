@@ -1,20 +1,21 @@
 package b404.businesslayer;
 
-import b404.securitylayer.PasswordEncryption;
+import java.sql.SQLException;
 
+import b404.securitylayer.PasswordEncryption;
 import b404.datalayer.VentureCreationsDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
 import b404.utility.Person;
-
-import java.sql.SQLException;
+import b404.utility.env.EnvManager;
 
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB();
+    private EnvManager env = new EnvManager();
+    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB(env);
 
     public String login(String username, String password) throws BadRequestException, InternalServerErrorException{
         //prepare person object for return values
