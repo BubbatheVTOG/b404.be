@@ -1,16 +1,15 @@
 package b404.datalayer;
 
 import java.sql.*;
-import java.util.Properties;
 
 import b404.utility.Person;
 import b404.utility.env.EnvManager;
 
 public class VentureCreationsDB {
+
     private Connection conn;
     private String driver;
     private String url;
-    private Properties properties = new Properties();
     private String user;
     private String password;
 
