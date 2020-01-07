@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import b404.utility.Person;
 
-public class VentureCreationsDB {
+public class PersonDB {
     private Connection conn;
 
 
@@ -14,7 +14,7 @@ public class VentureCreationsDB {
     private String user;
     private String password;
 
-    public VentureCreationsDB(){
+    public PersonDB(){
 
         this.driver = "org.mariadb.jdbc.Driver";
         this.url = "jdbc:mariadb://db:3306/venture_creations?allowPublicKeyRetrieval=true";
