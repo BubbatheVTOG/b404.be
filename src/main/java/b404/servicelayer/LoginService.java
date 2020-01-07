@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import b404.businesslayer.PersonBusiness;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
+import main.java.b404.securitylayer.JWTUtility;
 
 /**
  * Service layer entity responsible only for fielding login attempts
@@ -13,10 +14,11 @@ import b404.utility.InternalServerErrorException;
 @Path("login")
 public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
+    private JWTUtility jwtUtility = new JWTUtility();
 
     /**
      * Checks that a persons username and password match values stored in database
-     * @param user - username from POST request body
+     * @param username - username from POST request body
      * @param password - password from POST request body
      * @return - HTTP Reponse: 200 OK for accepted login
      *                         400 BAD REQUEST for invalid password
@@ -25,13 +27,15 @@ public class LoginService {
     @POST
     @Consumes("application/json")
     @Produces("application/json")
-    public Response login(@FormParam("user") String user, @FormParam("password") String password) {
+    public Response login(@FormParam("username") String username, @FormParam("password") String password) {
         try {
             //Send parameters to business layer and store response
-            String responseMessage = personBusiness.login(user, password);
+            String userID = personBusiness.login(username, password);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
+            String token = jwtUtility.generateToken(String.valueOf(userID));
+
+            return Response.ok("{\"success\":\"" + "You have logged in successfully" + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
         catch(BadRequestException bre){
