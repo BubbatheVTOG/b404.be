@@ -1,6 +1,7 @@
+package b404.businesslayer;
+
 import java.sql.SQLException;
 
-package b404.businesslayer;
 import b404.securitylayer.PasswordEncryption;
 import b404.datalayer.VentureCreationsDB;
 import b404.utility.BadRequestException;
