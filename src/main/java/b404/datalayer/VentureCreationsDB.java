@@ -11,6 +11,9 @@ public class VentureCreationsDB {
     private String driver;
     private String url;
     private Properties properties = new Properties();
+    private String user;
+    private String password;
+
 
     public VentureCreationsDB(EnvManager env){
 
@@ -19,9 +22,8 @@ public class VentureCreationsDB {
         this.driver = "org.mariadb.jdbc.Driver";
 
         //TODO: communicate on what these values should be and how best to store them
-        this.properties = new Properties();
-        properties.put( "user", "b404" );
-        properties.put( "password", "b404" );
+        this.user = "b404";
+        this.password = "b404";
     }
 
     /**
@@ -33,7 +35,7 @@ public class VentureCreationsDB {
 
         try{
             Class.forName(this.driver);
-            conn = DriverManager.getConnection(this.url, this.properties);
+            conn = DriverManager.getConnection(this.url, this.user, this.password);
         }
         //return false on error connecting
         catch(SQLException sqle){
@@ -85,6 +87,5 @@ public class VentureCreationsDB {
 
         //return person;
         return person;
-
     }
 }
