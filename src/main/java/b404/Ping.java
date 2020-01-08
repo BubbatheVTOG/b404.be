@@ -18,6 +18,6 @@ public class Ping {
     @GET
     @Produces("application/json")
     public Response ping() {
-        return Response.ok().entity("{\"success\":\"pong\"").build();
+        return Response.ok().entity("{\"success\":\"pong\"}").build();
     }
 }
