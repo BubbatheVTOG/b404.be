@@ -7,11 +7,12 @@ import javax.ws.rs.core.Response;
 import b404.businesslayer.PersonBusiness;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
+import b404.securitylayer.JWTUtility;
+
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import main.java.b404.securitylayer.JWTUtility;
 
 /**
  * Service layer entity responsible only for fielding login attempts
