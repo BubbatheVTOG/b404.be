@@ -26,8 +26,6 @@ public class LoginService {
     @Consumes("application/json")
     @Produces("application/json")
     public Response login(@FormParam("user") String user, @FormParam("password") String password) {
-        return Response.ok("{\"success\":\"" + user + ":" + password + "\"}").build();
-        /*
         try {
             //Send parameters to business layer and store response
             String responseMessage = personBusiness.login(user, password);
@@ -43,6 +41,5 @@ public class LoginService {
         catch(InternalServerErrorException isee){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + isee.getMessage() + "\"}").build();
         }
-        */
     }
 }
