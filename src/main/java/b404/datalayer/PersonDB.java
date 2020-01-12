@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.Properties;
 
 import b404.utility.Person;
+import b404.utility.env.EnvManager;
 
 public class PersonDB {
     private Connection conn;
@@ -14,10 +15,10 @@ public class PersonDB {
     private String user;
     private String password;
 
-    public PersonDB(){
+    public PersonDB(EnvManager env){
 
         this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://db:3306/venture_creations?allowPublicKeyRetrieval=true";
+        this.url = "jdbc:mariadb://"+env.getValue("DB_NAME")+":3306/venture_creations?allowPublicKeyRetrieval=true";
 
         //TODO: communicate on what these values should be and how best to store them
         this.user = "b404";
