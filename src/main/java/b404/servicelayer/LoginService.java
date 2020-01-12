@@ -33,7 +33,6 @@ public class LoginService {
     @Operation(summary = "Login", description = "This can only be done by the logged in user.")
     @ApiResponse(responseCode = "200", description = "User logged in successfully.")
     @ApiResponse(responseCode = "403", description = "Invalid username/password supplied")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
