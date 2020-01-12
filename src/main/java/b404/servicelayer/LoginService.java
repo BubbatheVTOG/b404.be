@@ -27,7 +27,8 @@ public class LoginService {
      * @param username - username from POST request body
      * @param password - password from POST request body
      * @return - HTTP Response: 200 OK for accepted login
-     *                         401 BAD REQUEST for invalid password
+     *                         400 BAD REQUEST for invalid username or password syntax
+     *                         401 UNAUTHORIZED for non-existent username or incorrect password for user
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @POST
@@ -45,8 +46,8 @@ public class LoginService {
             return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
-        catch(UnauthorizedException bre){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        catch(UnauthorizedException ue){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
         catch(BadRequestException bre){
