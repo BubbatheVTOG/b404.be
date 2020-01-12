@@ -17,7 +17,7 @@ public class PasswordEncryption {
             String hashedPassword = num.toString(16);
 
             while (hashedPassword.length() < 32) {
-                hashedPassword = "0" + hash;
+                hashedPassword = "0" + hashedPassword;
             }
             return hashedPassword;
         } catch (NoSuchAlgorithmException nsae) {
