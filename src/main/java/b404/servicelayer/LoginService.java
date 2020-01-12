@@ -47,7 +47,7 @@ public class LoginService {
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
         }
-        //Catch a BadRequestException and return Bad Request response with message from error
+        //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(UnauthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
