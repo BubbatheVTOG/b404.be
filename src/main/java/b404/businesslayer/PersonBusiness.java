@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import b404.datalayer.PersonDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
-//import b404.security.PasswordEncryption;
+import b404.securitylayer.PasswordEncryption;
 import b404.utility.Person;
 
 /**
@@ -33,13 +33,11 @@ public class PersonBusiness {
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
 
-            /*
             String encryptedPassword = PasswordEncryption.encrypt(password);
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new BadRequestException("Invalid login credentials");
             }
-            */
         }
         //If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException sqle){
