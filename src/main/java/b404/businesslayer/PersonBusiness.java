@@ -21,14 +21,15 @@ public class PersonBusiness {
     }
 
     public String login(String username, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
-        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
-        if(username.equals("admin")){
-            return username + ":" + password + "-> logged in without database connection";
-        }
 
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(username.isEmpty() || username == null){ throw new BadRequestException("Invalid username syntax"); }
         if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password syntax"); }
+
+        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
+        if(username.equals("admin")){
+            return username + ":" + password + "-> logged in without database connection";
+        }
 
         try{
             //Retrieve the person from the database by name
