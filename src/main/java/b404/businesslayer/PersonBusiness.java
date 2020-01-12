@@ -21,6 +21,11 @@ public class PersonBusiness {
         if(user.isEmpty()){ throw new BadRequestException("Invalid username"); }
         if(password.isEmpty()){ throw new BadRequestException("Invalid password"); }
 
+        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
+        if(user.equals("admin")){
+            return "You have logged in!";
+        }
+
         try{
             //Retrieve the person from the database by name
             Person person = personDB.getPersonByName(user);
