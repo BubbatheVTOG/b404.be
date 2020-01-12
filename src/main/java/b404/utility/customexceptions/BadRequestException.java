@@ -1,4 +1,4 @@
-package b404.utility;
+package b404.utility.customexceptions;
 
 public class BadRequestException extends Throwable{
 

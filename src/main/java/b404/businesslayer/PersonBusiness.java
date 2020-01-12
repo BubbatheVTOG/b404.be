@@ -3,10 +3,11 @@ package b404.businesslayer;
 import java.sql.SQLException;
 
 import b404.datalayer.PersonDB;
-import b404.utility.BadRequestException;
-import b404.utility.InternalServerErrorException;
+import b404.utility.customexceptions.BadRequestException;
+import b404.utility.customexceptions.InternalServerErrorException;
 import b404.securitylayer.PasswordEncryption;
-import b404.utility.Person;
+import b404.utility.customexceptions.UnauthorizedException;
+import b404.utility.objects.Person;
 import b404.utility.env.EnvManager;
 
 /**
@@ -17,11 +18,11 @@ public class PersonBusiness {
     private EnvManager env = new EnvManager();
     private PersonDB personDB = new PersonDB(env);
 
-    public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
+    public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username"); }
-        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password"); }
+        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username syntax"); }
+        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password syntax"); }
 
         //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
         if(user.equals("admin")){
@@ -38,7 +39,7 @@ public class PersonBusiness {
             String encryptedPassword = PasswordEncryption.encrypt(password);
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
-                throw new BadRequestException("Invalid login credentials");
+                throw new UnauthorizedException("Invalid login credentials");
             }
         }
         //If the data layer throws an SQLException; throw a custom Internal Server Error

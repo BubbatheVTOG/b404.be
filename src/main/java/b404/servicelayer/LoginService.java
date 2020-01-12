@@ -5,9 +5,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import b404.businesslayer.PersonBusiness;
-import b404.utility.BadRequestException;
-import b404.utility.InternalServerErrorException;
+import b404.utility.customexceptions.BadRequestException;
+import b404.utility.customexceptions.InternalServerErrorException;
 
+import b404.utility.customexceptions.UnauthorizedException;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -26,13 +27,13 @@ public class LoginService {
      * @param username - username from POST request body
      * @param password - password from POST request body
      * @return - HTTP Response: 200 OK for accepted login
-     *                         400 BAD REQUEST for invalid password
+     *                         401 BAD REQUEST for invalid password
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @POST
     @Operation(summary = "Login", description = "This can only be done by the logged in user.")
     @ApiResponse(responseCode = "200", description = "User logged in successfully.")
-    @ApiResponse(responseCode = "403", description = "Invalid username/password supplied")
+    @ApiResponse(responseCode = "401", description = "Invalid username/password supplied")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
@@ -42,6 +43,10 @@ public class LoginService {
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
+        }
+        //Catch a BadRequestException and return Bad Request response with message from error
+        catch(UnauthorizedException bre){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
         catch(BadRequestException bre){

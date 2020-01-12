@@ -1,9 +1,8 @@
 package b404.datalayer;
 
 import java.sql.*;
-import java.util.Properties;
 
-import b404.utility.Person;
+import b404.utility.objects.Person;
 import b404.utility.env.EnvManager;
 
 public class PersonDB {
