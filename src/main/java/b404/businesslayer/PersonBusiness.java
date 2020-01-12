@@ -14,28 +14,25 @@ import b404.utility.objects.Person;
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    //private PersonDB personDB;
+    private PersonDB personDB;
 
     public PersonBusiness(){
-         //this.personDB = new PersonDB();
+         this.personDB = new PersonDB();
     }
 
-    public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
-        return user + ":" + password + "-> logged in without database connection";
-
-        /*
+    public String login(String username, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
         //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
-        if(user.equals("admin")){
-            return user + ":" + password + "-> logged in without database connection";
+        if(username.equals("admin")){
+            return username + ":" + password + "-> logged in without database connection";
         }
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username syntax"); }
+        if(username.isEmpty() || username == null){ throw new BadRequestException("Invalid username syntax"); }
         if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password syntax"); }
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByName(user);
+            Person person = personDB.getPersonByName(username);
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
@@ -53,6 +50,5 @@ public class PersonBusiness {
 
         //Reaching this indicates no issues have been met and a success message can be returned
         return "You have logged in!";
-        */
     }
 }
