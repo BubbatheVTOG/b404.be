@@ -23,7 +23,7 @@ public class PersonBusiness {
 
         //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
         if(user.equals("admin")){
-            return user + ":" + password + "Logged in without database connection";
+            return user + ":" + password + "-> logged in without database connection";
         }
 
         try{
