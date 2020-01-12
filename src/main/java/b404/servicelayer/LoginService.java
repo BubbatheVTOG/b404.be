@@ -1,16 +1,23 @@
 package b404.servicelayer;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import b404.businesslayer.PersonBusiness;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
 
+import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 /**
  * Service layer entity responsible only for fielding login attempts
  */
 @Path("login")
+@Api(value = "/login")
 public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
 
@@ -23,8 +30,13 @@ public class LoginService {
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @POST
-    @Produces("application/json")
-    public Response login(@FormParam("user") String user, @FormParam("password") String password) {
+    @Operation(summary = "Login", description = "This can only be done by the logged in user.")
+    @ApiResponse(responseCode = "200", description = "User logged in successfully.")
+    @ApiResponse(responseCode = "403", description = "Invalid username/password supplied")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
+                          @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
         try {
             //Send parameters to business layer and store response
             String responseMessage = personBusiness.login(user, password);

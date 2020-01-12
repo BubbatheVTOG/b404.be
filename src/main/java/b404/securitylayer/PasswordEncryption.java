@@ -1,4 +1,4 @@
-package b404.security;
+package b404.securitylayer;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
