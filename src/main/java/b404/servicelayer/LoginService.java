@@ -32,9 +32,11 @@ public class LoginService {
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @POST
-    @Operation(summary = "Login", description = "This can only be done by the logged in user.")
+    @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponse(responseCode = "200", description = "User logged in successfully.")
+    @ApiResponse(responseCode = "400", description = "Invalid username/password syntax")
     @ApiResponse(responseCode = "401", description = "Invalid username/password supplied")
+    @ApiResponse(responseCode = "500", description = "Issue with backend functionality")
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
