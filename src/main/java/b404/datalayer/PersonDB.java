@@ -3,12 +3,12 @@ package b404.datalayer;
 import java.sql.*;
 
 import b404.utility.objects.Person;
-import b404.utility.env.EnvManager;
+//import b404.utility.env.EnvManager;
 
 public class PersonDB {
     private Connection conn;
 
-    private EnvManager env;
+    //private EnvManager env;
 
     private String driver;
     private String url;
@@ -42,7 +42,7 @@ public class PersonDB {
             throw new SQLException("Error opening connection to the database");
         }
         catch(ClassNotFoundException cnfe){
-            throw new SQLException("Error opening connection to the database");
+            throw new SQLException("Mariadb driver not found");
         }
     }
 
