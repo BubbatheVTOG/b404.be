@@ -8,15 +8,13 @@ import b404.utility.customexceptions.InternalServerErrorException;
 import b404.securitylayer.PasswordEncryption;
 import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
-import b404.utility.env.EnvManager;
 
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private EnvManager env = new EnvManager();
-    private PersonDB personDB = new PersonDB(env);
+    private PersonDB personDB = new PersonDB();
 
     public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
 
