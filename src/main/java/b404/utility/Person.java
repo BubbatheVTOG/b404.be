@@ -4,7 +4,7 @@ package b404.utility;
 import java.sql.*;
 import java.util.*;
 
-import b404.datalayer.VentureCreationsDB;
+import b404.datalayer.PersonDB;
 */
 
 /**
@@ -121,7 +121,7 @@ public class Person {
 
 	/*
 	public boolean fetch() {
-		VentureCreationsDB api = new VentureCreationsDB();
+		PersonDB api = new PersonDB();
 		String query = "SELECT name, email, passwordHash, salt, title, companyID, accessLevelID FROM Person WHERE userID LIKE ?";
 		ArrayList<String> values = new ArrayList<String>();
 		values.add(userID);

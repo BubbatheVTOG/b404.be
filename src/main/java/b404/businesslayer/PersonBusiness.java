@@ -2,35 +2,37 @@ package b404.businesslayer;
 
 import java.sql.SQLException;
 
-import b404.securitylayer.PasswordEncryption;
-import b404.datalayer.VentureCreationsDB;
+import b404.datalayer.PersonDB;
 import b404.utility.BadRequestException;
 import b404.utility.InternalServerErrorException;
+import b404.securitylayer.PasswordEncryption;
 import b404.utility.Person;
-import b404.utility.env.EnvManager;
 
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private EnvManager env = new EnvManager();
-    private VentureCreationsDB ventureCreationsDB = new VentureCreationsDB(env);
+    private PersonDB personDB = new PersonDB();
 
-    public String login(String username, String password) throws BadRequestException, InternalServerErrorException{
-        //prepare person object for return values
-        Person person;
+    public String login(String user, String password) throws BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(username.isEmpty()){ throw new BadRequestException("Invalid username"); }
-        if(password.isEmpty()){ throw new BadRequestException("Invalid password"); }
+        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username"); }
+        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password"); }
+
+        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
+        if(user.equals("admin")){
+            return user + ":" + password + "-> logged in without database connection";
+        }
 
         try{
             //Retrieve the person from the database by name
-            person = ventureCreationsDB.getPersonByName(username);
+            Person person = personDB.getPersonByName(user);
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
+
             String encryptedPassword = PasswordEncryption.encrypt(password);
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
@@ -42,7 +44,7 @@ public class PersonBusiness {
             throw new InternalServerErrorException("Sorry, could not process your request at this time");
         }
 
-        //Reaching this indicates no issues have been met and the userID is returned in string format
-        return String.valueOf(person.getUserID());
+        //Reaching this indicates no issues have been met and a success message can be returned
+        return "You have logged in!";
     }
 }
