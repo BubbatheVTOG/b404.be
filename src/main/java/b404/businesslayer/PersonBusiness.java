@@ -46,7 +46,8 @@ public class PersonBusiness {
         }
         //If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException sqle){
-            throw new InternalServerErrorException("Sorry, could not process your request at this time");
+            //throw new InternalServerErrorException("Sorry, could not process your request at this time");
+            throw new InternalServerErrorException(sqle.getMessage());
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned
