@@ -23,7 +23,6 @@ public class LoginService {
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @POST
-    @Consumes("application/json")
     @Produces("application/json")
     public Response login(@FormParam("user") String user, @FormParam("password") String password) {
         return Response.ok("{\"success\":\"" + user + ":" + password + "\"}").build();
