@@ -6,7 +6,7 @@ import b404.datalayer.PersonDB;
 import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.customexceptions.BadRequestException;
 import b404.utility.customexceptions.InternalServerErrorException;
-import b404.securitylayer.PasswordEncryption;
+import b404.utility.security.PasswordEncryption;
 import b404.utility.objects.Person;
 
 /**

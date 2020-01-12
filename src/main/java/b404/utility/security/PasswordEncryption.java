@@ -1,8 +1,4 @@
-package b404.securitylayer;
-
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+package b404.utility.security;
 
 public class PasswordEncryption {
     public static String encrypt(String password){
