@@ -39,7 +39,7 @@ public class PersonDB {
         }
         //return false on error connecting
         catch(SQLException sqle){
-            throw new SQLException(this.url);
+            throw new SQLException("Could not connect to database");
         }
         catch(ClassNotFoundException cnfe){
             throw new SQLException("Mariadb driver not found");
