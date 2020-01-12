@@ -21,7 +21,9 @@ public class PersonBusiness {
     }
 
     public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+        return user + ":" + password + "-> logged in without database connection";
 
+        /*
         //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
         if(user.equals("admin")){
             return user + ":" + password + "-> logged in without database connection";
@@ -51,5 +53,6 @@ public class PersonBusiness {
 
         //Reaching this indicates no issues have been met and a success message can be returned
         return "You have logged in!";
+        */
     }
 }
