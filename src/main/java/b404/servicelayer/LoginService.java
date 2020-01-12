@@ -40,6 +40,8 @@ public class LoginService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
+        return Response.ok("{\"success\":\"" + "dummy login" + "\"}").build();
+        /*
         try {
             //Send parameters to business layer and store response
             String responseMessage = personBusiness.login(username, password);
@@ -63,5 +65,6 @@ public class LoginService {
         catch(Exception e){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
+        */
     }
 }
