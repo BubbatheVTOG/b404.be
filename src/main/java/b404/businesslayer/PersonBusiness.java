@@ -14,10 +14,10 @@ import b404.utility.objects.Person;
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private PersonDB personDB;
+    //private PersonDB personDB;
 
     public PersonBusiness(){
-         this.personDB = new PersonDB();
+         //this.personDB = new PersonDB();
     }
 
     public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
