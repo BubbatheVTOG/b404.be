@@ -35,11 +35,13 @@ public class PersonBusiness {
             //Retrieve the person from the database by name
             Person person = personDB.getPersonByName(username);
 
+            //Checks if person was not found in database
+            if(person == null){
+                throw new UnauthorizedException("Invalid login credentials");
+            }
+
             //Encrypt password that was passed in and compare to hash stored in database
-            //Throw BadRequestException if they do not match
-
             String encryptedPassword = PasswordEncryption.encrypt(password);
-
             if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new UnauthorizedException("Invalid login credentials");
             }

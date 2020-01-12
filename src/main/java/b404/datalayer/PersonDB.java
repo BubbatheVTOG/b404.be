@@ -70,12 +70,17 @@ public class PersonDB {
         preparedStatement.setString(1, name);
         ResultSet result = preparedStatement.executeQuery();
 
-        //Pull response content and map into a Person object
-        Person person = new Person(result.getInt("userID"),
-                                   result.getString("name"),
-                                   result.getString("passwordHash"),
-                                   result.getInt("companyID"),
-                                   result.getInt("accessLevelID"));
+        Person person = null;
+
+        while(result.next()) {
+
+            //Pull response content and map into a Person object
+            person = new Person(result.getInt("userID"),
+                    result.getString("name"),
+                    result.getString("passwordHash"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
+        }
 
         //Close the database
         this.close();
