@@ -18,7 +18,7 @@ public class LoginService {
      * Checks that a persons username and password match values stored in database
      * @param user - username from POST request body
      * @param password - password from POST request body
-     * @return - HTTP Reponse: 200 OK for accepted login
+     * @return - HTTP Response: 200 OK for accepted login
      *                         400 BAD REQUEST for invalid password
      *                         500 INTERNAL SERVER ERROR for backend error
      */

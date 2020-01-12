@@ -58,11 +58,6 @@ public class PersonDB {
     }
 
     public Person getPersonByName(String name) throws SQLException {
-        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
-        if(name.equals("admin")){
-            return new Person(1, "admin", "password", 1, 1);
-        }
-
         this.connect();
 
         //Prepare sql statement
