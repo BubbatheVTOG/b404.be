@@ -23,8 +23,8 @@ public class PersonBusiness {
     public String login(String username, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(username.isEmpty() || username == null){ throw new BadRequestException("Invalid username syntax"); }
-        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password syntax"); }
+        if(username == null || username.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
+        if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
 
         try{
             //Retrieve the person from the database by name
