@@ -37,6 +37,7 @@ public class LoginService {
     @ApiResponse(responseCode = "400", description = "Invalid username/password syntax")
     @ApiResponse(responseCode = "401", description = "Invalid username/password supplied")
     @ApiResponse(responseCode = "500", description = "Issue with backend functionality")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
