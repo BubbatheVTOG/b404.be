@@ -1,30 +1,48 @@
 package b404.datalayer;
 
-import b404.utility.Person;
-
 import java.sql.*;
+
+import b404.utility.objects.Person;
+import b404.utility.env.EnvManager;
 
 public class PersonDB {
     private Connection conn;
+
+    private EnvManager env;
+
+    private String driver;
+    private String url;
+    private String user;
+    private String password;
+
+    public PersonDB(){
+        this.env = new EnvManager();
+
+        this.driver = "org.mariadb.jdbc.Driver";
+        this.url = "jdbc:mariadb://" + env.getValue("DB_NAME") + ":3306/venture_creations?allowPublicKeyRetrieval=true";
+
+        //TODO: communicate on what these values should be and how best to store them
+        this.user = "b404";
+        this.password = "b404";
+    }
 
     /**
      * Opens a connection to the database
      * Throws a custom SQLException on error
      */
-    public void connect() throws SQLException{
+    private void connect() throws SQLException{
         conn = null;
 
-        //TODO: communicate on what these values should be and how best to store them
-        String userName = "b404";
-        String password = "b404";
-        String url = "jdbc:mysql://db:3306:b404";
-
         try{
-            conn = DriverManager.getConnection(url, userName, password);
+            Class.forName(this.driver);
+            conn = DriverManager.getConnection(this.url, this.user, this.password);
         }
         //return false on error connecting
         catch(SQLException sqle){
-            throw new SQLException("Error opening connection to the database");
+            throw new SQLException("Could not connect to database");
+        }
+        catch(ClassNotFoundException cnfe){
+            throw new SQLException("Mariadb driver not found");
         }
     }
 
@@ -32,7 +50,7 @@ public class PersonDB {
      * Closes the database connection
      * Throws a custom SQLException on error
      */
-    public void close() throws SQLException{
+    private void close() throws SQLException{
         try{
             this.conn.close();
         }
@@ -42,8 +60,6 @@ public class PersonDB {
     }
 
     public Person getPersonByName(String name) throws SQLException {
-        //TODO uncomment connect and close once Database connectivity is resolved
-        /*
         this.connect();
 
         //Prepare sql statement
@@ -52,22 +68,24 @@ public class PersonDB {
 
         //Set parameters and execute query
         preparedStatement.setString(1, name);
-        ResultSet resultset = preparedStatement.executeQuery();
+        ResultSet result = preparedStatement.executeQuery();
 
-        //Pull response content and map into a Person object
-        Person person = new Person(resultset.getInt("userID"),
-                                   resultset.getString("name"),
-                                   resultset.getString("passwordHash"),
-                                   resultset.getInt("companyID"),
-                                   resultset.getInt("accessLevelID"));
+        Person person = null;
+
+        while(result.next()) {
+
+            //Pull response content and map into a Person object
+            person = new Person(result.getInt("userID"),
+                    result.getString("name"),
+                    result.getString("passwordHash"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
+        }
 
         //Close the database
-        //this.close();
-        */
+        this.close();
 
         //return person;
-        //TODO: This returns a dummy person with admin and password for front-end testing; remove once DB connectivity is functional
-        return new Person(1, "admin", "password", 1, 1);
-
+        return person;
     }
 }
