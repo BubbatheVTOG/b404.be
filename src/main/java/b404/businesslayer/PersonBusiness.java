@@ -21,8 +21,8 @@ public class PersonBusiness {
     public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue
-        if(user.isEmpty() || user == null){ throw new BadRequestException("Invalid username syntax"); }
-        if(password.isEmpty() || password == null){ throw new BadRequestException("Invalid password syntax"); }
+        if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
+        if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
 
         //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
         if(user.equals("admin")){
@@ -35,16 +35,17 @@ public class PersonBusiness {
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw BadRequestException if they do not match
-
-            String encryptedPassword = PasswordEncryption.encrypt(password);
+            String salt = person.getSalt();
+            String encryptedPassword = PasswordEncryption.hash(password, salt);
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
-                throw new UnauthorizedException("Invalid login credentials");
+                throw new UnauthorizedException("Invalid login credentials.");
             }
         }
-        //If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException sqle){
-            throw new InternalServerErrorException("Sorry, could not process your request at this time");
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //ArithmeticException - If the password encryption process fails
+        catch(SQLException | ArithmeticException ex){
+            throw new InternalServerErrorException(ex.getMessage());
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned

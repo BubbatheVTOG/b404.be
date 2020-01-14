@@ -57,7 +57,7 @@ public class LoginService {
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with message from error
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + isee.getMessage() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){

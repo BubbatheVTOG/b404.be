@@ -2,6 +2,7 @@ package b404.securitylayer;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -9,45 +10,54 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import javax.xml.bind.DatatypeConverter;
 
+/**
+ * Utility class for handling salt generation and password hashing
+ */
 public class PasswordEncryption {
-    public static String encrypt(String password) {
-        return password;
+    private static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA1";
+    private static final int NUM_ITERATIONS = 1000;
+    private static final int KEY_LENGTH = 64 * 8;
+
+    /**
+     * Hashes a password given a plain text password and salt
+     * @param password - password to hash
+     * @param salt - salt to increase hashing algorithm complexity
+     * @return Hexidecimal string of hashed password
+     * @throws ArithmeticException - General exception for handling errors with retrieving hash algorithm or key spec errors
+     */
+    public static String hash(String password, String salt) throws ArithmeticException {
+        try {
+            char[] chars = password.toCharArray();
+
+            PBEKeySpec spec = new PBEKeySpec(chars, salt.getBytes(), NUM_ITERATIONS, KEY_LENGTH);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance(HASH_ALGORITHM);
+            byte[] hash = skf.generateSecret(spec).getEncoded();
+
+            return toHex(hash);
+        }
+        catch(NoSuchAlgorithmException | InvalidKeySpecException e){
+            throw new ArithmeticException(e.getMessage());
+        }
     }
 
-    /*public static String[] encrypt(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        int iterations = 1000;
-        char[] chars = password.toCharArray();
-        byte[] salt = getSalt();
-
-        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-
-        String [] output = {toHex(salt), toHex(hash)};
-        return output;
-    }
-
-    public static String[] encrypt(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        int iterations = 1000;
-        char[] chars = password.toCharArray();
-
-        PBEKeySpec spec = new PBEKeySpec(chars, salt.getBytes(), iterations, 64 * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] hash = skf.generateSecret(spec).getEncoded();
-
-        String [] output = {toHex(salt.getBytes()), toHex(hash)};
-        System.out.println(decodeHex(toHex(salt.getBytes())));
-        return output;
-    }
-
-    public static byte[] getSalt() throws NoSuchAlgorithmException {
+    /**
+     * Responsible for generating a continuously unique salt for password hashing
+     * @return Hexidecimal string of the salt
+     * @throws NoSuchAlgorithmException - algorithm for randomizing salt was not found
+     */
+    public static String getSalt() throws NoSuchAlgorithmException {
         SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
         byte [] salt = new byte[16];
         secureRandom.nextBytes(salt);
-        return salt;
+        return toHex(salt);
     }
 
-    public static String toHex(byte[] array) throws NoSuchAlgorithmException {
+    /**
+     * Converts a byte[] to a hexidecimal string
+     * @param array byte[] to convert. Primarily for hash and salt conversion
+     * @return Hexidecimal string of whatever byte[] is passed in
+     */
+    private static String toHex(byte[] array) {
         BigInteger bigInteger = new BigInteger(1, array);
         String hex = bigInteger.toString(16);
         int paddingLength = (array.length * 2) - hex.length();
@@ -58,13 +68,8 @@ public class PasswordEncryption {
         }
     }
 
-    public static String decodeHex(String salt) {
+    private static String decodeHex(String salt) {
         byte[] bytes = DatatypeConverter.parseHexBinary(salt);
-        try {
-            String result = new String(bytes, "UTF-8");
-            return result;
-        } catch(UnsupportedEncodingException uee) {
-            throw new RuntimeException(uee);
-        }
-    }*/
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
 }
