@@ -5,51 +5,66 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import javax.xml.bind.DatatypeConverter;
 
 public class PasswordEncryption {
     public static String encrypt(String password) {
         return password;
-        /*try {
-            // Generating salt
-            SecureRandom random = new SecureRandom();
-            byte[] bytes = new byte[16];
-            random.nextBytes(bytes);
+    }
 
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), bytes, 65536, 512);
-            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    /*public static String[] encrypt(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+        byte[] salt = getSalt();
 
-            byte[] hash = secretKeyFactory.generateSecret(keySpec).getEncoded();
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = skf.generateSecret(spec).getEncoded();
 
-            String hashedPassword = new String(hash);
-            String salt = new String(bytes);
-            String [] output = {hashedPassword, salt};
+        String [] output = {toHex(salt), toHex(hash)};
+        return output;
+    }
 
-            return output;
-        } catch (InvalidKeySpecException ikse) {
-            throw new RuntimeException(ikse);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(nsae);
+    public static String[] encrypt(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        int iterations = 1000;
+        char[] chars = password.toCharArray();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt.getBytes(), iterations, 64 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        byte[] hash = skf.generateSecret(spec).getEncoded();
+
+        String [] output = {toHex(salt.getBytes()), toHex(hash)};
+        System.out.println(decodeHex(toHex(salt.getBytes())));
+        return output;
+    }
+
+    public static byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+        byte [] salt = new byte[16];
+        secureRandom.nextBytes(salt);
+        return salt;
+    }
+
+    public static String toHex(byte[] array) throws NoSuchAlgorithmException {
+        BigInteger bigInteger = new BigInteger(1, array);
+        String hex = bigInteger.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0) {
+            return String.format("%0" +paddingLength+ "d", 0) + hex;
+        } else {
+            return hex;
         }
     }
 
-    public static String[] encrypt(String password, String salt) {
-        //return password
-        byte[] bytes = salt.getBytes();
+    public static String decodeHex(String salt) {
+        byte[] bytes = DatatypeConverter.parseHexBinary(salt);
         try {
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), bytes, 65536, 512);
-            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-
-            byte[] hash = secretKeyFactory.generateSecret(keySpec).getEncoded();
-
-            String hashedPassword = new String(hash);
-            String [] output = {hashedPassword, salt};
-
-            return output;
-        } catch (InvalidKeySpecException ikse) {
-            throw new RuntimeException(ikse);
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(nsae);
-        }*/
-    }
+            String result = new String(bytes, "UTF-8");
+            return result;
+        } catch(UnsupportedEncodingException uee) {
+            throw new RuntimeException(uee);
+        }
+    }*/
 }
