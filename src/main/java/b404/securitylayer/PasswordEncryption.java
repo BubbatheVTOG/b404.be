@@ -1,25 +1,53 @@
 package b404.securitylayer;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 public class PasswordEncryption {
-    public static String encrypt(String password){
+    public static String encrypt(String password) {
         return password;
         /*try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            // Generating salt
+            SecureRandom random = new SecureRandom();
+            byte[] bytes = new byte[16];
+            random.nextBytes(bytes);
 
-            byte[] messageDigest = md.digest(password.getBytes());
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), bytes, 65536, 512);
+            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
-            BigInteger num = new BigInteger(1, messageDigest);
+            byte[] hash = secretKeyFactory.generateSecret(keySpec).getEncoded();
 
-            String hashedPassword = num.toString(16);
+            String hashedPassword = new String(hash);
+            String salt = new String(bytes);
+            String [] output = {hashedPassword, salt};
 
-            while (hashedPassword.length() < 32) {
-                hashedPassword = "0" + hashedPassword;
-            }
-            return hashedPassword;
+            return output;
+        } catch (InvalidKeySpecException ikse) {
+            throw new RuntimeException(ikse);
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(nsae);
+        }
+    }
+
+    public static String[] encrypt(String password, String salt) {
+        //return password
+        byte[] bytes = salt.getBytes();
+        try {
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), bytes, 65536, 512);
+            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+
+            byte[] hash = secretKeyFactory.generateSecret(keySpec).getEncoded();
+
+            String hashedPassword = new String(hash);
+            String [] output = {hashedPassword, salt};
+
+            return output;
+        } catch (InvalidKeySpecException ikse) {
+            throw new RuntimeException(ikse);
         } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(nsae);
         }*/
