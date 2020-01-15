@@ -38,7 +38,7 @@ public class PersonBusiness {
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
         catch(SQLException | ArithmeticException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+            return ex.getMessage();
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned
