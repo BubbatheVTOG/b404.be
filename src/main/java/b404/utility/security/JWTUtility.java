@@ -1,6 +1,7 @@
-package b404.utility.security;
+package main.java.b404.securitylayer;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -25,7 +26,7 @@ public class JWTUtility {
         this.issuer = "venture_creations";
 
         //Tokens will be valid for 5 minutes
-        this.JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 60 * 1000;
+        this.JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 1000;
     }
 
     //Externally accessible function for creating a JWT using a userID
@@ -39,13 +40,13 @@ public class JWTUtility {
         Date expirationDate = new Date(System.currentTimeMillis() + this.JWT_TOKEN_VALIDITY_DURATION);
 
         return Jwts.builder().setClaims(claims)
-                             .setSubject(subject)
-                             .setIssuer(this.issuer)
-                             .setIssuedAt(currDate)
-                             .setExpiration(expirationDate)
-                             //using HMAC-SHA256 for signature hashing algorithm
-                             .signWith(SignatureAlgorithm.HS256, this.SECRET_KEY)
-                             .compact();
+                .setSubject(subject)
+                .setIssuer(this.issuer)
+                .setIssuedAt(currDate)
+                .setExpiration(expirationDate)
+                //using HMAC-SHA256 for signature hashing algorithm
+                .signWith(SignatureAlgorithm.HS256, this.SECRET_KEY)
+                .compact();
     }
 
 
@@ -68,16 +69,24 @@ public class JWTUtility {
 
     //Check if the token has expired
     private Boolean isTokenExpired(String token) {
-        Date expiration = getExpirationDateFromToken(token);
-        Date currDate = new Date();
+        try {
+            Date expiration = getExpirationDateFromToken(token);
+            Date currDate = new Date();
 
-        return expiration.before(currDate);
+            return expiration.before(currDate);
+        }
+        catch(ExpiredJwtException ejwte){
+            return true;
+        }
     }
 
     //Validate that token has not expired and is for desired userID
     public Boolean validateToken(String token, String userID) {
-        String tokenUsername = getUserIDFromToken(token);
-        return (tokenUsername.equals(userID) && !isTokenExpired(token));
+        if(!isTokenExpired(token)){
+            String tokenUsername = getUserIDFromToken(token);
+            return tokenUsername.equals(userID);
+        }
+        return false;
     }
 
 }

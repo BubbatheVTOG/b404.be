@@ -22,17 +22,12 @@ public class PersonBusiness {
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
         if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
 
-        //TODO: This returns a person with password -> password when name -> user for front-end testing; remove once DB connectivity is functional
-        if(user.equals("admin")){
-            return user + ":" + password + "-> logged in without database connection";
-        }
-
         try{
             //Retrieve the person from the database by name
             Person person = personDB.getPersonByName(user);
 
             //Encrypt password that was passed in and compare to hash stored in database
-            //Throw BadRequestException if they do not match
+            //Throw UnauthorizedException if they do not match
             String salt = person.getSalt();
             String encryptedPassword = PasswordEncryption.hash(password, salt);
 
