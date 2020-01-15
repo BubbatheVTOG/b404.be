@@ -45,7 +45,7 @@ public class PersonBusiness {
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
         catch(SQLException | ArithmeticException ex){
-            return ex.getMessage();
+            throw new InternalServerErrorException(ex.getMessage());
         }
         catch(NullPointerException npe){
             throw new UnauthorizedException(npe.getMessage());

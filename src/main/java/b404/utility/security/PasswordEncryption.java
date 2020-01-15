@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import javax.validation.constraints.Null;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -34,6 +35,9 @@ public class PasswordEncryption {
             byte[] hash = skf.generateSecret(spec).getEncoded();
 
             return toHex(hash);
+        }
+        catch(NullPointerException npe){
+            throw new NullPointerException("Null pointer in hash algorithm");
         }
         catch(NoSuchAlgorithmException | InvalidKeySpecException e){
             throw new ArithmeticException(e.getMessage());
