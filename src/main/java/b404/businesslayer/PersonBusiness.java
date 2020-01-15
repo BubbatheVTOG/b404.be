@@ -9,6 +9,8 @@ import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
 
+import javax.validation.constraints.Null;
+
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
@@ -44,6 +46,9 @@ public class PersonBusiness {
         //ArithmeticException - If the password encryption process fails
         catch(SQLException | ArithmeticException ex){
             return ex.getMessage();
+        }
+        catch(NullPointerException npe){
+            throw new UnauthorizedException(npe.getMessage());
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned
