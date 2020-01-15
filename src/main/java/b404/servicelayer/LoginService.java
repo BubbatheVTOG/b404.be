@@ -62,7 +62,7 @@ public class LoginService {
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "An unknown issue has occurred" + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + e.getMessage() + "\"}").build();
         }
     }
 }
