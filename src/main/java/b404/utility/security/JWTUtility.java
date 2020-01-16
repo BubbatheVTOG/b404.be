@@ -1,4 +1,4 @@
-package main.java.b404.securitylayer;
+package b404.utility.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
