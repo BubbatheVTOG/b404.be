@@ -77,7 +77,10 @@ public class PersonDB {
             //Pull response content and map into a Person object
             person = new Person(result.getInt("userID"),
                     result.getString("name"),
+                    result.getString("email"),
                     result.getString("passwordHash"),
+                    result.getString("salt"),
+                    result.getString("title"),
                     result.getInt("companyID"),
                     result.getInt("accessLevelID"));
         }
