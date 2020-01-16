@@ -35,10 +35,10 @@ public class LoginService {
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User logged in successfully."),
-            @ApiResponse(code = 400, message = "Invalid username/password syntax"),
-            @ApiResponse(code = 401, message = "Invalid username/password supplied"),
-            @ApiResponse(code = 500, message = "Issue with backend functionality")
+            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
+            @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
