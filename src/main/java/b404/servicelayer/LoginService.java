@@ -35,9 +35,9 @@ public class LoginService {
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponses(value = {
-            @io.swagger.annotations.ApiResponse(code = 200, message = "User logged in successfully."),
-            @io.swagger.annotations.ApiResponse(code = 400, message = "Invalid username/password syntax"),
-            @io.swagger.annotations.ApiResponse(code = 401, message = "Invalid username/password supplied"),
+            @ApiResponse(code = 200, message = "User logged in successfully."),
+            @ApiResponse(code = 400, message = "Invalid username/password syntax"),
+            @ApiResponse(code = 401, message = "Invalid username/password supplied"),
             @ApiResponse(code = 500, message = "Issue with backend functionality")
     })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
