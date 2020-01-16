@@ -18,7 +18,9 @@ import javax.validation.constraints.Null;
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
 
-    public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+    public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+
+        Person person = null;
 
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
@@ -26,7 +28,11 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByName(user);
+            person = personDB.getPersonByName(user);
+
+            if(person == null){
+                throw new UnauthorizedException("Invalid login credentials.");
+            }
 
             //Check that username was found in the database
             if(person == null){
@@ -49,6 +55,6 @@ public class PersonBusiness {
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned
-        return "You have logged in!";
+        return person;
     }
 }
