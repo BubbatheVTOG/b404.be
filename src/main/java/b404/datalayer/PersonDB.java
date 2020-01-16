@@ -5,8 +5,6 @@ import java.sql.*;
 import b404.utility.objects.Person;
 import b404.utility.env.EnvManager;
 
-import javax.validation.constraints.Null;
-
 public class PersonDB {
     private Connection conn;
 
@@ -62,37 +60,35 @@ public class PersonDB {
     }
 
     public Person getPersonByName(String name) throws SQLException {
-        try {
-            this.connect();
+        this.connect();
 
-            //Prepare sql statement
-            String query = "SELECT * FROM person WHERE person.name = ?";
-            PreparedStatement preparedStatement = this.conn.prepareStatement(query);
+        //Prepare sql statement
+        String query = "SELECT * FROM person WHERE person.name = ?";
+        PreparedStatement preparedStatement = this.conn.prepareStatement(query);
 
-            //Set parameters and execute query
-            preparedStatement.setString(1, name);
-            ResultSet result = preparedStatement.executeQuery();
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
+        ResultSet result = preparedStatement.executeQuery();
 
-            Person person = null;
+        Person person = null;
 
-            while (result.next()) {
+        while(result.next()) {
 
-                //Pull response content and map into a Person object
-                person = new Person(result.getInt("userID"),
-                        result.getString("name"),
-                        result.getString("passwordHash"),
-                        result.getInt("companyID"),
-                        result.getInt("accessLevelID"));
-            }
-
-            //Close the database
-            this.close();
-
-            //return person;
-            return person;
+            //Pull response content and map into a Person object
+            person = new Person(result.getInt("userID"),
+                    result.getString("name"),
+                    result.getString("email"),
+                    result.getString("passwordHash"),
+                    result.getString("salt"),
+                    result.getString("title"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
         }
-        catch(NullPointerException npe){
-            throw new NullPointerException("Null pointer in data layer");
-        }
+
+        //Close the database
+        this.close();
+
+        //return person;
+        return person;
     }
 }
