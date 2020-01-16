@@ -10,9 +10,10 @@ import b404.utility.customexceptions.InternalServerErrorException;
 
 import b404.utility.customexceptions.UnauthorizedException;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Service layer entity responsible only for fielding login attempts
@@ -33,10 +34,12 @@ public class LoginService {
      */
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
-    @ApiResponse(responseCode = "200", description = "User logged in successfully.")
-    @ApiResponse(responseCode = "400", description = "Invalid username/password syntax")
-    @ApiResponse(responseCode = "401", description = "Invalid username/password supplied")
-    @ApiResponse(responseCode = "500", description = "Issue with backend functionality")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User logged in successfully."),
+            @ApiResponse(code = 400, message = "Invalid username/password syntax"),
+            @ApiResponse(code = 401, message = "Invalid username/password supplied"),
+            @ApiResponse(code = 500, message = "Issue with backend functionality")
+    })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
