@@ -17,16 +17,13 @@ public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
 
     public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
-
-        Person person = null;
-
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
         if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
 
         try{
             //Retrieve the person from the database by name
-            person = personDB.getPersonByName(user);
+            Person person = personDB.getPersonByName(user);
 
             if(person == null){
                 throw new UnauthorizedException("Invalid login credentials.");
@@ -40,14 +37,14 @@ public class PersonBusiness {
             if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new UnauthorizedException("Invalid login credentials.");
             }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
         catch(SQLException | ArithmeticException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
-
-        //Reaching this indicates no issues have been met and a success message can be returned
-        return person;
     }
 }
