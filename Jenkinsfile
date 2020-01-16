@@ -28,6 +28,7 @@ pipeline {
               branch 'master'
               branch 'testing'
               branch 'dev'
+              branch 'debug'
             }
           }
           steps {
