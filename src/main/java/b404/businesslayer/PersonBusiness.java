@@ -47,9 +47,6 @@ public class PersonBusiness {
         catch(SQLException | ArithmeticException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
-        catch(NullPointerException npe){
-            throw new UnauthorizedException(npe.getMessage());
-        }
 
         //Reaching this indicates no issues have been met and a success message can be returned
         return "You have logged in!";

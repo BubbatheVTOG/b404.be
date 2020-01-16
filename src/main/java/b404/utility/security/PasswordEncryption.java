@@ -36,9 +36,6 @@ public class PasswordEncryption {
 
             return toHex(hash);
         }
-        catch(NullPointerException npe){
-            throw new NullPointerException("Null pointer in hash algorithm");
-        }
         catch(NoSuchAlgorithmException | InvalidKeySpecException e){
             throw new ArithmeticException(e.getMessage());
         }
