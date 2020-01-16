@@ -2,14 +2,10 @@ package b404.utility.security;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import javax.validation.constraints.Null;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utility class for handling salt generation and password hashing
@@ -70,10 +66,5 @@ public class PasswordEncryption {
         } else {
             return hex;
         }
-    }
-
-    private static String decodeHex(String salt) {
-        byte[] bytes = DatatypeConverter.parseHexBinary(salt);
-        return new String(bytes, StandardCharsets.UTF_8);
     }
 }
