@@ -9,8 +9,6 @@ import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
 
-import javax.validation.constraints.Null;
-
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
@@ -18,8 +16,7 @@ import javax.validation.constraints.Null;
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
 
-    public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
-
+    public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
         if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
@@ -28,7 +25,6 @@ public class PersonBusiness {
             //Retrieve the person from the database by name
             Person person = personDB.getPersonByName(user);
 
-            //Check that username was found in the database
             if(person == null){
                 throw new UnauthorizedException("Invalid login credentials.");
             }
@@ -41,14 +37,14 @@ public class PersonBusiness {
             if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new UnauthorizedException("Invalid login credentials.");
             }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
         catch(SQLException | ArithmeticException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
-
-        //Reaching this indicates no issues have been met and a success message can be returned
-        return "You have logged in!";
     }
 }
