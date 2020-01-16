@@ -9,6 +9,8 @@ import b404.utility.customexceptions.BadRequestException;
 import b404.utility.customexceptions.InternalServerErrorException;
 
 import b404.utility.customexceptions.UnauthorizedException;
+import b404.utility.objects.Person;
+import b404.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -43,10 +45,14 @@ public class LoginService {
                           @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
         try {
             //Send parameters to business layer and store response
-            String responseMessage = personBusiness.login(username, password);
+            Person person = personBusiness.login(username, password);
+
+            String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
+            return Response.ok("{\"success\":\"" + person.toString() + "\"}")
+                           .header("Authorization", jwtToken)
+                           .build();
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(UnauthorizedException ue){

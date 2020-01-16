@@ -16,7 +16,9 @@ import b404.utility.security.PasswordEncryption;
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
 
-    public String login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+    public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+
+        Person person = null;
 
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
@@ -24,7 +26,11 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByName(user);
+            person = personDB.getPersonByName(user);
+
+            if(person == null){
+                throw new UnauthorizedException("Invalid login credentials.");
+            }
 
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
@@ -42,6 +48,6 @@ public class PersonBusiness {
         }
 
         //Reaching this indicates no issues have been met and a success message can be returned
-        return "You have logged in!";
+        return person;
     }
 }
