@@ -1,23 +1,76 @@
 package b404.utility.security;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import javax.validation.constraints.Null;
+import javax.xml.bind.DatatypeConverter;
+
+/**
+ * Utility class for handling salt generation and password hashing
+ */
 public class PasswordEncryption {
-    public static String encrypt(String password){
-        return password;
-        /*try {
-            MessageDigest md = MessageDigest.getInstance("SHA-512");
+    private static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA1";
+    private static final int NUM_ITERATIONS = 1000;
+    private static final int KEY_LENGTH = 64 * 8;
 
-            byte[] messageDigest = md.digest(password.getBytes());
+    /**
+     * Hashes a password given a plain text password and salt
+     * @param password - password to hash
+     * @param salt - salt to increase hashing algorithm complexity
+     * @return Hexidecimal string of hashed password
+     * @throws ArithmeticException - General exception for handling errors with retrieving hash algorithm or key spec errors
+     */
+    public static String hash(String password, String salt) throws ArithmeticException {
+        try {
+            char[] chars = password.toCharArray();
 
-            BigInteger num = new BigInteger(1, messageDigest);
+            PBEKeySpec spec = new PBEKeySpec(chars, salt.getBytes(), NUM_ITERATIONS, KEY_LENGTH);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance(HASH_ALGORITHM);
+            byte[] hash = skf.generateSecret(spec).getEncoded();
 
-            String hashedPassword = num.toString(16);
+            return toHex(hash);
+        }
+        catch(NoSuchAlgorithmException | InvalidKeySpecException e){
+            throw new ArithmeticException(e.getMessage());
+        }
+    }
 
-            while (hashedPassword.length() < 32) {
-                hashedPassword = "0" + hashedPassword;
-            }
-            return hashedPassword;
-        } catch (NoSuchAlgorithmException nsae) {
-            throw new RuntimeException(nsae);
-        }*/
+    /**
+     * Responsible for generating a continuously unique salt for password hashing
+     * @return Hexidecimal string of the salt
+     * @throws NoSuchAlgorithmException - algorithm for randomizing salt was not found
+     */
+    public static String getSalt() throws NoSuchAlgorithmException {
+        SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+        byte [] salt = new byte[16];
+        secureRandom.nextBytes(salt);
+        return toHex(salt);
+    }
+
+    /**
+     * Converts a byte[] to a hexidecimal string
+     * @param array byte[] to convert. Primarily for hash and salt conversion
+     * @return Hexidecimal string of whatever byte[] is passed in
+     */
+    private static String toHex(byte[] array) {
+        BigInteger bigInteger = new BigInteger(1, array);
+        String hex = bigInteger.toString(16);
+        int paddingLength = (array.length * 2) - hex.length();
+        if(paddingLength > 0) {
+            return String.format("%0" +paddingLength+ "d", 0) + hex;
+        } else {
+            return hex;
+        }
+    }
+
+    private static String decodeHex(String salt) {
+        byte[] bytes = DatatypeConverter.parseHexBinary(salt);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }

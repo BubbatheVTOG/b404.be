@@ -10,9 +10,10 @@ import b404.utility.customexceptions.InternalServerErrorException;
 
 import b404.utility.customexceptions.UnauthorizedException;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Service layer entity responsible only for fielding login attempts
@@ -33,10 +34,12 @@ public class LoginService {
      */
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
-    @ApiResponse(responseCode = "200", description = "User logged in successfully.")
-    @ApiResponse(responseCode = "400", description = "Invalid username/password syntax")
-    @ApiResponse(responseCode = "401", description = "Invalid username/password supplied")
-    @ApiResponse(responseCode = "500", description = "Issue with backend functionality")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
+            @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
@@ -58,11 +61,11 @@ public class LoginService {
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with message from error
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + isee.getMessage() + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "An unknown issue has occurred" + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
         }
     }
 }

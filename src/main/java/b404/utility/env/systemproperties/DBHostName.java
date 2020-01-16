@@ -24,8 +24,10 @@ public class DBHostName implements EnvironmentProperty {
     @Override
     public void getSystemValue() {
         String tempVal = System.getenv(key);
-        if (tempVal.length() > 0) {
-            value = tempVal;
+        if (tempVal != null) {
+            if (tempVal.length() > 0) {
+                value = tempVal;
+            }
         }
     }
 }
