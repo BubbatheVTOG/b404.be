@@ -44,7 +44,7 @@
     <jjwt-jackson.version>0.10.7</jjwt-jackson.version>
     <mariadb.jdbc.version>2.5.2</mariadb.jdbc.version>
     <jersey.version>2.27</jersey.version>
-    <jaxb.version>2.3.1</jaxb.version>
+    <jaxb.api.version>2.3.0</jaxb.api.version>
     <swagger.core.version>2.0.2</swagger.core.version>
     <swagger-ui.version>3.17.0</swagger-ui.version>
     <!-- END LIBRARY VERSION -->
@@ -100,7 +100,17 @@
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>${jaxb.version}</version>
+      <version>${jaxb.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>${jaxb.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${jaxb.api.version}</version>
     </dependency>
 
     <dependency>
