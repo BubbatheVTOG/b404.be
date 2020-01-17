@@ -37,7 +37,7 @@ public class LoginService {
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 200, message = "Person object which contains (userID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
             @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
@@ -53,9 +53,9 @@ public class LoginService {
             String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + person.toString() + "\"}")
-                           .header("Authorization", jwtToken)
-                           .build();
+            return Response.ok(person.toSecureJSON())
+                    .header("Authorization", jwtToken)
+                    .build();
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(UnauthorizedException ue){
