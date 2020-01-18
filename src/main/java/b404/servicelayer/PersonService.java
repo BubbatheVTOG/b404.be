@@ -38,9 +38,9 @@ public class PersonService {
      */
     @Path("/id/{id}")
     @GET
-    @Operation(summary = "Login", description = "Authenticates the user by username and password")
+    @Operation(summary = "id", description = "Gets a user's information by userID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 200, message = ""),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
             @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
@@ -67,6 +67,7 @@ public class PersonService {
         catch(UnauthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
+        //Catch a NotFoundException and return Not Found response with message from error
         catch(NotFoundException nfe){
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
         }
@@ -74,7 +75,7 @@ public class PersonService {
         catch(b404.utility.customexceptions.BadRequestException bre){
             return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with message from error
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
         }
