@@ -1,6 +1,7 @@
 package b404.servicelayer;
 
 import b404.businesslayer.PersonBusiness;
+import b404.utility.customexceptions.BadRequestException;
 import b404.utility.customexceptions.InternalServerErrorException;
 import b404.utility.customexceptions.NotFoundException;
 import b404.utility.customexceptions.UnauthorizedException;
@@ -68,7 +69,7 @@ public class PersonService {
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
-        catch(b404.utility.customexceptions.BadRequestException bre){
+        catch(BadRequestException bre){
             return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
