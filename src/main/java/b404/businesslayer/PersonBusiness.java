@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import b404.datalayer.PersonDB;
 import b404.utility.customexceptions.BadRequestException;
 import b404.utility.customexceptions.InternalServerErrorException;
+import b404.utility.customexceptions.NotFoundException;
 import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
@@ -32,11 +33,6 @@ public class PersonBusiness {
                 throw new UnauthorizedException("Invalid login credentials.");
             }
 
-            //Check that username was found in the database
-            if(person == null){
-                throw new UnauthorizedException("Invalid login credentials.");
-            }
-
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
             String salt = person.getSalt();
@@ -56,43 +52,40 @@ public class PersonBusiness {
         }
     }
 
-    public Person getPersonByUserID(String userID) throws UnauthorizedException, BadRequestException, InternalServerErrorException {
-        return new Person();
-    }
-    /*
-        //Initial parameter validation; throws BadRequestException if there is an issue
-        if(userID == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
-
+    /**
+     * Get a person from the database by userID
+     * @param userID String must be convertible to integer
+     * @return Person object of person found in database
+     * @throws NotFoundException - UserID does not exist in database
+     * @throws BadRequestException - UserID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public Person getPersonByUserID(String userID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            //Retrieve the person from the database by name
-            person = personDB.getPersonByName(userID);
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(userID == null){ throw new BadRequestException("A userID must be provided"); }
 
+            int userIDInteger = Integer.parseInt(userID);
+
+            //Retrieve the person from the database by userID
+            Person person = personDB.getPersonByUserID(userIDInteger);
+
+            //If null is returned, no user was found with given userID
             if(person == null){
-                throw new UnauthorizedException("Invalid login credentials.");
+                throw new NotFoundException("No user with that userID exists.");
             }
 
-            //Check that username was found in the database
-            if(person == null){
-                throw new UnauthorizedException("Invalid login credentials.");
-            }
-
-            //Encrypt password that was passed in and compare to hash stored in database
-            //Throw UnauthorizedException if they do not match
-            String salt = person.getSalt();
-            String encryptedPassword = PasswordEncryption.hash(password, salt);
-
-            if(!person.getPasswordHash().equals(encryptedPassword)){
-                throw new UnauthorizedException("Invalid login credentials.");
-            }
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
+        }
+        //Catch an error converting userID to an integer
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("UserID must be an integer.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
-        catch(SQLException | ArithmeticException ex){
+        catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
-
-        //Reaching this indicates no issues have been met and a success message can be returned
-        return person;
     }
-    */
 }

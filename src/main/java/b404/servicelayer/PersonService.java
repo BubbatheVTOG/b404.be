@@ -2,6 +2,7 @@ package b404.servicelayer;
 
 import b404.businesslayer.PersonBusiness;
 import b404.utility.customexceptions.InternalServerErrorException;
+import b404.utility.customexceptions.NotFoundException;
 import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
@@ -65,6 +66,9 @@ public class PersonService {
         //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(UnauthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
+        }
+        catch(NotFoundException nfe){
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error
         catch(b404.utility.customexceptions.BadRequestException bre){
