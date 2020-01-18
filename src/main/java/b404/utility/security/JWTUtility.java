@@ -13,7 +13,7 @@ public class JWTUtility {
     //TODO: insert secret key into properties file along with db connection information
     private static final String SECRET_KEY= "7BA7D93955DCF9B08CDAED92CDF38F659EDFDECD933CF0EAFC0DD3D35F503FCC";
     private static final String ISSUER = "venture_creations";
-    private static final int JWT_TOKEN_VALIDITY_DURATION = 5 * 60 * 1000;
+    private static final int JWT_TOKEN_VALIDITY_DURATION = 8 * 60 * 60 * 1000;
 
     //Externally accessible function for creating a JWT using a userID
     public static String generateToken(String userID){
