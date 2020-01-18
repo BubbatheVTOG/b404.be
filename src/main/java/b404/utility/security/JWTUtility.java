@@ -1,9 +1,6 @@
 package b404.utility.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -71,11 +68,16 @@ public class JWTUtility {
 
     //Validate that token has not expired and is for desired userID
     public static Boolean validateToken(String token, String userID) {
-        if(!isTokenExpired(token)){
-            String tokenUsername = getUserIDFromToken(token);
-            return tokenUsername.equals(userID);
+        try {
+            if (!isTokenExpired(token)) {
+                String tokenUsername = getUserIDFromToken(token);
+                return tokenUsername.equals(userID);
+            }
+            return false;
         }
-        return false;
+        catch(MalformedJwtException mje){
+            return false;
+        }
     }
 
 }
