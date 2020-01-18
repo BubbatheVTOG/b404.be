@@ -37,7 +37,7 @@ public class LoginService {
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 200, message = "Person object which contains keys (userID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
             @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")

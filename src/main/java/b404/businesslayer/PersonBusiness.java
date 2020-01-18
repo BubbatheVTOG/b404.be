@@ -10,8 +10,6 @@ import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
 
-import javax.validation.constraints.Null;
-
 /**
  * Business layer for functionality related to person
  * Includes login as well as business operations for people
@@ -19,6 +17,15 @@ import javax.validation.constraints.Null;
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
 
+    /**
+     * Checks that a username and password matches an entry in the database
+     * @param user - username for login attempt
+     * @param password - plaintext password for login attempt
+     * @return Person object that matches username and password input
+     * @throws UnauthorizedException - if username is not found or password does not match database entry
+     * @throws BadRequestException - username or password passed in was empty or null
+     * @throws InternalServerErrorException - Error in password encryption or database connectivity process
+     */
     public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
 
         //Initial parameter validation; throws BadRequestException if there is an issue

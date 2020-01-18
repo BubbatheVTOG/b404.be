@@ -3,7 +3,6 @@ package b404.datalayer;
 import java.sql.*;
 
 import b404.utility.objects.Person;
-import b404.utility.env.EnvManager;
 
 public class PersonDB {
     DBConn dbConn;
@@ -12,6 +11,12 @@ public class PersonDB {
         this.dbConn = new DBConn();
     }
 
+    /**
+     * Connect to database and retrieve entry by name
+     * @param name - Username to search database for
+     * @return Person object or null if not found
+     * @throws SQLException - Error connecting to database or executing query
+     */
     public Person getPersonByName(String name) throws SQLException {
         this.dbConn.connect();
 
@@ -45,6 +50,13 @@ public class PersonDB {
         return person;
     }
 
+
+    /**
+     * Connect to database and retrieve entry by userID
+     * @param userID - UserID to search database for
+     * @return Person object or null if not found
+     * @throws SQLException - Error connecting to database or executing query
+     */
     public Person getPersonByUserID(int userID) throws SQLException {
         this.dbConn.connect();
 
