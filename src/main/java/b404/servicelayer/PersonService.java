@@ -56,7 +56,7 @@ public class PersonService {
             String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + person.toString() + "\"}")
+            return Response.ok(person.toSecureJSON())
                     .header("Authorization", jwtToken)
                     .build();
         }

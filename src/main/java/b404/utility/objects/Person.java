@@ -3,7 +3,6 @@ package b404.utility.objects;
 /*
 import java.sql.*;
 import java.util.*;
-
 import b404.datalayer.PersonDB;
 */
 
@@ -31,7 +30,7 @@ public class Person {
 
 
 	//Constructor for all non-null values
-    public Person(int userID, String name, String password, int companyID, int accessLevelID){
+	public Person(int userID, String name, String password, int companyID, int accessLevelID){
 		this.userID = userID;
 		this.name = name;
 		this.passwordHash = password;
@@ -170,22 +169,21 @@ public class Person {
 			return false;
 		}
 	}
-
 	public int put() {
 		DatabaseAPI api = new DatabaseAPI();
 		String query = "UPDATE Person SET "
 			+ "name = ?, "
-			
+
 			+ "email = ?, "
-			
+
 			+ "passwordHash = ?, "
-			
+
 			+ "salt = ?, "
-			
+
 			+ "title = ?, "
-			
+
 			+ "companyID = ?, "
-			
+
 			+ "accessLevelID = ? "
 			+ "WHERE userID LIKE ?;";
 		ArrayList<String> values = new ArrayList<String>();
@@ -205,7 +203,6 @@ public class Person {
 		}
 		return rc;
 	}
-
 	public int post() {
 		DatabaseAPI api = new DatabaseAPI();
 		String query = "INSERT INTO Person VALUES ("
@@ -229,7 +226,6 @@ public class Person {
 		int rc = api.setData(query, values);
 		return rc;
 	}
-
 	public int delete() {
 		DatabaseAPI api = new DatabaseAPI();
 		String query = "DELETE FROM Person WHERE userID LIKE ?;";
