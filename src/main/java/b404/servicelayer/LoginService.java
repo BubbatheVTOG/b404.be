@@ -53,9 +53,9 @@ public class LoginService {
             String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + person.toString() + "\"}")
-                           .header("Authorization", jwtToken)
-                           .build();
+            return Response.ok(person.toSecureJSON())
+                    .header("Authorization", jwtToken)
+                    .build();
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(UnauthorizedException ue){

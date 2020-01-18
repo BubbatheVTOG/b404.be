@@ -27,7 +27,6 @@ public class PersonBusiness {
      * @throws InternalServerErrorException - Error in password encryption or database connectivity process
      */
     public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
-
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
         if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
@@ -39,7 +38,7 @@ public class PersonBusiness {
             if(person == null){
                 throw new UnauthorizedException("Invalid login credentials.");
             }
-
+          
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
             String salt = person.getSalt();

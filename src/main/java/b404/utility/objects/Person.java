@@ -115,8 +115,36 @@ public class Person {
 		this.accessLevelID = accessLevelID;
 	}
 
-	public String toString() {
-		return this.userID + ' ' + this.name + ' ' + this.email + ' ' + this.passwordHash + ' ' + this.salt + ' ' + this.title + ' ' + this.companyID + ' ' + this.accessLevelID;
+	/**
+	 * Puts the Person object into valid json format
+	 * @return JSON format String
+	 */
+	public String toJSON() {
+		return "{" +
+				"\"userID\": " + this.userID + "," +
+				"\"name\": \"" + this.name + "\"," +
+				"\"email\": \"" + this.email + "\"," +
+				"\"passwordHash\": \"" + this.passwordHash + "\"," +
+				"\"salt\": \"" + this.salt + "\"," +
+				"\"title\": \"" + this.title + "\"," +
+				"\"companyID\": " + this.companyID + "," +
+				"\"accessLevelID\": " + this.accessLevelID +
+				"}";
+	}
+
+	/**
+	 * Puts the Person object into valid json format and removes passwordHash and salt
+	 * @return JSON format String
+	 */
+	public String toSecureJSON() {
+		return "{" +
+				"\"userID\": " + this.userID + "," +
+				"\"name\": \"" + this.name + "\"," +
+				"\"email\": \"" + this.email + "\"," +
+				"\"title\": \"" + this.title + "\"," +
+				"\"companyID\": " + this.companyID + "," +
+				"\"accessLevelID\": " + this.accessLevelID +
+				"}";
 	}
 
 	/*
