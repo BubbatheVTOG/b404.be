@@ -67,13 +67,9 @@ public class JWTUtility {
     }
 
     //Validate that token has not expired and is for desired userID
-    public static Boolean validateToken(String token, String userID) {
+    public static Boolean validateToken(String token) {
         try {
-            if (!isTokenExpired(token)) {
-                String tokenUsername = getUserIDFromToken(token);
-                return tokenUsername.equals(userID);
-            }
-            return false;
+            return !isTokenExpired(token);
         }
         catch(MalformedJwtException mje){
             return false;
