@@ -46,7 +46,7 @@ public class PersonService {
     public Response getPersonByUserID(@RequestBody(description = "id", required = true) @PathParam("id") String userID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
-            if(!JWTUtility.validateToken(JWT, userID)){
+            if(!JWTUtility.validateToken(JWT)){
                 throw new UnauthorizedException("Invalid JSON Web Token provided.");
             }
 
