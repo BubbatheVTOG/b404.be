@@ -5,10 +5,12 @@ import java.sql.*;
 import b404.utility.objects.Person;
 
 public class PersonDB {
-    DBConn dbConn;
+    private DBConn dbConn;
+    private CompanyDB companyDB;
 
     public PersonDB(){
         this.dbConn = new DBConn();
+        this.companyDB = new CompanyDB();
     }
 
     /**
@@ -50,7 +52,6 @@ public class PersonDB {
         return person;
     }
 
-
     /**
      * Connect to database and retrieve entry by userID
      * @param userID - UserID to search database for
@@ -88,6 +89,39 @@ public class PersonDB {
 
         //return person;
         return person;
+    }
+
+    /**
+     * Connect to database and add
+     * @param name
+     * @param password
+     * @param salt
+     * @param email
+     * @param title
+     * @param companyID
+     * @param accessLevelID
+     * @throws SQLException - error connecting to database or executing query
+     */
+    public void insertPerson(String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "INSERT INTO person (name, email, passwordHash, salt, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?)";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, email);
+        preparedStatement.setString(3, password);
+        preparedStatement.setString(4, salt);
+        preparedStatement.setString(5, title);
+        preparedStatement.setInt(6, companyID);
+        preparedStatement.setInt(7, accessLevelID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
     }
 
 }

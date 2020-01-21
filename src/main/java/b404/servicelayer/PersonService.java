@@ -35,7 +35,7 @@ public class PersonService {
      */
     @Path("/id/{id}")
     @GET
-    @Operation(summary = "id", description = "Gets a user's information by userID")
+    @Operation(summary = "getPerson", description = "Gets a user's information by userID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Person object which contains keys (userID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
@@ -43,15 +43,84 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPersonByUserID(@RequestBody(description = "id", required = true) @PathParam("id") String userID,
+    public Response getPersonByUserID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String userID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
-            if(!JWTUtility.validateToken(JWT)){
+            if(!JWTUtility.validateToken(JWT )){
                 throw new UnauthorizedException("Invalid JSON Web Token provided.");
             }
 
             //Send parameters to business layer and store response
             Person person = personBusiness.getPersonByUserID(userID);
+
+            String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return Response.ok(person.toSecureJSON())
+                    .header("Authorization", jwtToken)
+                    .build();
+        }
+        //Catch an UnauthorizedException and return Unauthorized response with message from error
+        catch(UnauthorizedException ue){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
+        }
+        //Catch a NotFoundException and return Not Found response with message from error
+        catch(NotFoundException nfe){
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        }
+        //Catch a BadRequestException and return Bad Request response with message from error
+        catch(BadRequestException bre){
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(InternalServerErrorException isee){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+        }
+        //Catch All to ensure no unexpected internal server errors are being returned to client
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+        }
+    }
+
+    /**
+     * Insert a person into the database
+     * @param username
+     * @param password
+     * @param email
+     * @param title
+     * @param companyName
+     * @param accessLevelID
+     * @param JWT
+     * @return - HTTP Response: 200 OK for person found and returned
+     *                         400 BAD REQUEST for invalid username or password syntax
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/id/{id}")
+    @POST
+    @Operation(summary = "insertPerson", description = "Insert a new person")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Person object which contains keys (userID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
+            @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response insertPerson(@RequestBody(description = "username", required = true)      @FormParam("id") String username,
+                                 @RequestBody(description = "password", required = true)      @FormParam("id") String password,
+                                 @RequestBody(description = "email")                          @FormParam("id") String email,
+                                 @RequestBody(description = "title")                          @FormParam("id") String title,
+                                 @RequestBody(description = "companyName", required = true)   @FormParam("id") String companyName,
+                                 @RequestBody(description = "accessLevelID", required = true) @FormParam("id") String accessLevelID,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+
+        try {
+            if(!JWTUtility.validateToken(JWT )){
+                throw new UnauthorizedException("Invalid JSON Web Token provided.");
+            }
+
+            //Send parameters to business layer and store response
+            Person person = personBusiness.insertPerson(username, password, email, title, companyName, accessLevelID);
 
             String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
 
