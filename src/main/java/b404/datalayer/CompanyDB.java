@@ -36,7 +36,7 @@ public class CompanyDB {
 
             //Pull response content and map into a Person object
             company = new Company(result.getInt("companyID"),
-                                  result.getString("companyName"));
+                                  result.getString("name"));
         }
 
         //Close the database
