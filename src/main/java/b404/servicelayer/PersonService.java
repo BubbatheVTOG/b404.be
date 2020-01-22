@@ -54,9 +54,10 @@ public class PersonService {
             //Construct response message
             String responseMessage = "{";
             for(Person person : people){
-                responseMessage += person.toSecureJSON();
+                responseMessage += person.toSecureJSON() + ",";
             }
-            responseMessage += "}";
+            //remove trailing comma and add closing bracket
+            responseMessage = responseMessage.substring(0,responseMessage.length() - 1) + "}";
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok(responseMessage)
