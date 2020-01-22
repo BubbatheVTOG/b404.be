@@ -164,7 +164,7 @@ public class PersonService {
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/id/{id}")
-    @GET
+    @DELETE
     @Operation(summary = "deletePerson", description = "delete a person's information form the database by UUID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Successfully deleted person."),
