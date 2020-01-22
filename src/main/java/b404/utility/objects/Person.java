@@ -102,11 +102,11 @@ public class Person {
 	 */
 	public String toJSON() {
 		return "{" +
-				"\"UUID\": " + this.UUID + "," +
-				"\"name\": \"" + this.name + "\"," +
-				"\"email\": \"" + this.email + "\"," +
+				"\"UUID\": \"" + this.UUID + "\"," +
+				"\"username\": \"" + this.name + "\"," +
 				"\"passwordHash\": \"" + this.passwordHash + "\"," +
 				"\"salt\": \"" + this.salt + "\"," +
+				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
 				"\"accessLevelID\": " + this.accessLevelID +
@@ -119,8 +119,8 @@ public class Person {
 	 */
 	public String toSecureJSON() {
 		return "{" +
-				"\"UUID\": " + this.UUID + "," +
-				"\"name\": \"" + this.name + "\"," +
+				"\"UUID\": \"" + this.UUID + "\"," +
+				"\"username\": \"" + this.name + "\"," +
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
