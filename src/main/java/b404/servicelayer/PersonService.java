@@ -26,8 +26,8 @@ public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
 
     /**
-     * Gets a Person object by userID
-     * @param userID - username from POST request body
+     * Gets a Person object by UUID
+     * @param UUID - username from POST request body
      * @return - HTTP Response: 200 OK for person found and returned
      *                         400 BAD REQUEST for invalid username or password syntax
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -35,15 +35,15 @@ public class PersonService {
      */
     @Path("/id/{id}")
     @GET
-    @Operation(summary = "getPerson", description = "Gets a user's information by userID")
+    @Operation(summary = "getPerson", description = "Gets a user's information by UUID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Person object which contains keys (userID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
             @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPersonByUserID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String userID,
+    public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String UUID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
@@ -51,9 +51,9 @@ public class PersonService {
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.getPersonByUserID(userID);
+            Person person = personBusiness.getPersonByUUID(UUID);
 
-            String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
+            String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok(person.toSecureJSON())
@@ -99,7 +99,7 @@ public class PersonService {
     @POST
     @Operation(summary = "insertPerson", description = "Insert a new person")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Person object which contains keys (userID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
@@ -121,7 +121,7 @@ public class PersonService {
             //Send parameters to business layer and store response
             Person person = personBusiness.insertPerson(username, password, email, title, companyName, accessLevelID);
 
-            String jwtToken = JWTUtility.generateToken(Integer.toString(person.getUserID()));
+            String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok(person.toSecureJSON())
@@ -153,7 +153,7 @@ public class PersonService {
     /**
      *
      * Delete a person from the database
-     * @param userID - userID of user to delete from the database
+     * @param UUID - UUID of user to delete from the database
      * @param JWT - JSON Web Token for authorizing request
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -162,7 +162,7 @@ public class PersonService {
      */
     @Path("/id/{id}")
     @GET
-    @Operation(summary = "deletePerson", description = "delete a person's information form the database by userID")
+    @Operation(summary = "deletePerson", description = "delete a person's information form the database by UUID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Successfully deleted person."),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
@@ -170,7 +170,7 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePersonByUserID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String userID,
+    public Response deletePersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String UUID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
@@ -178,7 +178,7 @@ public class PersonService {
             }
 
             //Send parameters to business layer and store response
-            String responseMessage = personBusiness.deletePersonByUserID(userID);
+            String responseMessage = personBusiness.deletePersonByUUID(UUID);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok("{\"success\":\"" + responseMessage + "\"}")

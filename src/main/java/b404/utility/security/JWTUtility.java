@@ -15,10 +15,10 @@ public class JWTUtility {
     private static final String ISSUER = "venture_creations";
     private static final int JWT_TOKEN_VALIDITY_DURATION = 8 * 60 * 60 * 1000;
 
-    //Externally accessible function for creating a JWT using a userID
-    public static String generateToken(String userID){
+    //Externally accessible function for creating a JWT using a UUID
+    public static String generateToken(String UUID){
         Map<String, Object> claims = new HashMap<>();
-        return constructToken(claims, userID);
+        return constructToken(claims, UUID);
     }
 
     private static String constructToken(Map<String, Object> claims, String subject) {
@@ -41,8 +41,8 @@ public class JWTUtility {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    //Get userID from token
-    public static String getUserIDFromToken(String token) {
+    //Get UUID from token
+    public static String getUUIDFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         return claims.getSubject();
     }
@@ -66,7 +66,7 @@ public class JWTUtility {
         }
     }
 
-    //Validate that token has not expired and is for desired userID
+    //Validate that token has not expired
     public static Boolean validateToken(String token) {
         try {
             return !isTokenExpired(token);

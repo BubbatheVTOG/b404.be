@@ -11,7 +11,7 @@ import b404.datalayer.PersonDB;
  */
 public class Person {
 
-	private int userID;
+	private String UUID;
 	private String name;
 	private String email;
 	private String passwordHash;
@@ -20,38 +20,20 @@ public class Person {
 	private int companyID;
 	private int accessLevelID;
 
-	//Default constructor
-	public Person() {}
-
-	//Constructor with primary keys only
-	public Person(int userID) {
-		this.userID = userID;
-	}
-
-
-	//Constructor for all non-null values
-	public Person(int userID, String name, String password, int companyID, int accessLevelID){
-		this.userID = userID;
-		this.name = name;
-		this.passwordHash = password;
-		this.companyID = companyID;
-		this.accessLevelID = accessLevelID;
-	}
-
 	//Fully parameterised constructor
-	public Person(int userID, String name, String email, String passwordHash, String salt, String title, int companyID, int accessLevelID) {
-		this.userID = userID;
+	public Person(String UUID, String name, String passwordHash, String salt, String email, String title, int companyID, int accessLevelID) {
+		this.UUID = UUID;
 		this.name = name;
-		this.email = email;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
+		this.email = email;
 		this.title = title;
 		this.companyID = companyID;
 		this.accessLevelID = accessLevelID;
 	}
 
-	public int getUserID() {
-		return this.userID;
+	public String getUUID() {
+		return this.UUID;
 	}
 
 	public String getName() {
@@ -82,8 +64,8 @@ public class Person {
 		return this.accessLevelID;
 	}
 
-	public void setUserID(int userID) {
-		this.userID = userID;
+	public void setUUID(String UUID) {
+		this.UUID = UUID;
 	}
 
 	public void setName(String name) {
@@ -120,7 +102,7 @@ public class Person {
 	 */
 	public String toJSON() {
 		return "{" +
-				"\"userID\": " + this.userID + "," +
+				"\"UUID\": " + this.UUID + "," +
 				"\"name\": \"" + this.name + "\"," +
 				"\"email\": \"" + this.email + "\"," +
 				"\"passwordHash\": \"" + this.passwordHash + "\"," +
@@ -137,7 +119,7 @@ public class Person {
 	 */
 	public String toSecureJSON() {
 		return "{" +
-				"\"userID\": " + this.userID + "," +
+				"\"UUID\": " + this.UUID + "," +
 				"\"name\": \"" + this.name + "\"," +
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
@@ -149,9 +131,9 @@ public class Person {
 	/*
 	public boolean fetch() {
 		PersonDB api = new PersonDB();
-		String query = "SELECT name, email, passwordHash, salt, title, companyID, accessLevelID FROM Person WHERE userID LIKE ?";
+		String query = "SELECT name, email, passwordHash, salt, title, companyID, accessLevelID FROM Person WHERE UUID LIKE ?";
 		ArrayList<String> values = new ArrayList<String>();
-		values.add(userID);
+		values.add(UUID);
 		api.connect();
 		ArrayList<ArrayList<String>> results = api.getData(query, values);
 		api.close();
@@ -185,7 +167,7 @@ public class Person {
 			+ "companyID = ?, "
 
 			+ "accessLevelID = ? "
-			+ "WHERE userID LIKE ?;";
+			+ "WHERE UUID LIKE ?;";
 		ArrayList<String> values = new ArrayList<String>();
 		values.add(name);
 		values.add(email);
@@ -194,7 +176,7 @@ public class Person {
 		values.add(title);
 		values.add(companyID);
 		values.add(accessLevelID);
-		values.add(userID);
+		values.add(UUID);
 		int rc = 0;
 		try {
 			rc = api.setData(query, values);
@@ -215,7 +197,7 @@ public class Person {
 			+ "?, "
 			+ "?);";
 		ArrayList<String> values = new ArrayList<String> ();
-		values.add(userID);
+		values.add(UUID);
 		values.add(name);
 		values.add(email);
 		values.add(passwordHash);
@@ -228,9 +210,9 @@ public class Person {
 	}
 	public int delete() {
 		DatabaseAPI api = new DatabaseAPI();
-		String query = "DELETE FROM Person WHERE userID LIKE ?;";
+		String query = "DELETE FROM Person WHERE UUID LIKE ?;";
 		ArrayList<String> values = new ArrayList<String>();
-		values.add(userID);
+		values.add(UUID);
 		int rc = api.setData(query, values);
 		return rc;
 	}

@@ -1,7 +1,7 @@
 package b404.businesslayer;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import b404.datalayer.CompanyDB;
 import b404.datalayer.PersonDB;
@@ -63,34 +63,28 @@ public class PersonBusiness {
     }
 
     /**
-     * Get a person from the database by userID
-     * @param userID String must be convertible to integer
+     * Get a person from the database by UUID
+     * @param UUID - String must be convertible to integer
      * @return Person object of person found in database
-     * @throws NotFoundException - UserID does not exist in database
-     * @throws BadRequestException - UserID was either null or invalid integer
+     * @throws NotFoundException - UUID does not exist in database
+     * @throws BadRequestException - UUID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public Person getPersonByUserID(String userID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person getPersonByUUID(String UUID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(userID == null){ throw new BadRequestException("A userID must be provided"); }
+            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
 
-            int userIDInteger = Integer.parseInt(userID);
+            //Retrieve the person from the database by String
+            Person person = personDB.getPersonByUUID(UUID);
 
-            //Retrieve the person from the database by userID
-            Person person = personDB.getPersonByUserID(userIDInteger);
-
-            //If null is returned, no user was found with given userID
+            //If null is returned, no user was found with given UUID
             if(person == null){
-                throw new NotFoundException("No user with that userID exists.");
+                throw new NotFoundException("No user with that UUID exists.");
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
-        }
-        //Catch an error converting userID to an integer
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("UserID must be an integer.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
@@ -118,7 +112,11 @@ public class PersonBusiness {
             if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
             if(password == null || password.isEmpty()){ throw new BadRequestException("A password must be provided"); }
             if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
+            if(accessLevelID == null){ throw new BadRequestException("An accessLevelID name must be provided"); }
             int accessLevelIDInteger = Integer.parseInt(accessLevelID);
+
+            //Generate a new UUID for the new person
+            String uuid = UUID.randomUUID().toString();
 
             //Get company name by using companyID
             Company company = companyDB.getCompanyByName(companyName);
@@ -127,13 +125,14 @@ public class PersonBusiness {
             }
             int companyID = company.getCompanyID();
 
+            //Get new salt and hash password with new salt
             String salt = PasswordEncryption.getSalt();
             String passwordHash = PasswordEncryption.hash(password, salt);
 
-            //Retrieve the person from the database by userID
-            personDB.insertPerson(username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
+            //Retrieve the person from the database by UUID
+            personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
 
-            Person person = new Person(0, username, email, passwordHash, salt, title, companyID, accessLevelIDInteger);
+            Person person = new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
@@ -149,33 +148,32 @@ public class PersonBusiness {
     }
 
     /**
-     * Delete a person from the database by userID
-     * @param userID String must be convertible to integer
+     * Delete a person from the database by UUID
+     * @param UUID String must be convertible to integer
      * @return Success string
-     * @throws NotFoundException - UserID does not exist in database
-     * @throws BadRequestException - UserID was either null or invalid integer
+     * @throws NotFoundException - UUID does not exist in database
+     * @throws BadRequestException - UUID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public String deletePersonByUserID(String userID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public String deletePersonByUUID(String UUID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(userID == null){ throw new BadRequestException("A userID must be provided"); }
-            int userIDInteger = Integer.parseInt(userID);
+            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A UUID must be provided"); }
 
-            //Retrieve the person from the database by userID
-            int numRowsDeleted = personDB.deletePersonByUserID(userIDInteger);
+            //Retrieve the person from the database by UUID
+            int numRowsDeleted = personDB.deletePersonByUUID(UUID);
 
-            //If null is returned, no user was found with given userID
+            //If null is returned, no user was found with given UUID
             if(numRowsDeleted == 0){
-                throw new NotFoundException("No user with that userID exists.");
+                throw new NotFoundException("No user with that UUID exists.");
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return "Successfully deleted person.";
         }
-        //Catch an error converting userID to an integer
+        //Catch an error converting UUID to an integer
         catch(NumberFormatException nfe){
-            throw new BadRequestException("UserID must be an integer.");
+            throw new BadRequestException("UUID must be an integer.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails

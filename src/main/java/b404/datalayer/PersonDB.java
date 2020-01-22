@@ -35,11 +35,11 @@ public class PersonDB {
         while(result.next()) {
 
             //Pull response content and map into a Person object
-            person = new Person(result.getInt("userID"),
+            person = new Person(result.getString("UUID"),
                     result.getString("name"),
-                    result.getString("email"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
                     result.getInt("accessLevelID"));
@@ -53,20 +53,20 @@ public class PersonDB {
     }
 
     /**
-     * Connect to database and retrieve entry by userID
-     * @param userID - UserID to search database for
+     * Connect to database and retrieve entry by UUID
+     * @param UUID - UUID to search database for
      * @return Person object or null if not found
      * @throws SQLException - Error connecting to database or executing query
      */
-    public Person getPersonByUserID(int userID) throws SQLException {
+    public Person getPersonByUUID(String UUID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM person WHERE person.userID = ?";
+        String query = "SELECT * FROM person WHERE person.UUID = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setInt(1, userID);
+        preparedStatement.setString(1, UUID);
         ResultSet result = preparedStatement.executeQuery();
 
         Person person = null;
@@ -74,11 +74,11 @@ public class PersonDB {
         while(result.next()) {
 
             //Pull response content and map into a Person object
-            person = new Person(result.getInt("userID"),
+            person = new Person(result.getString("UUID"),
                     result.getString("name"),
-                    result.getString("email"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
                     result.getInt("accessLevelID"));
@@ -93,6 +93,7 @@ public class PersonDB {
 
     /**
      * Connect to database and add
+     * @param UUID
      * @param name
      * @param password
      * @param salt
@@ -102,21 +103,22 @@ public class PersonDB {
      * @param accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void insertPerson(String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+    public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (name, email, passwordHash, salt, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?)";
+        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?)";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setString(1, name);
-        preparedStatement.setString(2, email);
-        preparedStatement.setString(3, password);
-        preparedStatement.setString(4, salt);
-        preparedStatement.setString(5, title);
+        preparedStatement.setString(1, UUID);
+        preparedStatement.setString(2, password);
+        preparedStatement.setString(3, salt);
+        preparedStatement.setString(4, name);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, title);
         preparedStatement.setInt(6, companyID);
-        preparedStatement.setInt(7, accessLevelID);
+        preparedStatement.setInt(8, accessLevelID);
 
         preparedStatement.executeUpdate();
 
@@ -125,20 +127,20 @@ public class PersonDB {
     }
 
     /**
-     * Connect to database and delete a person by userID
-     * @param userID - UserID to delete from database
+     * Connect to database and delete a person by UUID
+     * @param UUID - UUID to delete from database
      * @return number of rows deleted
      * @throws SQLException - Error connecting to database or executing query
      */
-    public int deletePersonByUserID(int userID) throws SQLException {
+    public int deletePersonByUUID(String UUID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "DELETE FROM person WHERE person.userID = ?";
+        String query = "DELETE FROM person WHERE person.UUID = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setInt(1, userID);
+        preparedStatement.setString(1, UUID);
         int numRowsDeleted = preparedStatement.executeUpdate();
 
         //Close the database
