@@ -7,6 +7,7 @@ import b404.utility.customexceptions.NotFoundException;
 import b404.utility.customexceptions.UnauthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response;
  * Service Layer entity responsible for receiving requests having to do with person information
  */
 @Path("person")
+@Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
 
