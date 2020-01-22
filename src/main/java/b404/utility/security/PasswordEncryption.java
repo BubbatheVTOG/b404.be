@@ -36,9 +36,6 @@ public class PasswordEncryption {
 
             return toHex(hash);
         }
-        catch(NullPointerException npe){
-            throw new NullPointerException("Null pointer in hash algorithm");
-        }
         catch(NoSuchAlgorithmException | InvalidKeySpecException e){
             throw new ArithmeticException(e.getMessage());
         }
@@ -49,11 +46,16 @@ public class PasswordEncryption {
      * @return Hexidecimal string of the salt
      * @throws NoSuchAlgorithmException - algorithm for randomizing salt was not found
      */
-    public static String getSalt() throws NoSuchAlgorithmException {
-        SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-        byte [] salt = new byte[16];
-        secureRandom.nextBytes(salt);
-        return toHex(salt);
+    public static String getSalt() throws ArithmeticException {
+        try {
+            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+            byte[] salt = new byte[16];
+            secureRandom.nextBytes(salt);
+            return toHex(salt);
+        }
+        catch(NoSuchAlgorithmException nsae){
+            throw new ArithmeticException("Error creating a new salt.");
+        }
     }
 
     /**

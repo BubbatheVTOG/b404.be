@@ -3,96 +3,151 @@ package b404.datalayer;
 import java.sql.*;
 
 import b404.utility.objects.Person;
-import b404.utility.env.EnvManager;
-
-import javax.validation.constraints.Null;
 
 public class PersonDB {
-    private Connection conn;
-
-    private EnvManager env;
-
-    private String driver;
-    private String url;
-    private String user;
-    private String password;
+    private DBConn dbConn;
+    private CompanyDB companyDB;
 
     public PersonDB(){
-        this.env = new EnvManager();
-
-        this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://" + env.getValue("DB_NAME") + ":3306/venture_creations?allowPublicKeyRetrieval=true";
-
-        //TODO: communicate on what these values should be and how best to store them
-        this.user = "b404";
-        this.password = "b404";
+        this.dbConn = new DBConn();
+        this.companyDB = new CompanyDB();
     }
 
     /**
-     * Opens a connection to the database
-     * Throws a custom SQLException on error
+     * Connect to database and retrieve entry by name
+     * @param name - Username to search database for
+     * @return Person object or null if not found
+     * @throws SQLException - Error connecting to database or executing query
      */
-    private void connect() throws SQLException{
-        conn = null;
-
-        try{
-            Class.forName(this.driver);
-            conn = DriverManager.getConnection(this.url, this.user, this.password);
-        }
-        //return false on error connecting
-        catch(SQLException sqle){
-            throw new SQLException("Could not connect to database");
-        }
-        catch(ClassNotFoundException cnfe){
-            throw new SQLException("Mariadb driver not found");
-        }
-    }
-
-    /**
-     * Closes the database connection
-     * Throws a custom SQLException on error
-     */
-    private void close() throws SQLException{
-        try{
-            this.conn.close();
-        }
-        catch(SQLException e){
-            throw new SQLException("Error closing the database connection");
-        }
-    }
-
     public Person getPersonByName(String name) throws SQLException {
-        try {
-            this.connect();
+        this.dbConn.connect();
 
-            //Prepare sql statement
-            String query = "SELECT * FROM person WHERE person.name = ?";
-            PreparedStatement preparedStatement = this.conn.prepareStatement(query);
+        //Prepare sql statement
+        String query = "SELECT * FROM person WHERE person.name = ?";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
-            //Set parameters and execute query
-            preparedStatement.setString(1, name);
-            ResultSet result = preparedStatement.executeQuery();
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
+        ResultSet result = preparedStatement.executeQuery();
 
-            Person person = null;
+        Person person = null;
 
-            while (result.next()) {
+        while(result.next()) {
 
-                //Pull response content and map into a Person object
-                person = new Person(result.getInt("userID"),
-                        result.getString("name"),
-                        result.getString("passwordHash"),
-                        result.getInt("companyID"),
-                        result.getInt("accessLevelID"));
-            }
-
-            //Close the database
-            this.close();
-
-            //return person;
-            return person;
+            //Pull response content and map into a Person object
+            person = new Person(result.getString("UUID"),
+                    result.getString("name"),
+                    result.getString("passwordHash"),
+                    result.getString("salt"),
+                    result.getString("email"),
+                    result.getString("title"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
         }
-        catch(NullPointerException npe){
-            throw new NullPointerException("Null pointer in data layer");
-        }
+
+        //Close the database
+        this.dbConn.close();
+
+        //return person;
+        return person;
     }
+
+    /**
+     * Connect to database and retrieve entry by UUID
+     * @param UUID - UUID to search database for
+     * @return Person object or null if not found
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public Person getPersonByUUID(String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM person WHERE person.UUID = ?";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, UUID);
+        ResultSet result = preparedStatement.executeQuery();
+
+        Person person = null;
+
+        while(result.next()) {
+
+            //Pull response content and map into a Person object
+            person = new Person(result.getString("UUID"),
+                    result.getString("name"),
+                    result.getString("passwordHash"),
+                    result.getString("salt"),
+                    result.getString("email"),
+                    result.getString("title"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
+        }
+
+        //Close the database
+        this.dbConn.close();
+
+        //return person;
+        return person;
+    }
+
+    /**
+     * Connect to database and add
+     * @param UUID
+     * @param name
+     * @param password
+     * @param salt
+     * @param email
+     * @param title
+     * @param companyID
+     * @param accessLevelID
+     * @throws SQLException - error connecting to database or executing query
+     */
+    public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?)";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, UUID);
+        preparedStatement.setString(2, password);
+        preparedStatement.setString(3, salt);
+        preparedStatement.setString(4, name);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, title);
+        preparedStatement.setInt(7, companyID);
+        preparedStatement.setInt(8, accessLevelID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+    }
+
+    /**
+     * Connect to database and delete a person by UUID
+     * @param UUID - UUID to delete from database
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int deletePersonByUUID(String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM person WHERE person.UUID = ?";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, UUID);
+        int numRowsDeleted = preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+
+        //return person;
+        return numRowsDeleted;
+    }
+
 }
