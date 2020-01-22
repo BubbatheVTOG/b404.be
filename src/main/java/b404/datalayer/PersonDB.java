@@ -107,7 +107,7 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?)";
+        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?)";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -117,7 +117,7 @@ public class PersonDB {
         preparedStatement.setString(4, name);
         preparedStatement.setString(5, email);
         preparedStatement.setString(6, title);
-        preparedStatement.setInt(6, companyID);
+        preparedStatement.setInt(7, companyID);
         preparedStatement.setInt(8, accessLevelID);
 
         preparedStatement.executeUpdate();
