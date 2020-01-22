@@ -147,4 +147,40 @@ public class PersonBusiness {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
+
+    /**
+     * Delete a person from the database by userID
+     * @param userID String must be convertible to integer
+     * @return Success string
+     * @throws NotFoundException - UserID does not exist in database
+     * @throws BadRequestException - UserID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public String deletePersonByUserID(String userID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(userID == null){ throw new BadRequestException("A userID must be provided"); }
+            int userIDInteger = Integer.parseInt(userID);
+
+            //Retrieve the person from the database by userID
+            int numRowsDeleted = personDB.deletePersonByUserID(userIDInteger);
+
+            //If null is returned, no user was found with given userID
+            if(numRowsDeleted == 0){
+                throw new NotFoundException("No user with that userID exists.");
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return "Successfully deleted person.";
+        }
+        //Catch an error converting userID to an integer
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("UserID must be an integer.");
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //ArithmeticException - If the password encryption process fails
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
 }

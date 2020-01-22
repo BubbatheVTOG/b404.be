@@ -124,4 +124,28 @@ public class PersonDB {
         this.dbConn.close();
     }
 
+    /**
+     * Connect to database and delete a person by userID
+     * @param userID - UserID to delete from database
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int deletePersonByUserID(int userID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM person WHERE person.userID = ?";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, userID);
+        int numRowsDeleted = preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+
+        //return person;
+        return numRowsDeleted;
+    }
+
 }

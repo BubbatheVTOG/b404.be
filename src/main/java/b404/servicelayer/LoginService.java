@@ -44,8 +44,8 @@ public class LoginService {
     })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
-                          @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
+    public Response login(@RequestBody(description = "username", required = true) @FormParam("username") String username,
+                          @RequestBody(description = "password", required = true) @FormParam("password") String password) {
         try {
             //Send parameters to business layer and store response
             Person person = personBusiness.login(username, password);
