@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 
 /**
  * Service Layer entity responsible for receiving requests having to do with person information
@@ -26,6 +27,54 @@ import javax.ws.rs.core.Response;
 @Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
+
+    /**
+     * Get all people from database
+     * @return - HTTP Response: 200 OK for person found and returned
+     *                         400 BAD REQUEST for invalid username or password syntax
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @GET
+    @Operation(summary = "getPerson", description = "Gets a user's information by UUID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of Person objects which each contain keys (UUID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+        try {
+            if(!JWTUtility.validateToken(JWT )){
+                throw new UnauthorizedException("Invalid JSON Web Token provided.");
+            }
+
+            //Send parameters to business layer and store response
+            ArrayList<Person> people = personBusiness.getAllPeople();
+
+            //Construct response message
+            String responseMessage = "{";
+            for(Person person : people){
+                responseMessage += person.toSecureJSON();
+            }
+            responseMessage += "}";
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return Response.ok(responseMessage)
+                    .build();
+        }
+        //Catch an UnauthorizedException and return Unauthorized response with message from error
+        catch(UnauthorizedException ue){
+            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(InternalServerErrorException isee){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+        }
+        //Catch All to ensure no unexpected internal server errors are being returned to client
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+        }
+    }
 
     /**
      * Gets a Person object by UUID

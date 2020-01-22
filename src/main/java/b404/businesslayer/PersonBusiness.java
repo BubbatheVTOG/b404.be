@@ -1,6 +1,7 @@
 package b404.businesslayer;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import b404.datalayer.CompanyDB;
@@ -64,6 +65,25 @@ public class PersonBusiness {
 
     /**
      * Get a person from the database by UUID
+     * @return ArrayList of people object of person found in database
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public ArrayList<Person> getAllPeople() throws InternalServerErrorException {
+        try{
+            //Retrieve the person from the database by String
+            ArrayList<Person> people = personDB.getAllPeople();
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return people;
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Get a person from the database by UUID
      * @param UUID - String must be convertible to integer
      * @return Person object of person found in database
      * @throws NotFoundException - UUID does not exist in database
@@ -87,7 +107,6 @@ public class PersonBusiness {
             return person;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        //ArithmeticException - If the password encryption process fails
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }

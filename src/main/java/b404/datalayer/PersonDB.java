@@ -1,6 +1,7 @@
 package b404.datalayer;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 import b404.utility.objects.Person;
 
@@ -11,6 +12,45 @@ public class PersonDB {
     public PersonDB(){
         this.dbConn = new DBConn();
         this.companyDB = new CompanyDB();
+    }
+
+    /**
+     * Connect to database and retrieve all content of person table
+     * @return ArrayList of all Person objects
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public ArrayList<Person> getAllPeople() throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM person;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        ResultSet result = preparedStatement.executeQuery();
+
+        ArrayList<Person> people = new ArrayList<>();
+
+        while(result.next()) {
+
+            //Pull response content and map into a Person object
+            Person person = new Person(result.getString("UUID"),
+                    result.getString("name"),
+                    result.getString("passwordHash"),
+                    result.getString("salt"),
+                    result.getString("email"),
+                    result.getString("title"),
+                    result.getInt("companyID"),
+                    result.getInt("accessLevelID"));
+
+            people.add(person);
+        }
+
+        //Close the database
+        this.dbConn.close();
+
+        //return person;
+        return people;
     }
 
     /**
@@ -62,7 +102,7 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM person WHERE person.UUID = ?";
+        String query = "SELECT * FROM person WHERE person.UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -107,7 +147,7 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -136,7 +176,7 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "DELETE FROM person WHERE person.UUID = ?";
+        String query = "DELETE FROM person WHERE person.UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
