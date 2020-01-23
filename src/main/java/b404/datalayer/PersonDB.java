@@ -132,15 +132,15 @@ public class PersonDB {
     }
 
     /**
-     * Connect to database and add
-     * @param UUID
-     * @param name
-     * @param password
-     * @param salt
-     * @param email
-     * @param title
-     * @param companyID
-     * @param accessLevelID
+     * Connect to database and add a new person
+     * @param UUID - new Person UUID
+     * @param name - new person name
+     * @param password - new person password
+     * @param salt - new person salt
+     * @param email - new person email
+     * @param title - new person title
+     * @param companyID - new person companyID
+     * @param accessLevelID - new person accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
     public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
@@ -159,6 +159,41 @@ public class PersonDB {
         preparedStatement.setString(6, title);
         preparedStatement.setInt(7, companyID);
         preparedStatement.setInt(8, accessLevelID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+    }
+
+    /**
+     * Connect to database and update person using UUID
+     * @param UUID - UUID of person to update
+     * @param name - new person name
+     * @param password - new person password
+     * @param salt - new person salt
+     * @param email - new person email
+     * @param title - new person title
+     * @param companyID - new person companyID
+     * @param accessLevelID - new person accessLevelID
+     * @throws SQLException - error connecting to database or executing query
+     */
+    public void updatePerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "UPDATE person SET name = ?, passwordHash = ?, salt = ?, email = ?, title = ?, companyID = ?, accessLevelID = ? WHERE UUID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, password);
+        preparedStatement.setString(2, salt);
+        preparedStatement.setString(3, name);
+        preparedStatement.setString(4, email);
+        preparedStatement.setString(5, title);
+        preparedStatement.setInt(6, companyID);
+        preparedStatement.setInt(7, accessLevelID);
+        preparedStatement.setString(8, UUID);
 
         preparedStatement.executeUpdate();
 

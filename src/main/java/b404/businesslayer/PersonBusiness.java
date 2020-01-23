@@ -70,11 +70,8 @@ public class PersonBusiness {
      */
     public ArrayList<Person> getAllPeople() throws InternalServerErrorException {
         try{
-            //Retrieve the person from the database by String
-            ArrayList<Person> people = personDB.getAllPeople();
-
-            //Reaching this indicates no issues have been met and a success message can be returned
-            return people;
+            //Return response from getAllPeople process
+            return personDB.getAllPeople();
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -152,6 +149,68 @@ public class PersonBusiness {
             personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
 
             Person person = new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
+        }
+        //Catch an error converting parameters to an integer
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("accessLevelID must be an integer.");
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Insert a new person into the database
+     * @param username
+     * @param password
+     * @param email
+     * @param title
+     * @param companyName
+     * @param accessLevelID
+     * @return Person object containing inserted data
+     * @throws NotFoundException - company name does not exist in the database
+     * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
+     * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
+     */
+    public Person updatePerson(String UUID, String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            Person person = personDB.getPersonByUUID(UUID);
+
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(!(username == null || username.isEmpty())){ person.setName(username); }
+            if(!(password == null || password.isEmpty())){
+                password = PasswordEncryption.hash(password, person.getSalt());
+                person.setPasswordHash(password);
+            }
+            if(!(companyName == null || companyName.isEmpty())){
+                Company company = companyDB.getCompanyByName(companyName);
+                if(company == null){
+                    throw new NotFoundException("No company with that name exists.");
+                }
+                person.setCompanyID(companyDB.getCompanyByName(companyName).getCompanyID());
+            }
+            if(!(accessLevelID == null)){
+                int accessLevelIDInteger = Integer.parseInt(accessLevelID);
+                person.setAccessLevelID(accessLevelIDInteger);
+            }
+
+            //Get company name by using companyID
+            Company company = companyDB.getCompanyByName(companyName);
+            if(company == null){
+                throw new NotFoundException("No company with that name exists.");
+            }
+            int companyID = company.getCompanyID();
+
+            //Get new salt and hash password with new salt
+            String salt = PasswordEncryption.getSalt();
+            String passwordHash = PasswordEncryption.hash(password, salt);
+
+            //Retrieve the person from the database by UUID
+            personDB.updatePerson(person.getUUID(), person.getName(), person.getPasswordHash(), person.getSalt(), person.getEmail(), person.getTitle(), person.getCompanyID(), person.getAccessLevelID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
