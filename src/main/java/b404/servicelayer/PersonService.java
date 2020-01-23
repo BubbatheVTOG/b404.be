@@ -136,13 +136,13 @@ public class PersonService {
 
     /**
      * Insert a person into the database
-     * @param username
-     * @param password
-     * @param email
-     * @param title
-     * @param companyName
-     * @param accessLevelID
-     * @param JWT
+     * @param username - updated person username; can be null
+     * @param password - updated person password; can be null
+     * @param email - updated person email; can be null
+     * @param title - updated person title; can be null
+     * @param companyName - updated person companyName; can be null
+     * @param accessLevelID - updated person accessLevelID; can be null
+     * @param JWT - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -204,13 +204,13 @@ public class PersonService {
 
     /**
      * Insert a person into the database
-     * @param username
-     * @param password
-     * @param email
-     * @param title
-     * @param companyName
-     * @param accessLevelID
-     * @param JWT
+     * @param username -  new person username
+     * @param password -  new person plaintext password
+     * @param email -  new person email; can be null
+     * @param title -  new person title; can be null
+     * @param companyName -  new person companyName
+     * @param accessLevelID -  new person accessLevelID
+     * @param JWT -  JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -228,8 +228,8 @@ public class PersonService {
     public Response updatePerson(@RequestBody(description = "id", required = true)      @FormParam("id") String UUID,
                                  @RequestBody(description = "username")      @FormParam("username") String username,
                                  @RequestBody(description = "password")      @FormParam("password") String password,
-                                 @RequestBody(description = "email")                          @FormParam("email") String email,
-                                 @RequestBody(description = "title")                          @FormParam("title") String title,
+                                 @RequestBody(description = "email")         @FormParam("email") String email,
+                                 @RequestBody(description = "title")         @FormParam("title") String title,
                                  @RequestBody(description = "companyName")   @FormParam("companyName") String companyName,
                                  @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
