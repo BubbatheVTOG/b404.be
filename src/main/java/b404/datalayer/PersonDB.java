@@ -147,14 +147,14 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, name, passwordHash, salt, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, UUID);
+        preparedStatement.setString(4, name);
         preparedStatement.setString(2, password);
         preparedStatement.setString(3, salt);
-        preparedStatement.setString(4, name);
         preparedStatement.setString(5, email);
         preparedStatement.setString(6, title);
         preparedStatement.setInt(7, companyID);
@@ -186,9 +186,9 @@ public class PersonDB {
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
+        preparedStatement.setString(3, name);
         preparedStatement.setString(1, password);
         preparedStatement.setString(2, salt);
-        preparedStatement.setString(3, name);
         preparedStatement.setString(4, email);
         preparedStatement.setString(5, title);
         preparedStatement.setInt(6, companyID);
