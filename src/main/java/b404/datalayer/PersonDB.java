@@ -149,9 +149,9 @@ public class PersonDB {
 
         //Set parameters and execute query
         preparedStatement.setString(1, UUID);
-        preparedStatement.setString(4, name);
-        preparedStatement.setString(2, password);
-        preparedStatement.setString(3, salt);
+        preparedStatement.setString(2, name);
+        preparedStatement.setString(3, password);
+        preparedStatement.setString(4, salt);
         preparedStatement.setString(5, email);
         preparedStatement.setString(6, title);
         preparedStatement.setInt(7, companyID);
@@ -183,22 +183,14 @@ public class PersonDB {
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setString(3, name);
-        preparedStatement.setString(1, password);
-        preparedStatement.setString(2, salt);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, password);
+        preparedStatement.setString(3, salt);
         preparedStatement.setString(4, email);
         preparedStatement.setString(5, title);
         preparedStatement.setInt(6, companyID);
         preparedStatement.setInt(7, accessLevelID);
         preparedStatement.setString(8, UUID);
-
-        //TODO: Remove this
-        try{
-            Integer.parseInt(null);
-        }
-        catch(NullPointerException npe){
-            throw new SQLException(UUID+"," +  name+"," + password+"," + salt+"," + email+"," + title+"," + companyID+"," + accessLevelID);
-        }
 
         preparedStatement.executeUpdate();
 
