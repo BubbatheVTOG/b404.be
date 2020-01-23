@@ -160,14 +160,15 @@ public class PersonDB {
         preparedStatement.setInt(7, companyID);
         preparedStatement.setInt(8, accessLevelID);
 
-        preparedStatement.executeUpdate();
-
+        //TODO: Remove this
         try{
             Integer.parseInt(null);
         }
         catch(NullPointerException npe){
-            throw new SQLException(UUID+ name+ password+ salt+ email+ title+ companyID+ accessLevelID);
+            throw new SQLException(UUID+"," +  name+"," + password+"," + salt+"," + email+"," + title+"," + companyID+"," + accessLevelID);
         }
+
+        preparedStatement.executeUpdate();
 
         //Close the database
         this.dbConn.close();
