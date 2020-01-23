@@ -50,14 +50,14 @@ public class AccessDB {
      * Get access level information based on the accessLevelID
      * @param name - name to retrieve accessLevel from
      * @return access object or null if not found
-     * @throws SQLException
+     * @throws SQLException - Error connecting to database or executing query
      */
     public Access getAccessByName(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
         String query = "SELECT * FROM accessLevel WHERE accessLevel.name = ?;";
-        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, name);
@@ -83,14 +83,14 @@ public class AccessDB {
      * Connect to database and add
      * @param accessLevelID - accessLevelID of new accessLevel to be added
      * @param name - name of new accessLevel to be added
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException - Error connecting to database or executing update
      */
     public void insertAccessLevel(int accessLevelID, String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
         String query = "INSERT INTO accessLevel (accessLevelID, name) VALUES (?, ?);";
-        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setInt(1, accessLevelID);
@@ -106,14 +106,14 @@ public class AccessDB {
      * Connect to database and delete an accessLevel by accessLevelID
      * @param accessLevelID - accessLevelID to delete from database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteAccessLevelByAccessLevelID(int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
         String query = "DELETE FROM accessLevel WHERE accessLevel.accessLevelID = ?;";
-        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setInt(1, accessLevelID);
@@ -130,14 +130,14 @@ public class AccessDB {
      * Connect to database and delete an accessLevel by name
      * @param name - name to delete from database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteAccessLevelByAccessLevelID(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
         String query = "DELETE FROM accessLevel WHERE accessLevel.name = ?;";
-        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, name);

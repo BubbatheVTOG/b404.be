@@ -15,9 +15,9 @@ public class CompanyDB {
 
     /**
      * Get a companies information by companyID
-     * @param companyID
+     * @param companyID - compantID to get company information from
      * @return company object or null if not found
-     * @throws SQLException
+     * @throws SQLException - Error connecting to database or executing query
      */
     public Company getCompanyByID(int companyID) throws SQLException {
         this.dbConn.connect();
@@ -107,14 +107,14 @@ public class CompanyDB {
 
         //Prepare sql statement
         String query = "DELETE FROM company WHERE company.companyID = ?;";
-        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setInt(1, companyID);
         int numRowsDeleted = preparedStatement.executeUpdate();
 
         //Close the database
-        dbConn.close();
+        this.dbConn.close();
 
         //Return deleted rows
         return numRowsDeleted;
