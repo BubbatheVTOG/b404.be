@@ -23,7 +23,7 @@ public class CompanyDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM company WHERE company.companyID = ?";
+        String query = "SELECT * FROM company WHERE company.companyID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -34,7 +34,7 @@ public class CompanyDB {
 
         while(result.next()) {
 
-            //Pull response content and map into a Person object
+            //Pull response content and map into a Company object
             company = new Company(result.getInt("companyID"),
                                   result.getString("name"));
         }
@@ -50,7 +50,7 @@ public class CompanyDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM company WHERE company.name = ?";
+        String query = "SELECT * FROM company WHERE company.name = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -61,7 +61,7 @@ public class CompanyDB {
 
         while(result.next()) {
 
-            //Pull response content and map into a Person object
+            //Pull response content and map into a Company object
             company = new Company(result.getInt("companyID"),
                     result.getString("name"));
         }
@@ -71,5 +71,52 @@ public class CompanyDB {
 
         //return person;
         return company;
+    }
+
+    /**
+     * Connect to database and add
+     * @param companyID - companyID of new company to be added
+     * @param name - name of new company to be added
+     * @throws SQLException - error connecting to database or executing
+     */
+    public void insertCompany(int companyID, String name) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "INSERT INTO company (companyID, name) VALUES (?, ?);";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        preparedStatement.setString(2, name);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        dbConn.close();
+    }
+
+    /**
+     * Connect to database and delete a company by companyID
+     * @param companyID - comapnyID to delete from the database
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int deleteCompanyByCompanyID(int companyID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM company WHERE company.companyID = ?;";
+        PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        int numRowsDeleted = preparedStatement.executeUpdate();
+
+        //Close the database
+        dbConn.close();
+
+        //Return deleted rows
+        return numRowsDeleted;
     }
 }
