@@ -5,10 +5,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import b404.businesslayer.PersonBusiness;
-import b404.utility.customexceptions.BadRequestException;
-import b404.utility.customexceptions.InternalServerErrorException;
-
-import b404.utility.customexceptions.UnauthorizedException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
@@ -58,7 +57,7 @@ public class LoginService {
                     .build();
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
-        catch(UnauthorizedException ue){
+        catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error

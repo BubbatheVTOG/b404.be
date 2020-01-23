@@ -4,12 +4,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import b404.datalayer.CompanyDB;
 import b404.datalayer.PersonDB;
-import b404.utility.customexceptions.BadRequestException;
-import b404.utility.customexceptions.InternalServerErrorException;
-import b404.utility.customexceptions.NotFoundException;
-import b404.utility.customexceptions.UnauthorizedException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.NotAuthorizedException;
+import b404.utility.objects.AccessLevel;
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
@@ -20,18 +20,19 @@ import b404.utility.security.PasswordEncryption;
  */
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
-    private CompanyDB companyDB = new CompanyDB();
+    private CompanyBusiness companyBusiness = new CompanyBusiness();
+    private AccessLevelBusiness accessLevelBusiness = new AccessLevelBusiness();
 
     /**
      * Checks that a username and password matches an entry in the database
      * @param user - username for login attempt
      * @param password - plaintext password for login attempt
      * @return Person object that matches username and password input
-     * @throws UnauthorizedException - if username is not found or password does not match database entry
+     * @throws NotAuthorizedException - if username is not found or password does not match database entry
      * @throws BadRequestException - username or password passed in was empty or null
      * @throws InternalServerErrorException - Error in password encryption or database connectivity process
      */
-    public Person login(String user, String password) throws UnauthorizedException, BadRequestException, InternalServerErrorException{
+    public Person login(String user, String password) throws NotAuthorizedException, BadRequestException, InternalServerErrorException{
         //Initial parameter validation; throws BadRequestException if there is an issue
         if(user == null || user.isEmpty()){ throw new BadRequestException("Invalid username syntax"); }
         if(password == null || password.isEmpty()){ throw new BadRequestException("Invalid password syntax"); }
@@ -41,7 +42,7 @@ public class PersonBusiness {
             Person person = personDB.getPersonByName(user);
 
             if(person == null){
-                throw new UnauthorizedException("Invalid login credentials.");
+                throw new NotAuthorizedException("Invalid login credentials.");
             }
           
             //Encrypt password that was passed in and compare to hash stored in database
@@ -50,7 +51,7 @@ public class PersonBusiness {
             String encryptedPassword = PasswordEncryption.hash(password, salt);
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
-                throw new UnauthorizedException("Invalid login credentials.");
+                throw new NotAuthorizedException("Invalid login credentials.");
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
@@ -64,8 +65,8 @@ public class PersonBusiness {
     }
 
     /**
-     * Get a person from the database by UUID
-     * @return ArrayList of people object of person found in database
+     * Get all people from the database
+     * @return ArrayList of people found in database
      * @throws InternalServerErrorException - Error in data layer
      */
     public ArrayList<Person> getAllPeople() throws InternalServerErrorException {
@@ -128,32 +129,25 @@ public class PersonBusiness {
             if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
             if(password == null || password.isEmpty()){ throw new BadRequestException("A password must be provided"); }
             if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
-            if(accessLevelID == null){ throw new BadRequestException("An accessLevelID name must be provided"); }
-            int accessLevelIDInteger = Integer.parseInt(accessLevelID);
 
             //Generate a new UUID for the new person
             String uuid = UUID.randomUUID().toString();
 
-            //Get company name by using companyID
-            Company company = companyDB.getCompanyByName(companyName);
-            if(company == null){
-                throw new NotFoundException("No company with that name exists.");
-            }
-            int companyID = company.getCompanyID();
+            //Get company ID by using companyName, companyBusiness will throw relevant custom exceptions
+            int companyID = companyBusiness.getCompanyByName(companyName).getCompanyID();
+
+            //Ensure that accessLevel exists in database; accessLevelBusiness will throw relevant custom exceptions
+            AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
 
             //Get new salt and hash password with new salt
             String salt = PasswordEncryption.getSalt();
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
+            personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevel.getAccessLevelID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
-        }
-        //Catch an error converting parameters to an integer
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("accessLevelID must be an integer.");
+            return new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevel.getAccessLevelID());
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -191,18 +185,22 @@ public class PersonBusiness {
             if(title == null || title.isEmpty()){ title = person.getTitle(); }
 
             int companyID = person.getCompanyID();
-            if(companyName != null && !companyName.isEmpty()){
-                Company company = companyDB.getCompanyByName(companyName);
-                if(company == null){
-                    throw new NotFoundException("No company with that name exists.");
+            if(companyName != null){
+                if(!companyName.isEmpty()) {
+                    Company company = companyBusiness.getCompanyByName(companyName);
+                    if (company == null) {
+                        throw new NotFoundException("No company with that name exists.");
+                    }
+                    companyID = company.getCompanyID();
                 }
-                companyID = company.getCompanyID();
             }
 
             int accessLevelIDInteger = person.getAccessLevelID();
-            if(accessLevelID != null){
-                accessLevelIDInteger = Integer.parseInt(accessLevelID);
+            AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
+            if(accessLevel == null){
+                throw new NotFoundException("No access level with that ID exists.");
             }
+            accessLevelIDInteger = accessLevel.getAccessLevelID();
 
             //Retrieve the person from the database by UUID
             personDB.updatePerson(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
@@ -231,7 +229,7 @@ public class PersonBusiness {
     public String deletePersonByUUID(String UUID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A UUID must be provided"); }
+            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
 
             //Retrieve the person from the database by UUID
             int numRowsDeleted = personDB.deletePersonByUUID(UUID);
@@ -243,10 +241,6 @@ public class PersonBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return "Successfully deleted person.";
-        }
-        //Catch an error converting UUID to an integer
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("UUID must be an integer.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails

@@ -18,7 +18,9 @@ public class Person {
 	private String salt;
 	private String title;
 	private int companyID;
+	private String companyName;
 	private int accessLevelID;
+	private String accessLevelName;
 
 	//Fully parameterised constructor
 	public Person(String UUID, String name, String passwordHash, String salt, String email, String title, int companyID, int accessLevelID) {
@@ -92,8 +94,16 @@ public class Person {
 		this.companyID = companyID;
 	}
 
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
 	public void setAccessLevelID(int accessLevelID) {
 		this.accessLevelID = accessLevelID;
+	}
+
+	public void setAccessLevelName(String accessLevelName) {
+		this.accessLevelName = accessLevelName;
 	}
 
 	/**
@@ -109,7 +119,9 @@ public class Person {
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
+				"\"companyName\": \"" + this.companyName + "," + "\"" +
 				"\"accessLevelID\": " + this.accessLevelID +
+				"\"accessLevelName\": \"" + this.accessLevelName + "\"" +
 				"}";
 	}
 
@@ -123,8 +135,8 @@ public class Person {
 				"\"username\": \"" + this.name + "\"," +
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
-				"\"companyID\": " + this.companyID + "," +
-				"\"accessLevelID\": " + this.accessLevelID +
+				"\"companyName\": \"" + this.companyName + "," + "\"" +
+				"\"accessLevelName\": \"" + this.accessLevelName + "\"" +
 				"}";
 	}
 
