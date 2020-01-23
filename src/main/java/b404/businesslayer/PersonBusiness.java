@@ -181,33 +181,28 @@ public class PersonBusiness {
                 throw new NotFoundException("No user with that id exists.");
             }
 
-            //Initial parameter validation; throws BadRequestException if there is an issue
-            if(!(username == null || username.isEmpty())){ person.setName(username); }
-            if(!(password == null || password.isEmpty())){
-                password = PasswordEncryption.hash(password, person.getSalt());
-                person.setPasswordHash(password);
-            }
-            if(!(companyName == null || companyName.isEmpty())){
+            //Initial parameter validation; Sets value to value from database if not passed in
+            if(username == null || username.isEmpty()){ username = person.getName(); }
+            if(password == null || password.isEmpty()){ password = PasswordEncryption.hash(password, person.getSalt()); }
+            if(email == null || email.isEmpty()){ email = person.getEmail(); }
+            if(title == null || title.isEmpty()){ title = person.getTitle(); }
+
+            int companyID = person.getCompanyID();
+            if(companyName != null && !companyName.isEmpty()){
                 Company company = companyDB.getCompanyByName(companyName);
                 if(company == null){
                     throw new NotFoundException("No company with that name exists.");
                 }
-                person.setCompanyID(companyDB.getCompanyByName(companyName).getCompanyID());
-            }
-            if(!(accessLevelID == null)){
-                int accessLevelIDInteger = Integer.parseInt(accessLevelID);
-                person.setAccessLevelID(accessLevelIDInteger);
+                companyID = company.getCompanyID();
             }
 
-            //Get company name by using companyID
-            Company company = companyDB.getCompanyByName(companyName);
-            if(company == null){
-                throw new NotFoundException("No company with that name exists.");
+            int accessLevelIDInteger = person.getAccessLevelID();
+            if(accessLevelID != null){
+                accessLevelIDInteger = Integer.parseInt(accessLevelID);
             }
-            int companyID = company.getCompanyID();
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(person.getUUID(), person.getName(), person.getPasswordHash(), person.getSalt(), person.getEmail(), person.getTitle(), person.getCompanyID(), person.getAccessLevelID());
+            personDB.updatePerson(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
