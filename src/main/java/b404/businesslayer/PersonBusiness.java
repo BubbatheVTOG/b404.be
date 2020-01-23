@@ -183,7 +183,8 @@ public class PersonBusiness {
 
             //Initial parameter validation; Sets value to value from database if not passed in
             if(username == null || username.isEmpty()){ username = person.getName(); }
-            if(password == null || password.isEmpty()){ password = PasswordEncryption.hash(password, person.getSalt()); }
+            if(password == null || password.isEmpty()){ password = person.getPasswordHash(); }
+            else{ password = PasswordEncryption.hash(password, person.getSalt()); }
             if(email == null || email.isEmpty()){ email = person.getEmail(); }
             if(title == null || title.isEmpty()){ title = person.getTitle(); }
 
