@@ -216,7 +216,7 @@ public class PersonService {
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @POST
+    @PUT
     @Operation(summary = "insertPerson", description = "Insert a new person")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Update person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
