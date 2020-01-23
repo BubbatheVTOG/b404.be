@@ -206,7 +206,7 @@ public class PersonBusiness {
             personDB.updatePerson(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return person;
+            return new Person(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
         }
         //Catch an error converting parameters to an integer
         catch(NumberFormatException nfe){
