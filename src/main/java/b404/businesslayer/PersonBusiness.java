@@ -178,8 +178,7 @@ public class PersonBusiness {
         try{
             Person person = personDB.getPersonByUUID(UUID);
             if(person == null){
-                throw new NotFoundException(UUID);
-                //throw new NotFoundException("No user with that UUID exists.");
+                throw new NotFoundException("No user with that id exists.");
             }
 
             //Initial parameter validation; throws BadRequestException if there is an issue
@@ -241,7 +240,7 @@ public class PersonBusiness {
 
             //If null is returned, no user was found with given UUID
             if(numRowsDeleted == 0){
-                throw new NotFoundException("No user with that UUID exists.");
+                throw new NotFoundException("No user with that id exists.");
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned

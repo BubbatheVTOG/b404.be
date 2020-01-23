@@ -162,6 +162,13 @@ public class PersonDB {
 
         preparedStatement.executeUpdate();
 
+        try{
+            Integer.parseInt(null);
+        }
+        catch(NullPointerException npe){
+            throw new SQLException(UUID+ name+ password+ salt+ email+ title+ companyID+ accessLevelID);
+        }
+
         //Close the database
         this.dbConn.close();
     }
