@@ -176,6 +176,8 @@ public class PersonBusiness {
      */
     public Person updatePerson(String UUID, String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
+            if(UUID == null || UUID.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
+
             Person person = personDB.getPersonByUUID(UUID);
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
