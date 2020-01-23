@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     public CompanyDB(){
         this.dbConn = new DBConn();
@@ -42,7 +42,6 @@ public class CompanyDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return company;
     }
 
@@ -69,7 +68,6 @@ public class CompanyDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return company;
     }
 }

@@ -214,7 +214,7 @@ public class PersonBusiness {
         }
         //Catch an error converting parameters to an integer
         catch(NumberFormatException nfe){
-            throw new BadRequestException("UUID: " + UUID + "username: " +  username + "password: " +   password + "email: " +   email + "title: " +   title + "companyName: " +  companyName + "accessLevelID: " +  accessLevelID);
+            throw new BadRequestException("accessLevelID must be an integer.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

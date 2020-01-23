@@ -49,7 +49,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return people;
     }
 
@@ -88,7 +87,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return person;
     }
 
@@ -127,7 +125,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return person;
     }
 
@@ -159,14 +156,6 @@ public class PersonDB {
         preparedStatement.setString(6, title);
         preparedStatement.setInt(7, companyID);
         preparedStatement.setInt(8, accessLevelID);
-
-        //TODO: Remove this
-        try{
-            Integer.parseInt(null);
-        }
-        catch(NullPointerException npe){
-            throw new SQLException(UUID+"," +  name+"," + password+"," + salt+"," + email+"," + title+"," + companyID+"," + accessLevelID);
-        }
 
         preparedStatement.executeUpdate();
 
@@ -203,6 +192,14 @@ public class PersonDB {
         preparedStatement.setInt(7, accessLevelID);
         preparedStatement.setString(8, UUID);
 
+        //TODO: Remove this
+        try{
+            Integer.parseInt(null);
+        }
+        catch(NullPointerException npe){
+            throw new SQLException(UUID+"," +  name+"," + password+"," + salt+"," + email+"," + title+"," + companyID+"," + accessLevelID);
+        }
+
         preparedStatement.executeUpdate();
 
         //Close the database
@@ -229,7 +226,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return numRowsDeleted;
     }
 
