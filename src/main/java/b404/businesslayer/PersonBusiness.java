@@ -111,12 +111,12 @@ public class PersonBusiness {
 
     /**
      * Insert a new person into the database
-     * @param username
-     * @param password
-     * @param email
-     * @param title
-     * @param companyName
-     * @param accessLevelID
+     * @param username - new person's username
+     * @param password - new person's password
+     * @param email - new person's email; can be null
+     * @param title - new person's title; can be null
+     * @param companyName - new person's companyName
+     * @param accessLevelID - new person's accessLevelID
      * @return Person object containing inserted data
      * @throws NotFoundException - company name does not exist in the database
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
@@ -148,10 +148,8 @@ public class PersonBusiness {
             //Retrieve the person from the database by UUID
             personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
 
-            Person person = new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
-
             //Reaching this indicates no issues have been met and a success message can be returned
-            return person;
+            return new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
         }
         //Catch an error converting parameters to an integer
         catch(NumberFormatException nfe){
@@ -164,14 +162,14 @@ public class PersonBusiness {
     }
 
     /**
-     * Insert a new person into the database
-     * @param username
-     * @param password
-     * @param email
-     * @param title
-     * @param companyName
-     * @param accessLevelID
-     * @return Person object containing inserted data
+     * Update an existing person in the database
+     * @param username - updated username; can be null
+     * @param password - updated password; can be null
+     * @param email - updated email; can be null
+     * @param title - updated title; can be null
+     * @param companyName - updated companyName; can be null
+     * @param accessLevelID - updated accessLevelID; can be null
+     * @return Person object containing updated data
      * @throws NotFoundException - company name does not exist in the database
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
@@ -179,6 +177,9 @@ public class PersonBusiness {
     public Person updatePerson(String UUID, String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             Person person = personDB.getPersonByUUID(UUID);
+            if(person == null){
+                throw new NotFoundException("No user with that UUID exists.");
+            }
 
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(!(username == null || username.isEmpty())){ person.setName(username); }
@@ -204,10 +205,6 @@ public class PersonBusiness {
                 throw new NotFoundException("No company with that name exists.");
             }
             int companyID = company.getCompanyID();
-
-            //Get new salt and hash password with new salt
-            String salt = PasswordEncryption.getSalt();
-            String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
             personDB.updatePerson(person.getUUID(), person.getName(), person.getPasswordHash(), person.getSalt(), person.getEmail(), person.getTitle(), person.getCompanyID(), person.getAccessLevelID());
