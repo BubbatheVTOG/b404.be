@@ -65,7 +65,7 @@ public class PersonService {
             return Response.ok(responseMessage)
                     .build();
         }
-        //Catch an NotAuthorizedException and return Unauthorized response with message from error
+        //Catch a NotAuthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
@@ -115,7 +115,7 @@ public class PersonService {
                     .header("Authorization", jwtToken)
                     .build();
         }
-        //Catch an NotAuthorizedException and return Unauthorized response with message from error
+        //Catch a NotAuthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
@@ -185,7 +185,7 @@ public class PersonService {
                     .header("Authorization", jwtToken)
                     .build();
         }
-        //Catch an NotAuthorizedException and return Unauthorized response with message from error
+        //Catch a NotAuthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
@@ -257,7 +257,7 @@ public class PersonService {
                     .header("Authorization", jwtToken)
                     .build();
         }
-        //Catch an NotAuthorizedException and return Unauthorized response with message from error
+        //Catch a NotAuthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
@@ -315,7 +315,7 @@ public class PersonService {
             return Response.ok("{\"success\":\"" + responseMessage + "\"}")
                     .build();
         }
-        //Catch an NotAuthorizedException and return Unauthorized response with message from error
+        //Catch a NotAuthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
