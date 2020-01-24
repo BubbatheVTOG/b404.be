@@ -185,20 +185,18 @@ public class PersonBusiness {
             if(title == null || title.isEmpty()){ title = person.getTitle(); }
 
             int companyID = person.getCompanyID();
-            if(companyName != null){
-                if(!companyName.isEmpty()) {
-                    Company company = companyBusiness.getCompanyByName(companyName);
-                    if (company == null) {
-                        throw new NotFoundException("No company with that name exists.");
-                    }
-                    companyID = company.getCompanyID();
+            if(companyName != null && !companyName.isEmpty()) {
+                Company company = companyBusiness.getCompanyByName(companyName);
+                if (company == null) {
+                    throw new NotFoundException("No company with that name exists.");
                 }
+                companyID = company.getCompanyID();
             }
 
             int accessLevelIDInteger = person.getAccessLevelID();
-            if(accessLevelID != null){
+            if(accessLevelID != null && !accessLevelID.isEmpty()) {
                 AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
-                if(accessLevel != null){
+                if (accessLevel == null) {
                     throw new NotFoundException("Access Level does not exist.");
                 }
                 accessLevelIDInteger = accessLevel.getAccessLevelID();
