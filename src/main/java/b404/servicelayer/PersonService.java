@@ -4,7 +4,6 @@ import b404.businesslayer.PersonBusiness;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotAuthorizedException;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
@@ -47,7 +46,7 @@ public class PersonService {
     public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                throw new NotAuthorizedException("Invalid JSON Web Token provided.");
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -64,10 +63,6 @@ public class PersonService {
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok(responseMessage)
                     .build();
-        }
-        //Catch a NotAuthorizedException and return Unauthorized response with message from error
-        catch(NotAuthorizedException ue){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
@@ -102,7 +97,7 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                throw new NotAuthorizedException("Invalid JSON Web Token provided.");
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -114,10 +109,6 @@ public class PersonService {
             return Response.ok(person.toSecureJSON())
                     .header("Authorization", jwtToken)
                     .build();
-        }
-        //Catch a NotAuthorizedException and return Unauthorized response with message from error
-        catch(NotAuthorizedException ue){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a NotFoundException and return Not Found response with message from error
         catch(NotFoundException nfe){
@@ -172,7 +163,7 @@ public class PersonService {
 
         try {
             if(!JWTUtility.validateToken(JWT )){
-                throw new NotAuthorizedException("Invalid JSON Web Token provided.");
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -184,10 +175,6 @@ public class PersonService {
             return Response.ok(person.toSecureJSON())
                     .header("Authorization", jwtToken)
                     .build();
-        }
-        //Catch a NotAuthorizedException and return Unauthorized response with message from error
-        catch(NotAuthorizedException ue){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a NotFoundException and return Not Found response with message from error
         catch(NotFoundException nfe){
@@ -244,7 +231,7 @@ public class PersonService {
 
         try {
             if(!JWTUtility.validateToken(JWT )){
-                throw new NotAuthorizedException("Invalid JSON Web Token provided.");
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -256,10 +243,6 @@ public class PersonService {
             return Response.ok(person.toSecureJSON())
                     .header("Authorization", jwtToken)
                     .build();
-        }
-        //Catch a NotAuthorizedException and return Unauthorized response with message from error
-        catch(NotAuthorizedException ue){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a NotFoundException and return Not Found response with message from error
         catch(NotFoundException nfe){
@@ -305,7 +288,7 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                throw new NotAuthorizedException("Invalid JSON Web Token provided.");
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -314,10 +297,6 @@ public class PersonService {
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok("{\"success\":\"" + responseMessage + "\"}")
                     .build();
-        }
-        //Catch a NotAuthorizedException and return Unauthorized response with message from error
-        catch(NotAuthorizedException ue){
-            return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         catch(BadRequestException bre){
             return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
