@@ -196,11 +196,13 @@ public class PersonBusiness {
             }
 
             int accessLevelIDInteger = person.getAccessLevelID();
-            AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
-            if(accessLevel == null){
-                throw new NotFoundException("No access level with that ID exists.");
+            if(accessLevelID != null){
+                AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
+                if(accessLevel != null){
+                    throw new NotFoundException("Access Level does not exist.");
+                }
+                accessLevelIDInteger = accessLevel.getAccessLevelID();
             }
-            accessLevelIDInteger = accessLevel.getAccessLevelID();
 
             //Retrieve the person from the database by UUID
             personDB.updatePerson(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
