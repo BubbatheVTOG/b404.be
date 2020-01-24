@@ -136,9 +136,7 @@ public class Person {
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
-				"\"companyName\": \"" + this.companyName + "," + "\"" +
 				"\"accessLevelID\": " + this.accessLevelID +
-				"\"accessLevelName\": \"" + this.accessLevelName + "\"" +
 				"}";
 		//TODO: discuss if company and accesslevelID are sufficient in return
 		/*
