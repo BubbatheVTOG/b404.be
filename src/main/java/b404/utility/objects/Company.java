@@ -28,4 +28,11 @@ public class Company {
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
+
+    public String toJSON(){
+        return "{" +
+                "\"companyID\":" + this.companyID + "," +
+                "\"companyName\":\"" + this.companyName + "\"," +
+                "}";
+    }
 }

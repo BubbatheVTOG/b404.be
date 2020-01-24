@@ -5,6 +5,7 @@ import b404.utility.objects.Company;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class CompanyDB {
     private DBConn dbConn;
@@ -14,10 +15,38 @@ public class CompanyDB {
     }
 
     /**
+     * Connect to database and retrieve all content of person table
+     * @return ArrayList of all Company objects in database
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public ArrayList<Company> getAllCompanies() throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM company;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        ResultSet result = preparedStatement.executeQuery();
+
+        ArrayList<Company> companyList = new ArrayList<>();
+
+        while(result.next()) {
+            companyList.add(new Company(result.getInt("companyID"),
+                    result.getString("name")));
+        }
+
+        //Close the database
+        this.dbConn.close();
+
+        return companyList;
+    }
+
+    /**
      * Get a companies information by companyID
-     * @param companyID
+     * @param companyID - companyID to search database for
      * @return company object or null if not found
-     * @throws SQLException
+     * @throws SQLException - error connecting to database or executing query
      */
     public Company getCompanyByID(int companyID) throws SQLException {
         this.dbConn.connect();

@@ -32,18 +32,14 @@ public class PersonDB {
         ArrayList<Person> people = new ArrayList<>();
 
         while(result.next()) {
-
-            //Pull response content and map into a Person object
-            Person person = new Person(result.getString("UUID"),
+            people.add(new Person(result.getString("UUID"),
                     result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
-                    result.getInt("accessLevelID"));
-
-            people.add(person);
+                    result.getInt("accessLevelID")));
         }
 
         //Close the database

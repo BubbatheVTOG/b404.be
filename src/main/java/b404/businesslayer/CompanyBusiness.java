@@ -7,6 +7,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Business layer service for company related logic
@@ -14,6 +15,20 @@ import java.sql.SQLException;
  */
 public class CompanyBusiness {
     private CompanyDB companyDB = new CompanyDB();
+
+    /**
+     * Gets all companies from the database
+     * @return Company object containing data from the database\
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public ArrayList<Company> getAllCompanies() throws InternalServerErrorException{
+        try {
+            return companyDB.getAllCompanies();
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
 
     /**
      * Gets a company from the database by companyID
