@@ -130,19 +130,19 @@ public class PersonService {
 
     /**
      * Insert a person into the database
-     * @param username - updated person username; can be null
-     * @param password - updated person password; can be null
-     * @param fName - updated person first name; can be null
-     * @param lName - updated person last name; can be null
-     * @param email - updated person email; can be null
-     * @param title - updated person title; can be null
-     * @param accessLevelID - updated person accessLevelID; can be null
+     * @param username - New person's username
+     * @param password - New person's password
+     * @param fName - New person's first name
+     * @param lName - New person's last name
+     * @param email - New person's email; can be null
+     * @param title - New person's title; can be null
+     * @param accessLevelID - New person's accessLevelID; can be null
      * @param JWT - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 CONFLICT for username conflict
-     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          404 NOT FOUND for non-existent accessLevelID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @POST
@@ -152,7 +152,7 @@ public class PersonService {
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
-            @ApiResponse(code = 404, message = "{error: CompanyName/accessLevelID was not found.}"),
+            @ApiResponse(code = 404, message = "{error: accessLevelID was not found.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -215,7 +215,7 @@ public class PersonService {
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 CONFLICT for username conflict
-     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          404 NOT FOUND for non-existent accessLevelID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @PUT
@@ -225,7 +225,7 @@ public class PersonService {
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
-            @ApiResponse(code = 404, message = "{error: user/CompanyName/accessLevelID was not found.}"),
+            @ApiResponse(code = 404, message = "{error: user/accessLevelID was not found.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
