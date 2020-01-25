@@ -180,7 +180,7 @@ public class PersonDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "UPDATE person SET username = ?, passwordHash = ?, salt = ?,fNme = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
+        String query = "UPDATE person SET username = ?, passwordHash = ?, salt = ?,fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
