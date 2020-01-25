@@ -229,8 +229,8 @@ public class CompanyService {
 
     /**
      * Update an existing company in the database
-     * @param companyID -  Existing person's UUID
-     * @param companyName - Person's new title; can be null
+     * @param companyID -  Existing company's UUID
+     * @param companyName - company's new name; can be null
      * @param JWT - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -287,7 +287,7 @@ public class CompanyService {
     }
 
     /**
-     * Get a company from the database by companyName
+     * Delete a company from the database by companyID
      * @return - HTTP Response: 200 OK for company found and
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND if company id does not exist
@@ -322,6 +322,165 @@ public class CompanyService {
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(NotFoundException nfe){
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(InternalServerErrorException isee){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+        }
+        //Catch All to ensure no unexpected internal server errors are being returned to client
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+        }
+    }
+
+    /**
+     * Delete a company from the database by companyName
+     * @return - HTTP Response: 200 OK for company found and
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT FOUND if company id does not exist
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/id/{id}")
+    @DELETE
+    @Operation(summary = "deleteCompanyByName", description = "Delete a company from the database by companyID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
+            @ApiResponse(code = 400, message = "{error: A company name must be provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+        try {
+            if(!JWTUtility.validateToken(JWT )){
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+            }
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return Response.ok("{\"success\":\"" + companyBusiness.deleteCompanyByName(companyName) + "\"}")
+                    .build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(BadRequestException bre){
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotFoundException nfe){
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(InternalServerErrorException isee){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+        }
+        //Catch All to ensure no unexpected internal server errors are being returned to client
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+        }
+    }
+
+    /**
+     * Add a person to an existing company in the database
+     * @param companyID -  Company ID to add person to
+     * @param personID - Person's UUID
+     * @param JWT - JWT for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for person updated successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          409 CONFLICT for username conflict
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @POST
+    @Operation(summary = "addPersonToCompany", description = "Add an existing person to a company")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "{success: person successfully added to company"),
+            @ApiResponse(code = 400, message = "{error: A companyID/personID must be provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company/person with that ID exists.}"),
+            @ApiResponse(code = 409, message = "{error: That person is already a part of that company.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addPersonToCompany(@RequestBody(description = "companyID", required = true)     @FormParam("companyID") String companyID,
+                                       @RequestBody(description = "personID", required = true)      @FormParam("personID") String personID,
+                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String JWT) {
+
+        try {
+            if(!JWTUtility.validateToken(JWT )){
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+            }
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return Response.ok("{\"success\":\"" + companyBusiness.addPersonToCompany(companyID, personID) + "\"}")
+                    .build();
+        }
+        //Catch all business logic related errors and return relevant response with message from error
+        catch(ConflictException nfe){
+            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        }
+        catch(NotFoundException bre){
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        }
+        catch(BadRequestException bre){
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        }
+        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(InternalServerErrorException isee){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+        }
+        //Catch All to ensure no unexpected internal server errors are being returned to client
+        catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+        }
+    }
+
+    /**
+     * Delete a person from a company
+     * @param companyID -  Company ID to add person to
+     * @param personID - Person's UUID
+     * @param JWT - JWT for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for person updated successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          409 CONFLICT for username conflict
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @POST
+    @Operation(summary = "deletePersonFromCompany", description = "Add an existing person to a company")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "{success: person successfully removed from company"),
+            @ApiResponse(code = 400, message = "{error: A companyID/personID must be provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company/person with that ID exists.}"),
+            @ApiResponse(code = 409, message = "{error: That person is already a part of that company.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removePersonFromCompany(@RequestBody(description = "companyID", required = true)     @FormParam("companyID") String companyID,
+                                            @RequestBody(description = "personID", required = true)      @FormParam("personID") String personID,
+                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String JWT) {
+
+        try {
+            if(!JWTUtility.validateToken(JWT )){
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+            }
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return Response.ok("{\"success\":\"" + companyBusiness.removePersonFromCompany(companyID, personID) + "\"}")
+                    .build();
+        }
+        //Catch all business logic related errors and return relevant response with message from error
+        catch(ConflictException nfe){
+            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        }
+        catch(NotFoundException bre){
+            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        }
+        catch(BadRequestException bre){
+            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){

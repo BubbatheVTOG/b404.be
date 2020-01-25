@@ -196,4 +196,54 @@ public class CompanyDB {
         //Return deleted rows
         return numRowsDeleted;
     }
+
+    /**
+     * Add a person to a company by adding a row into personCompany
+     * @param companyID - companyID of company to add person to
+     * @param UUID - UUID of person to add to company
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public void addPersonToCompany(int companyID, String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "INSERT INTO personCompany (companyID, UUID) VALUES (?,?);";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        preparedStatement.setString(2, UUID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+    }
+
+    /**
+     * Delete a person from a company by removing a row in personCompany
+     * @param companyID - companyID of company to add person to
+     * @param UUID - UUID of person to add to company
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int removePersonFromCompany(int companyID, String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM personCompany WHERE companyID = ? AND UUID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        preparedStatement.setString(2, UUID);
+
+        int numRowsAffected = preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+
+        return numRowsAffected;
+    }
 }

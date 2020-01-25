@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public class CompanyBusiness {
     private CompanyDB companyDB = new CompanyDB();
+    private PersonBusiness personBusiness = new PersonBusiness();
 
     /**
      * Gets all companies from the database
@@ -172,15 +173,17 @@ public class CompanyBusiness {
     }
 
     /**
-     * Deletes a company from the database by companyID
+     * Deletes a company from the database by companyName
      * @param companyName - company name to delete from the database
      * @return Success string
-     * @throws BadRequestException - CompanyName was a null or empty
+     * @throws BadRequestException - CompanyName was null or empty
      * @throws NotFoundException - No company with provided Company name was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
     public String deleteCompanyByName(String companyName) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
+            if(companyName == null || companyName.isEmpty()){throw new BadRequestException("A company name must be provided.");}
+
             int numRowsAffected = companyDB.deleteCompany(companyName);
 
             if(numRowsAffected == 0){
@@ -188,6 +191,67 @@ public class CompanyBusiness {
             }
 
             return "Successfully deleted company.";
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("CompanyID must be a valid integer");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Adds a person to a company
+     * @param companyID - ID of company to add person to
+     * @param personID - ID of person to add to company
+     * @return Success string
+     * @throws BadRequestException - CompanyName was a null or empty
+     * @throws NotFoundException - No company with provided Company name was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public String addPersonToCompany(String companyID, String personID) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
+        try {
+            int companyIDInteger = Integer.parseInt(companyID);
+            if(companyDB.getCompanyByID(companyIDInteger) == null){ throw new NotFoundException("No company with that ID exists. ");}
+            if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
+
+            //TODO implement check for if companyID and UUID already exist in the personCompany
+            if(false){
+                throw new ConflictException("That person is already a part of that company.");
+            }
+
+            companyDB.addPersonToCompany(companyIDInteger, personID);
+
+            return "Successfully added person to company.";
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("CompanyID must be a valid integer");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Removes a person from a company
+     * @param companyID - ID of company to remove person from
+     * @param personID - ID of person to remove from company
+     * @return Success string
+     * @throws BadRequestException - CompanyName was a null or empty
+     * @throws NotFoundException - No company with provided Company name was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public String removePersonFromCompany(String companyID, String personID) throws BadRequestException, NotFoundException, InternalServerErrorException{
+        try {
+            int companyIDInteger = Integer.parseInt(companyID);
+            if(companyDB.getCompanyByID(companyIDInteger) == null){ throw new NotFoundException("No company with that ID exists. ");}
+            if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
+
+            if(companyDB.removePersonFromCompany(companyIDInteger, personID) == 0){
+                throw new NotFoundException("That person was not a part of that company");
+            }
+
+            return "Successfully removed person from company.";
         }
         catch(NumberFormatException nfe){
             throw new BadRequestException("CompanyID must be a valid integer");
