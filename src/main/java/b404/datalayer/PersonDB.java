@@ -35,9 +35,11 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             Person person = new Person(result.getString("UUID"),
-                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
+                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -76,9 +78,11 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
+                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -115,9 +119,11 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
+                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -134,31 +140,35 @@ public class PersonDB {
     /**
      * Connect to database and add
      * @param UUID
-     * @param name
      * @param password
      * @param salt
+     * @param fName
+     * @param lName
+     * @param userName
      * @param email
      * @param title
      * @param companyID
      * @param accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+    public void insertPerson(String UUID, String password, String salt, String fName, String lName, String userName, String email, String title, int companyID, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?,?,?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, UUID);
         preparedStatement.setString(2, password);
         preparedStatement.setString(3, salt);
-        preparedStatement.setString(4, name);
-        preparedStatement.setString(5, email);
-        preparedStatement.setString(6, title);
-        preparedStatement.setInt(7, companyID);
-        preparedStatement.setInt(8, accessLevelID);
+        preparedStatement.setString(4, fName);
+        preparedStatement.setString(5, lName);
+        preparedStatement.setString(6, userName);
+        preparedStatement.setString(7, email);
+        preparedStatement.setString(8, title);
+        preparedStatement.setInt(9, companyID);
+        preparedStatement.setInt(10, accessLevelID);
 
         preparedStatement.executeUpdate();
 

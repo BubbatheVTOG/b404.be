@@ -114,7 +114,9 @@ public class PersonBusiness {
 
     /**
      * Insert a new person into the database
-     * @param username
+     * @param userName
+     * @param fName
+     * @param lName
      * @param password
      * @param email
      * @param title
@@ -125,10 +127,10 @@ public class PersonBusiness {
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
      */
-    public Person insertPerson(String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person insertPerson(String userName, String fName, String lName, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
+            if(userName == null || userName.isEmpty()){ throw new BadRequestException("A username must be provided"); }
             if(password == null || password.isEmpty()){ throw new BadRequestException("A password must be provided"); }
             if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
             if(accessLevelID == null){ throw new BadRequestException("An accessLevelID name must be provided"); }
@@ -149,9 +151,9 @@ public class PersonBusiness {
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
+            personDB.insertPerson(uuid, passwordHash, salt, fName, lName, userName, email, title, companyID, accessLevelIDInteger);
 
-            Person person = new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevelIDInteger);
+            Person person = new Person(uuid, passwordHash, salt, fName, lName, userName, email, title, companyID, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
