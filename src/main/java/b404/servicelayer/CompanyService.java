@@ -472,10 +472,6 @@ public class CompanyService {
             return Response.ok("{\"success\":\"" + companyBusiness.removePersonFromCompany(companyID, personID) + "\"}")
                     .build();
         }
-        //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
-        }
         catch(NotFoundException bre){
             return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
         }
