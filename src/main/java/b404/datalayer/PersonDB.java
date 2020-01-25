@@ -11,7 +11,6 @@ public class PersonDB {
 
     public PersonDB(){
         this.dbConn = new DBConn();
-        this.companyDB = new CompanyDB();
     }
 
     /**
@@ -32,14 +31,19 @@ public class PersonDB {
         ArrayList<Person> people = new ArrayList<>();
 
         while(result.next()) {
-            people.add(new Person(result.getString("UUID"),
-                    result.getString("name"),
+
+            //Pull response content and map into a Person object
+            Person person = new Person(result.getString("UUID"),
+                    result.getString("username"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
                     result.getString("email"),
                     result.getString("title"),
-                    result.getInt("companyID"),
-                    result.getInt("accessLevelID")));
+                    result.getInt("accessLevelID"));
+
+            people.add(person);
         }
 
         //Close the database
@@ -49,20 +53,20 @@ public class PersonDB {
     }
 
     /**
-     * Connect to database and retrieve entry by name
-     * @param name - Username to search database for
+     * Connect to database and retrieve entry by username
+     * @param username - Username to search database for
      * @return Person object or null if not found
      * @throws SQLException - Error connecting to database or executing query
      */
-    public Person getPersonByName(String name) throws SQLException {
+    public Person getPersonByUsername(String username) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM person WHERE person.name = ?";
+        String query = "SELECT * FROM person WHERE person.username = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setString(1, name);
+        preparedStatement.setString(1, username);
         ResultSet result = preparedStatement.executeQuery();
 
         Person person = null;
@@ -71,12 +75,13 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("name"),
+                    result.getString("username"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
                     result.getString("email"),
                     result.getString("title"),
-                    result.getInt("companyID"),
                     result.getInt("accessLevelID"));
         }
 
@@ -109,12 +114,13 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("name"),
+                    result.getString("username"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
+                    result.getString("fName"),
+                    result.getString("lName"),
                     result.getString("email"),
                     result.getString("title"),
-                    result.getInt("companyID"),
                     result.getInt("accessLevelID"));
         }
 
@@ -127,31 +133,31 @@ public class PersonDB {
     /**
      * Connect to database and add a new person
      * @param UUID - new Person UUID
-     * @param name - new person name
+     * @param username - new person username
      * @param password - new person password
      * @param salt - new person salt
      * @param email - new person email
      * @param title - new person title
-     * @param companyID - new person companyID
      * @param accessLevelID - new person accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+    public void insertPerson(String UUID, String username, String password, String salt, String fName, String lName, String email, String title, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, name, passwordHash, salt, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES (?,?,?,?,?,?,?,?,?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, UUID);
-        preparedStatement.setString(2, name);
+        preparedStatement.setString(2, username);
         preparedStatement.setString(3, password);
         preparedStatement.setString(4, salt);
-        preparedStatement.setString(5, email);
-        preparedStatement.setString(6, title);
-        preparedStatement.setInt(7, companyID);
-        preparedStatement.setInt(8, accessLevelID);
+        preparedStatement.setString(5, fName);
+        preparedStatement.setString(6, lName);
+        preparedStatement.setString(7, email);
+        preparedStatement.setString(8, title);
+        preparedStatement.setInt(9, accessLevelID);
 
         preparedStatement.executeUpdate();
 
@@ -162,29 +168,27 @@ public class PersonDB {
     /**
      * Connect to database and update person using UUID
      * @param UUID - UUID of person to update
-     * @param name - new person name
+     * @param username - new person username
      * @param password - new person password
-     * @param salt - new person salt
      * @param email - new person email
      * @param title - new person title
-     * @param companyID - new person companyID
      * @param accessLevelID - new person accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void updatePerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+    public void updatePerson(String UUID, String username, String password, String fName, String lName, String email, String title, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "UPDATE person SET name = ?, passwordHash = ?, salt = ?, email = ?, title = ?, companyID = ?, accessLevelID = ? WHERE UUID = ?;";
+        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setString(1, name);
+        preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
-        preparedStatement.setString(3, salt);
-        preparedStatement.setString(4, email);
-        preparedStatement.setString(5, title);
-        preparedStatement.setInt(6, companyID);
+        preparedStatement.setString(3, fName);
+        preparedStatement.setString(4, lName);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, title);
         preparedStatement.setInt(7, accessLevelID);
         preparedStatement.setString(8, UUID);
 

@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import b404.datalayer.PersonDB;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotAuthorizedException;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+
+import b404.utility.ConflictException;
 import b404.utility.objects.AccessLevel;
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
@@ -39,7 +40,7 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByName(user);
+            Person person = personDB.getPersonByUsername(user);
 
             if(person == null){
                 throw new NotAuthorizedException("Invalid login credentials.");
@@ -47,8 +48,7 @@ public class PersonBusiness {
           
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
-            String salt = person.getSalt();
-            String encryptedPassword = PasswordEncryption.hash(password, salt);
+            String encryptedPassword = PasswordEncryption.hash(password, person.getSalt());
 
             if(!person.getPasswordHash().equals(encryptedPassword)){
                 throw new NotAuthorizedException("Invalid login credentials.");
@@ -114,27 +114,31 @@ public class PersonBusiness {
      * Insert a new person into the database
      * @param username - new person's username
      * @param password - new person's password
+     * @param fName - new person's first name
+     * @param lName - new person's last name
      * @param email - new person's email; can be null
      * @param title - new person's title; can be null
-     * @param companyName - new person's companyName
      * @param accessLevelID - new person's accessLevelID
      * @return Person object containing inserted data
      * @throws NotFoundException - company name does not exist in the database
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
      */
-    public Person insertPerson(String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person insertPerson(String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
             if(password == null || password.isEmpty()){ throw new BadRequestException("A password must be provided"); }
-            if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
+            if(fName == null || fName.isEmpty()){ throw new BadRequestException("A first name must be provided"); }
+            if(lName == null || lName.isEmpty()){ throw new BadRequestException("A last name must be provided"); }
 
             //Generate a new UUID for the new person
             String uuid = UUID.randomUUID().toString();
 
-            //Get company ID by using companyName, companyBusiness will throw relevant custom exceptions
-            int companyID = companyBusiness.getCompanyByName(companyName).getCompanyID();
+            //Check that username does not already exist in the database
+            if(personDB.getPersonByUsername(username) != null){
+                throw new ConflictException("A user with that username already exists.");
+            }
 
             //Ensure that accessLevel exists in database; accessLevelBusiness will throw relevant custom exceptions
             AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
@@ -144,10 +148,10 @@ public class PersonBusiness {
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, email, title, companyID, accessLevel.getAccessLevelID());
+            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, passwordHash, salt, email, title, companyID, accessLevel.getAccessLevelID());
+            return new Person(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -159,16 +163,17 @@ public class PersonBusiness {
      * Update an existing person in the database
      * @param username - updated username; can be null
      * @param password - updated password; can be null
+     * @param fName - updated first name; can be null
+     * @param lName - updated last name; can be null
      * @param email - updated email; can be null
      * @param title - updated title; can be null
-     * @param companyName - updated companyName; can be null
      * @param accessLevelID - updated accessLevelID; can be null
      * @return Person object containing updated data
      * @throws NotFoundException - company name does not exist in the database
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String UUID, String username, String password, String email, String title, String companyName, String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String UUID, String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             if(UUID == null || UUID.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
@@ -177,40 +182,40 @@ public class PersonBusiness {
                 throw new NotFoundException("No user with that id exists.");
             }
 
-            //Initial parameter validation; Sets value to value from database if not passed in
-            if(username == null || username.isEmpty()){ username = person.getName(); }
+            //Check if new username is unique or use old username if new username is null
+            if(username == null || username.isEmpty()){
+                username = person.getUsername();
+            }
+            else{
+                Person usernameCheck = personDB.getPersonByUsername(username);
+                //If username was found and person is not the same as person to update throw conflict
+                if(usernameCheck != null && !usernameCheck.getUUID().equals(person.getUUID())){
+                    throw new ConflictException("A user with that username already exists.");
+                }
+            }
+
+            //Hash new password or use old password if new password is null
             if(password == null || password.isEmpty()){ password = person.getPasswordHash(); }
             else{ password = PasswordEncryption.hash(password, person.getSalt()); }
+
+            //Alter less impactful data
+            if(fName == null || fName.isEmpty()){ fName = person.getFName(); }
+            if(lName == null || lName.isEmpty()){ lName = person.getLName(); }
             if(email == null || email.isEmpty()){ email = person.getEmail(); }
             if(title == null || title.isEmpty()){ title = person.getTitle(); }
 
-            int companyID = person.getCompanyID();
-            if(companyName != null && !companyName.isEmpty()) {
-                Company company = companyBusiness.getCompanyByName(companyName);
-                if (company == null) {
-                    throw new NotFoundException("No company with that name exists.");
-                }
-                companyID = company.getCompanyID();
-            }
-
+            //Set accessLevelIDInteger to pre-existing if null or get ID from database if not null
+            //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
-                AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
-                if (accessLevel == null) {
-                    throw new NotFoundException("Access Level does not exist.");
-                }
-                accessLevelIDInteger = accessLevel.getAccessLevelID();
+                accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
+            personDB.updatePerson(UUID, username, password, fName, lName, email, title, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(UUID, username, password, person.getSalt(), email, title, companyID, accessLevelIDInteger);
-        }
-        //Catch an error converting parameters to an integer
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("accessLevelID must be an integer.");
+            return new Person(UUID, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
