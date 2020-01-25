@@ -153,11 +153,11 @@ public class PersonDB {
         preparedStatement.setString(2, username);
         preparedStatement.setString(3, password);
         preparedStatement.setString(4, salt);
-        preparedStatement.setString(4, fName);
-        preparedStatement.setString(4, lName);
-        preparedStatement.setString(5, email);
-        preparedStatement.setString(6, title);
-        preparedStatement.setInt(8, accessLevelID);
+        preparedStatement.setString(5, fName);
+        preparedStatement.setString(6, lName);
+        preparedStatement.setString(7, email);
+        preparedStatement.setString(8, title);
+        preparedStatement.setInt(9, accessLevelID);
 
         preparedStatement.executeUpdate();
 
@@ -187,12 +187,12 @@ public class PersonDB {
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
         preparedStatement.setString(3, salt);
-        preparedStatement.setString(3, fName);
-        preparedStatement.setString(3, lName);
-        preparedStatement.setString(4, email);
-        preparedStatement.setString(5, title);
-        preparedStatement.setInt(7, accessLevelID);
-        preparedStatement.setString(8, UUID);
+        preparedStatement.setString(4, fName);
+        preparedStatement.setString(5, lName);
+        preparedStatement.setString(6, email);
+        preparedStatement.setString(7, title);
+        preparedStatement.setInt(8, accessLevelID);
+        preparedStatement.setString(9, UUID);
 
         preparedStatement.executeUpdate();
 
