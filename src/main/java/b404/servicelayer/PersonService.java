@@ -142,7 +142,7 @@ public class PersonService {
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 CONFLICT for username conflict
-     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          404 NOT FOUND for non-existent accessLevelID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @POST
@@ -152,7 +152,7 @@ public class PersonService {
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
-            @ApiResponse(code = 404, message = "{error: CompanyName/accessLevelID was not found.}"),
+            @ApiResponse(code = 404, message = "{error: accessLevelID was not found.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -215,7 +215,7 @@ public class PersonService {
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 CONFLICT for username conflict
-     *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          404 NOT FOUND for non-existent accessLevelID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @PUT
@@ -225,7 +225,7 @@ public class PersonService {
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
-            @ApiResponse(code = 404, message = "{error: user/CompanyName/accessLevelID was not found.}"),
+            @ApiResponse(code = 404, message = "{error: user/accessLevelID was not found.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
