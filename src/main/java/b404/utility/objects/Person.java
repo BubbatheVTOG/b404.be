@@ -12,20 +12,24 @@ import b404.datalayer.PersonDB;
 public class Person {
 
 	private String UUID;
-	private String name;
-	private String email;
 	private String passwordHash;
 	private String salt;
+	private String fName;
+	private String lName;
+	private String userName;
+	private String email;
 	private String title;
 	private int companyID;
 	private int accessLevelID;
 
 	//Fully parameterised constructor
-	public Person(String UUID, String name, String passwordHash, String salt, String email, String title, int companyID, int accessLevelID) {
+	public Person(String UUID, String passwordHash, String salt, String fName, String lName, String userName, String email, String title, int companyID, int accessLevelID) {
 		this.UUID = UUID;
-		this.name = name;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
+		this.fName = fName;
+		this.lName = lName;
+		this.userName = userName;
 		this.email = email;
 		this.title = title;
 		this.companyID = companyID;
@@ -36,14 +40,6 @@ public class Person {
 		return this.UUID;
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public String getEmail() {
-		return this.email;
-	}
-
 	public String getPasswordHash() {
 		return this.passwordHash;
 	}
@@ -52,13 +48,19 @@ public class Person {
 		return this.salt;
 	}
 
+	public String getFName() { return this.fName; };
+
+	public String getLName() { return this.lName; };
+
+	public String getUserName() { return this.userName; }
+
+	public String getEmail() { return this.email; }
+
 	public String getTitle() {
 		return this.title;
 	}
 
-	public int getCompanyID() {
-		return this.companyID;
-	}
+	public int getCompanyID() { return this.companyID; }
 
 	public int getAccessLevelID() {
 		return this.accessLevelID;
@@ -68,14 +70,6 @@ public class Person {
 		this.UUID = UUID;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	public void setPasswordHash(String passwordHash) {
 		this.passwordHash = passwordHash;
 	}
@@ -83,6 +77,14 @@ public class Person {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+
+	public void setFName(String fName) { this.fName = fName; }
+
+	public void setLName(String fName) { this.lName = lName; }
+
+	public void setUserName(String userName) { this.userName = userName; }
+
+	public void setEmail(String email) { this.email = email; }
 
 	public void setTitle(String title) {
 		this.title = title;
@@ -103,10 +105,12 @@ public class Person {
 	public String toJSON() {
 		return "{" +
 				"\"UUID\": " + this.UUID + "," +
-				"\"name\": \"" + this.name + "\"," +
-				"\"email\": \"" + this.email + "\"," +
 				"\"passwordHash\": \"" + this.passwordHash + "\"," +
 				"\"salt\": \"" + this.salt + "\"," +
+				"\"fName\": \"" + this.fName + "\"," +
+				"\"lName\": \"" + this.lName + "\"," +
+				"\"userName\": \"" + this.userName + "\"," +
+				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
 				"\"accessLevelID\": " + this.accessLevelID +
@@ -120,7 +124,9 @@ public class Person {
 	public String toSecureJSON() {
 		return "{" +
 				"\"UUID\": " + this.UUID + "," +
-				"\"name\": \"" + this.name + "\"," +
+				"\"fName\": \"" + this.fName + "\"," +
+				"\"lName\": \"" + this.lName + "\"," +
+				"\"userName\": \"" + this.userName + "\"," +
 				"\"email\": \"" + this.email + "\"," +
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
