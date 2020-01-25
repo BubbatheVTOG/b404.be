@@ -82,4 +82,56 @@ public class CompanyBusiness {
             throw new InternalServerErrorException(sqle.getMessage());
         }
     }
+
+    /**
+     * Deletes a company from the database by companyID
+     * @param companyID - companyId to delete from the database
+     * @return Success string
+     * @throws BadRequestException - CompanyID was an invalid integer format
+     * @throws NotFoundException - No company with provided CompanyId was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public String deleteCompanyByID(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
+        try {
+            int numRowsAffected = companyDB.deleteCompany(Integer.parseInt(companyID));
+
+            if(numRowsAffected == 0){
+                throw new NotFoundException("No company with that id exists");
+            }
+
+            return "Successfully deleted company.";
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("CompanyID must be a valid integer");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a company from the database by companyID
+     * @param companyName - company name to delete from the database
+     * @return Success string
+     * @throws BadRequestException - CompanyName was a null or empty
+     * @throws NotFoundException - No company with provided Company name was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public String deleteCompanyByName(String companyName) throws BadRequestException, NotFoundException, InternalServerErrorException{
+        try {
+            int numRowsAffected = companyDB.deleteCompany(companyName);
+
+            if(numRowsAffected == 0){
+                throw new NotFoundException("No company with that id exists");
+            }
+
+            return "Successfully deleted company.";
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("CompanyID must be a valid integer");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
 }
