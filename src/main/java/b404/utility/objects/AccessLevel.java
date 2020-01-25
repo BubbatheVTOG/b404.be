@@ -1,15 +1,15 @@
 package b404.utility.objects;
 
-public class Access {
+public class AccessLevel {
     private int accessLevelID;
     private String accessLevelName;
 
-    public Access(int accessLevelID, String accessLevelName) {
+    public AccessLevel(int accessLevelID, String accessLevelName) {
         this.accessLevelID = accessLevelID;
         this.accessLevelName = accessLevelName;
     }
 
-    public Access(String accessLevelName) { this.accessLevelName = accessLevelName; }
+    public AccessLevel(String accessLevelName) { this.accessLevelName = accessLevelName; }
 
     public int getAccessLevelID() { return accessLevelID; }
 

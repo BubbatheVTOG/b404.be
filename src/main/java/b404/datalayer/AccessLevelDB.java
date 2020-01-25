@@ -1,15 +1,15 @@
 package b404.datalayer;
 
-import b404.utility.objects.Access;
+import b404.utility.objects.AccessLevel;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AccessDB {
+public class AccessLevelDB {
     DBConn dbConn;
 
-    public AccessDB() {
+    public AccessLevelDB() {
         this.dbConn = new DBConn();
     }
 
@@ -19,7 +19,7 @@ public class AccessDB {
      * @return access object or null if not found
      * @throws SQLException - Error connecting to database or executing query
      */
-    public Access getAccessByID(int accessLevelID) throws SQLException {
+    public AccessLevel getAccessByID(int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -30,12 +30,12 @@ public class AccessDB {
         preparedStatement.setInt(1, accessLevelID);
         ResultSet result = preparedStatement.executeQuery();
 
-        Access access = null;
+        AccessLevel accessLevel = null;
 
         while(result.next()) {
 
             //Pull response content and map to an access object
-            access = new Access(result.getInt("accessLevelID"),
+            accessLevel = new AccessLevel(result.getInt("accessLevelID"),
                                 result.getString("name"));
         }
 
@@ -43,7 +43,7 @@ public class AccessDB {
         this.dbConn.close();
 
         //Return access
-        return access;
+        return accessLevel;
     }
 
     /**
@@ -52,7 +52,7 @@ public class AccessDB {
      * @return access object or null if not found
      * @throws SQLException - Error connecting to database or executing query
      */
-    public Access getAccessByName(String name) throws SQLException {
+    public AccessLevel getAccessByName(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -63,12 +63,12 @@ public class AccessDB {
         preparedStatement.setString(1, name);
         ResultSet result = preparedStatement.executeQuery();
 
-        Access access = null;
+        AccessLevel accessLevel = null;
 
         while(result.next()) {
 
             //Pull response content and map into an Access object
-            access = new Access(result.getInt("accessLevelID"),
+            accessLevel = new AccessLevel(result.getInt("accessLevelID"),
                                 result.getString("name"));
         }
 
@@ -76,7 +76,7 @@ public class AccessDB {
         this.dbConn.close();
 
         //Return access
-        return access;
+        return accessLevel;
     }
 
     /**
