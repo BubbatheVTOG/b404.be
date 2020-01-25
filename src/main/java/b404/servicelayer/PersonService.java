@@ -157,6 +157,8 @@ public class PersonService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertPerson(@RequestBody(description = "username", required = true)      @FormParam("username") String username,
+                                 @RequestBody(description = "fName", required = true)         @FormParam("fName") String fName,
+                                 @RequestBody(description = "lName", required = true)         @FormParam("lName") String lName,
                                  @RequestBody(description = "password", required = true)      @FormParam("password") String password,
                                  @RequestBody(description = "email")                          @FormParam("email") String email,
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
@@ -170,7 +172,7 @@ public class PersonService {
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.insertPerson(username, password, email, title, companyName, accessLevelID);
+            Person person = personBusiness.insertPerson(username, fName, lName, password, email, title, companyName, accessLevelID);
 
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
