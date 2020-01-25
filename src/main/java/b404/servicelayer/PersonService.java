@@ -32,7 +32,6 @@ public class PersonService {
     /**
      * Get all people from database
      * @return - HTTP Response: 200 OK for person found and returned
-     *                         400 BAD REQUEST for invalid username or password syntax
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         404 NOT FOUND when requested user is not found
      *                         500 INTERNAL SERVER ERROR for backend error
@@ -80,9 +79,8 @@ public class PersonService {
      * Gets a Person by UUID
      * @param UUID - username from POST request body
      * @return - HTTP Response: 200 OK for person found and returned
-     *                         400 BAD REQUEST for invalid username or password syntax
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                         404 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         404 NOT FOUND if no user with that UUID exists
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/id/{id}")
@@ -282,7 +280,6 @@ public class PersonService {
      * @param UUID - UUID of user to delete from the database
      * @param JWT - JSON Web Token for authorizing request
      * @return - HTTP Response: 200 OK for person inserted successfully
-     *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND when no user with provided UUID exists
      *                          500 INTERNAL SERVER ERROR for backend error
@@ -292,7 +289,6 @@ public class PersonService {
     @Operation(summary = "deletePerson", description = "delete a person's information form the database by UUID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Successfully deleted person."),
-            @ApiResponse(code = 400, message = "{error: A user ID must be provided."),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
