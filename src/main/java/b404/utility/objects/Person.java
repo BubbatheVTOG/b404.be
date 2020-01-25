@@ -96,7 +96,7 @@ public class Person {
 	 */
 	public String toJSON() {
 		return "{" +
-				"\"UUID\": " + this.UUID + "," +
+				"\"UUID\": \"" + this.UUID + "\"," +
                 "\"username\": \"" + this.username + "\"," +
 				"\"passwordHash\": \"" + this.passwordHash + "\"," +
 				"\"salt\": \"" + this.salt + "\"," +
@@ -114,7 +114,7 @@ public class Person {
 	 */
 	public String toSecureJSON() {
 		return "{" +
-				"\"UUID\": " + this.UUID + "," +
+				"\"UUID\": \"" + this.UUID + "\"," +
                 "\"username\": \"" + this.username + "\"," +
 				"\"fName\": \"" + this.fName + "\"," +
 				"\"lName\": \"" + this.lName + "\"," +
