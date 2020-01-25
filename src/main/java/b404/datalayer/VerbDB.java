@@ -30,8 +30,8 @@ public class VerbDB {
 
         while(result.next()) {
             verb = new Verb(result.getInt("verbID"),
-                            result.getString("name"),
-                            result.getString("description"));
+                    result.getString("name"),
+                    result.getString("description"));
         }
 
         //Close the database

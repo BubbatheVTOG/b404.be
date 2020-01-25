@@ -114,6 +114,7 @@ public class Person {
 				"\"title\": \"" + this.title + "\"," +
 				"\"companyID\": " + this.companyID + "," +
 				"\"accessLevelID\": " + this.accessLevelID +
+				"\"accessLevelName\": \"" + this.accessLevelName + "\"" +
 				"}";
 	}
 

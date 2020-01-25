@@ -69,11 +69,13 @@ public class JWTUtility {
     //Validate that token has not expired
     public static Boolean validateToken(String token) {
         try {
+            if(token == null || token.isEmpty()){
+                return false;
+            }
             return !isTokenExpired(token);
         }
         catch(MalformedJwtException mje){
             return false;
         }
     }
-
 }

@@ -31,9 +31,9 @@ public class FileDB {
 
         while(result.next()) {
             file = new File(result.getInt("fileID"),
-                            result.getString("name"),
-                            result.getBlob("file"),
-                            result.getInt("stepID"));
+                    result.getString("name"),
+                    result.getBlob("file"),
+                    result.getInt("stepID"));
         }
 
         //Close the database

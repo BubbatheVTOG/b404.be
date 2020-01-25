@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CompanyDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     public CompanyDB(){
         this.dbConn = new DBConn();
@@ -15,15 +15,15 @@ public class CompanyDB {
 
     /**
      * Get a companies information by companyID
-     * @param companyID - compantID to get company information from
+     * @param companyID
      * @return company object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException
      */
     public Company getCompanyByID(int companyID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM company WHERE company.companyID = ?;";
+        String query = "SELECT * FROM company WHERE company.companyID = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -34,7 +34,7 @@ public class CompanyDB {
 
         while(result.next()) {
 
-            //Pull response content and map into a Company object
+            //Pull response content and map into a Person object
             company = new Company(result.getInt("companyID"),
                                   result.getString("name"));
         }
@@ -42,15 +42,20 @@ public class CompanyDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return company;
     }
 
+    /**
+     * Gets a company from the database by company name
+     * @param companyName - name to search database for
+     * @return - Company with matching Company Name
+     * @throws SQLException - Error connecting to database or executing query
+     */
     public Company getCompanyByName(String companyName) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM company WHERE company.name = ?;";
+        String query = "SELECT * FROM company WHERE company.name = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
@@ -61,7 +66,7 @@ public class CompanyDB {
 
         while(result.next()) {
 
-            //Pull response content and map into a Company object
+            //Pull response content and map into a Person object
             company = new Company(result.getInt("companyID"),
                     result.getString("name"));
         }
@@ -69,7 +74,6 @@ public class CompanyDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return company;
     }
 
@@ -98,11 +102,11 @@ public class CompanyDB {
 
     /**
      * Connect to database and delete a company by companyID
-     * @param companyID - comapnyID to delete from the database
+     * @param companyID - comapanyID of company to delete from the database
      * @return number of rows deleted
      * @throws SQLException - Error connecting to database or executing query
      */
-    public int deleteCompanyByCompanyID(int companyID) throws SQLException {
+    public int deleteCompany(int companyID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -111,6 +115,30 @@ public class CompanyDB {
 
         //Set parameters and execute query
         preparedStatement.setInt(1, companyID);
+        int numRowsDeleted = preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+
+        //Return deleted rows
+        return numRowsDeleted;
+    }
+
+    /**
+     * Connect to database and delete a company by company name
+     * @param companyName - company name of company to delete from the database
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int deleteCompany(String companyName) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM company WHERE company.name = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, companyName);
         int numRowsDeleted = preparedStatement.executeUpdate();
 
         //Close the database

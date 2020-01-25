@@ -35,11 +35,9 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             Person person = new Person(result.getString("UUID"),
+                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -51,7 +49,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return people;
     }
 
@@ -78,11 +75,9 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
+                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -92,7 +87,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return person;
     }
 
@@ -119,11 +113,9 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
+                    result.getString("name"),
                     result.getString("passwordHash"),
                     result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("userName"),
                     result.getString("email"),
                     result.getString("title"),
                     result.getInt("companyID"),
@@ -133,42 +125,72 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return person;
     }
 
     /**
-     * Connect to database and add
-     * @param UUID
-     * @param password
-     * @param salt
-     * @param fName
-     * @param lName
-     * @param userName
-     * @param email
-     * @param title
-     * @param companyID
-     * @param accessLevelID
+     * Connect to database and add a new person
+     * @param UUID - new Person UUID
+     * @param name - new person name
+     * @param password - new person password
+     * @param salt - new person salt
+     * @param email - new person email
+     * @param title - new person title
+     * @param companyID - new person companyID
+     * @param accessLevelID - new person accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void insertPerson(String UUID, String password, String salt, String fName, String lName, String userName, String email, String title, int companyID, int accessLevelID) throws SQLException {
+    public void insertPerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, passwordHash, salt, name, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, name, passwordHash, salt, email, title, companyID, accessLevelID) VALUES (?,?,?,?,?,?,?,?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, UUID);
+        preparedStatement.setString(2, name);
+        preparedStatement.setString(3, password);
+        preparedStatement.setString(4, salt);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, title);
+        preparedStatement.setInt(7, companyID);
+        preparedStatement.setInt(8, accessLevelID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+    }
+
+    /**
+     * Connect to database and update person using UUID
+     * @param UUID - UUID of person to update
+     * @param name - new person name
+     * @param password - new person password
+     * @param salt - new person salt
+     * @param email - new person email
+     * @param title - new person title
+     * @param companyID - new person companyID
+     * @param accessLevelID - new person accessLevelID
+     * @throws SQLException - error connecting to database or executing query
+     */
+    public void updatePerson(String UUID, String name, String password, String salt, String email, String title, int companyID, int accessLevelID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "UPDATE person SET name = ?, passwordHash = ?, salt = ?, email = ?, title = ?, companyID = ?, accessLevelID = ? WHERE UUID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
         preparedStatement.setString(2, password);
         preparedStatement.setString(3, salt);
-        preparedStatement.setString(4, fName);
-        preparedStatement.setString(5, lName);
-        preparedStatement.setString(6, userName);
-        preparedStatement.setString(7, email);
-        preparedStatement.setString(8, title);
-        preparedStatement.setInt(9, companyID);
-        preparedStatement.setInt(10, accessLevelID);
+        preparedStatement.setString(4, email);
+        preparedStatement.setString(5, title);
+        preparedStatement.setInt(6, companyID);
+        preparedStatement.setInt(7, accessLevelID);
+        preparedStatement.setString(8, UUID);
 
         preparedStatement.executeUpdate();
 
@@ -196,7 +218,6 @@ public class PersonDB {
         //Close the database
         this.dbConn.close();
 
-        //return person;
         return numRowsDeleted;
     }
 

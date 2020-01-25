@@ -7,52 +7,52 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AccessLevelDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
-    public AccessLevelDB() {
+    public AccessLevelDB(){
         this.dbConn = new DBConn();
     }
 
     /**
-     * Get access level information based on the accessLevelID
-     * @param accessLevelID - accessLevelID to retrieve accessLevel from
-     * @return access object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * Get access level information based on accessLevelID
+     * @param accessLevelID - accessLevelID to search database for
+     * @return AccessLevel object or null if not found
+     * @throws SQLException
      */
-    public AccessLevel getAccessByID(int accessLevelID) throws SQLException {
+    public AccessLevel getAccessLevel(int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM accessLevel WHERE accessLevel.accessLevelID = ?;";
+        String query = "SELECT * FROM accessLevel WHERE accessLevel.accessLevelID = ?";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setInt(1, accessLevelID);
         ResultSet result = preparedStatement.executeQuery();
 
+
         AccessLevel accessLevel = null;
 
         while(result.next()) {
 
-            //Pull response content and map to an access object
+            //Pull response content and map into a Person object
             accessLevel = new AccessLevel(result.getInt("accessLevelID"),
-                                result.getString("name"));
+                                          result.getString("accessLevelName"));
         }
 
         //Close the database
         this.dbConn.close();
 
-        //Return access
         return accessLevel;
     }
 
     /**
-     * Get access level information based on the accessLevelID
-     * @param name - name to retrieve accessLevel from
-     * @return access object or null if not found
+     * Get access level information based on the accessLevelName
+     * @param name - name to search database for
+     * @return AccessLevel object or null if not found
      * @throws SQLException - Error connecting to database or executing query
      */
-    public AccessLevel getAccessByName(String name) throws SQLException {
+    public AccessLevel getAccessLevel(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -63,24 +63,24 @@ public class AccessLevelDB {
         preparedStatement.setString(1, name);
         ResultSet result = preparedStatement.executeQuery();
 
-        AccessLevel accessLevel = null;
+        AccessLevel access = null;
 
         while(result.next()) {
 
             //Pull response content and map into an Access object
-            accessLevel = new AccessLevel(result.getInt("accessLevelID"),
-                                result.getString("name"));
+            access = new AccessLevel(result.getInt("accessLevelID"),
+                                     result.getString("name"));
         }
 
         //Close the database
         this.dbConn.close();
 
         //Return access
-        return accessLevel;
+        return access;
     }
 
     /**
-     * Connect to database and add
+     * Connect to database and add a new access level
      * @param accessLevelID - accessLevelID of new accessLevel to be added
      * @param name - name of new accessLevel to be added
      * @throws SQLException - Error connecting to database or executing update
@@ -108,7 +108,7 @@ public class AccessLevelDB {
      * @return number of rows deleted
      * @throws SQLException - Error connecting to database or executing update
      */
-    public int deleteAccessLevelByAccessLevelID(int accessLevelID) throws SQLException {
+    public int deleteAccessLevel(int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -132,7 +132,7 @@ public class AccessLevelDB {
      * @return number of rows deleted
      * @throws SQLException - Error connecting to database or executing update
      */
-    public int deleteAccessLevelByAccessLevelID(String name) throws SQLException {
+    public int deleteAccessLevel(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement

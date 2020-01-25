@@ -31,11 +31,11 @@ public class MilestoneDB {
 
         while(result.next()) {
             milestone = new Milestone(result.getInt("milestoneID"),
-                                      result.getInt("orderNumber"),
-                                      result.getString("name"),
-                                      result.getString("description"),
-                                      result.getDate("deliveryDate"),
-                                      result.getInt("companyID"));
+                    result.getInt("orderNumber"),
+                    result.getString("name"),
+                    result.getString("description"),
+                    result.getDate("deliveryDate"),
+                    result.getInt("companyID"));
         }
 
         //Close the database

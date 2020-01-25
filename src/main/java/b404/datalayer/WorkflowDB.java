@@ -35,10 +35,10 @@ public class WorkflowDB {
 
         while(result.next()) {
             workflow = new Workflow(result.getInt("workflowID"),
-                                    result.getString("name"),
-                                    result.getDate("startDate"),
-                                    result.getDate("endDate"),
-                                    result.getInt("milestoneID"));
+                    result.getString("name"),
+                    result.getDate("startDate"),
+                    result.getDate("endDate"),
+                    result.getInt("milestoneID"));
         }
 
         //Close the database
