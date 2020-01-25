@@ -136,6 +136,8 @@ public class PersonService {
     /**
      * Insert a person into the database
      * @param username
+     * @param fName
+     * @param lName
      * @param password
      * @param email
      * @param title
