@@ -212,7 +212,7 @@ public class PersonBusiness {
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(UUID, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
+            personDB.updatePerson(UUID, username, password, fName, lName, email, title, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return new Person(UUID, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);

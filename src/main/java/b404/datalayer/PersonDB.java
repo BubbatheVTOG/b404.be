@@ -170,29 +170,27 @@ public class PersonDB {
      * @param UUID - UUID of person to update
      * @param username - new person username
      * @param password - new person password
-     * @param salt - new person salt
      * @param email - new person email
      * @param title - new person title
      * @param accessLevelID - new person accessLevelID
      * @throws SQLException - error connecting to database or executing query
      */
-    public void updatePerson(String UUID, String username, String password, String salt, String fName, String lName, String email, String title, int accessLevelID) throws SQLException {
+    public void updatePerson(String UUID, String username, String password, String fName, String lName, String email, String title, int accessLevelID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "UPDATE person SET username = ?, passwordHash = ?, salt = ?,fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
+        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);
-        preparedStatement.setString(3, salt);
-        preparedStatement.setString(4, fName);
-        preparedStatement.setString(5, lName);
-        preparedStatement.setString(6, email);
-        preparedStatement.setString(7, title);
-        preparedStatement.setInt(8, accessLevelID);
-        preparedStatement.setString(9, UUID);
+        preparedStatement.setString(3, fName);
+        preparedStatement.setString(4, lName);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, title);
+        preparedStatement.setInt(7, accessLevelID);
+        preparedStatement.setString(8, UUID);
 
         preparedStatement.executeUpdate();
 
