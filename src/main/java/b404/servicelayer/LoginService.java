@@ -5,10 +5,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import b404.businesslayer.PersonBusiness;
-import b404.utility.customexceptions.BadRequestException;
-import b404.utility.customexceptions.InternalServerErrorException;
-
-import b404.utility.customexceptions.UnauthorizedException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
+import b404.utility.objects.Person;
+import b404.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -35,24 +36,28 @@ public class LoginService {
     @POST
     @Operation(summary = "Login", description = "Authenticates the user by username and password")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{Success: You have logged in.}"),
+            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: Invalid username/password syntax}"),
             @ApiResponse(code = 401, message = "{error: Invalid login credentials.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@RequestBody(description = "Username", required = true) @FormParam("username") String username,
-                          @RequestBody(description = "Password", required = true) @FormParam("password") String password) {
+    public Response login(@RequestBody(description = "username", required = true) @FormParam("username") String username,
+                          @RequestBody(description = "password", required = true) @FormParam("password") String password) {
         try {
             //Send parameters to business layer and store response
-            String responseMessage = personBusiness.login(username, password);
+            Person person = personBusiness.login(username, password);
+
+            String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + responseMessage + "\"}").build();
+            return Response.ok(person.toSecureJSON())
+                    .header("Authorization", jwtToken)
+                    .build();
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
-        catch(UnauthorizedException ue){
+        catch(NotAuthorizedException ue){
             return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"" + ue.getMessage() + "\"}").build();
         }
         //Catch a BadRequestException and return Bad Request response with message from error

@@ -3,7 +3,6 @@ package b404.utility.objects;
 /*
 import java.sql.*;
 import java.util.*;
-
 import b404.datalayer.PersonDB;
 */
 
@@ -12,55 +11,31 @@ import b404.datalayer.PersonDB;
  */
 public class Person {
 
-	private int userID;
-	private String name;
-	private String email;
+	private String UUID;
+    private String username;
 	private String passwordHash;
 	private String salt;
+	private String fName;
+	private String lName;
+	private String email;
 	private String title;
-	private int companyID;
 	private int accessLevelID;
 
-	//Default constructor
-	public Person() {}
-
-	//Constructor with primary keys only
-	public Person(int userID) {
-		this.userID = userID;
-	}
-
-
-	//Constructor for all non-null values
-    public Person(int userID, String name, String password, int companyID, int accessLevelID){
-		this.userID = userID;
-		this.name = name;
-		this.passwordHash = password;
-		this.companyID = companyID;
-		this.accessLevelID = accessLevelID;
-	}
-
 	//Fully parameterised constructor
-	public Person(int userID, String name, String email, String passwordHash, String salt, String title, int companyID, int accessLevelID) {
-		this.userID = userID;
-		this.name = name;
-		this.email = email;
+	public Person(String UUID, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
+		this.UUID = UUID;
+        this.username = username;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
+		this.fName = fName;
+		this.lName = lName;
+		this.email = email;
 		this.title = title;
-		this.companyID = companyID;
 		this.accessLevelID = accessLevelID;
 	}
 
-	public int getUserID() {
-		return this.userID;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public String getEmail() {
-		return this.email;
+	public String getUUID() {
+		return this.UUID;
 	}
 
 	public String getPasswordHash() {
@@ -71,28 +46,24 @@ public class Person {
 		return this.salt;
 	}
 
+	public String getFName() { return this.fName; }
+
+	public String getLName() { return this.lName; }
+
+	public String getUsername() { return this.username; }
+
+	public String getEmail() { return this.email; }
+
 	public String getTitle() {
 		return this.title;
-	}
-
-	public int getCompanyID() {
-		return this.companyID;
 	}
 
 	public int getAccessLevelID() {
 		return this.accessLevelID;
 	}
 
-	public void setUserID(int userID) {
-		this.userID = userID;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
+	public void setUUID(String UUID) {
+		this.UUID = UUID;
 	}
 
 	public void setPasswordHash(String passwordHash) {
@@ -103,113 +74,53 @@ public class Person {
 		this.salt = salt;
 	}
 
+	public void setFName(String fName) { this.fName = fName; }
+
+	public void setLName(String lName) { this.lName = lName; }
+
+	public void setUsername(String username) { this.username = username; }
+
+	public void setEmail(String email) { this.email = email; }
+
 	public void setTitle(String title) {
 		this.title = title;
-	}
-
-	public void setCompanyID(int companyID) {
-		this.companyID = companyID;
 	}
 
 	public void setAccessLevelID(int accessLevelID) {
 		this.accessLevelID = accessLevelID;
 	}
 
-	public String toString() {
-		return this.userID + ' ' + this.name + ' ' + this.email + ' ' + this.passwordHash + ' ' + this.salt + ' ' + this.title + ' ' + this.companyID + ' ' + this.accessLevelID;
+	/**
+	 * Puts the Person object into valid json format
+	 * @return JSON format String
+	 */
+	public String toJSON() {
+		return "{" +
+				"\"UUID\": \"" + this.UUID + "\"," +
+                "\"username\": \"" + this.username + "\"," +
+				"\"passwordHash\": \"" + this.passwordHash + "\"," +
+				"\"salt\": \"" + this.salt + "\"," +
+				"\"fName\": \"" + this.fName + "\"," +
+				"\"lName\": \"" + this.lName + "\"," +
+				"\"email\": \"" + this.email + "\"," +
+				"\"title\": \"" + this.title + "\"," +
+				"\"accessLevelID\": " + this.accessLevelID +
+				"}";
 	}
 
-	/*
-	public boolean fetch() {
-		PersonDB api = new PersonDB();
-		String query = "SELECT name, email, passwordHash, salt, title, companyID, accessLevelID FROM Person WHERE userID LIKE ?";
-		ArrayList<String> values = new ArrayList<String>();
-		values.add(userID);
-		api.connect();
-		ArrayList<ArrayList<String>> results = api.getData(query, values);
-		api.close();
-		if(!results.isEmpty()) {
-			setName(results.get(0).get(0));
-			setEmail(results.get(0).get(1));
-			setPasswordHash(results.get(0).get(2));
-			setSalt(results.get(0).get(3));
-			setTitle(results.get(0).get(4));
-			setCompanyID(results.get(0).get(5));
-			setAccessLevelID(results.get(0).get(6));
-			return true;
-		}
-		else {
-			return false;
-		}
+	/**
+	 * Puts the Person object into valid json format and removes passwordHash and salt
+	 * @return JSON format String
+	 */
+	public String toSecureJSON() {
+		return "{" +
+				"\"UUID\": \"" + this.UUID + "\"," +
+                "\"username\": \"" + this.username + "\"," +
+				"\"fName\": \"" + this.fName + "\"," +
+				"\"lName\": \"" + this.lName + "\"," +
+				"\"email\": \"" + this.email + "\"," +
+				"\"title\": \"" + this.title + "\"," +
+				"\"accessLevelID\": " + this.accessLevelID +
+				"}";
 	}
-
-	public int put() {
-		DatabaseAPI api = new DatabaseAPI();
-		String query = "UPDATE Person SET "
-			+ "name = ?, "
-			
-			+ "email = ?, "
-			
-			+ "passwordHash = ?, "
-			
-			+ "salt = ?, "
-			
-			+ "title = ?, "
-			
-			+ "companyID = ?, "
-			
-			+ "accessLevelID = ? "
-			+ "WHERE userID LIKE ?;";
-		ArrayList<String> values = new ArrayList<String>();
-		values.add(name);
-		values.add(email);
-		values.add(passwordHash);
-		values.add(salt);
-		values.add(title);
-		values.add(companyID);
-		values.add(accessLevelID);
-		values.add(userID);
-		int rc = 0;
-		try {
-			rc = api.setData(query, values);
-		} catch (NullPointerException NPE) {
-			NPE.printStackTrace();
-		}
-		return rc;
-	}
-
-	public int post() {
-		DatabaseAPI api = new DatabaseAPI();
-		String query = "INSERT INTO Person VALUES ("
-			+ "?, "
-			+ "?, "
-			+ "?, "
-			+ "?, "
-			+ "?, "
-			+ "?, "
-			+ "?, "
-			+ "?);";
-		ArrayList<String> values = new ArrayList<String> ();
-		values.add(userID);
-		values.add(name);
-		values.add(email);
-		values.add(passwordHash);
-		values.add(salt);
-		values.add(title);
-		values.add(companyID);
-		values.add(accessLevelID);
-		int rc = api.setData(query, values);
-		return rc;
-	}
-
-	public int delete() {
-		DatabaseAPI api = new DatabaseAPI();
-		String query = "DELETE FROM Person WHERE userID LIKE ?;";
-		ArrayList<String> values = new ArrayList<String>();
-		values.add(userID);
-		int rc = api.setData(query, values);
-		return rc;
-	}
-	*/
-
-} // End of class Person
+}
