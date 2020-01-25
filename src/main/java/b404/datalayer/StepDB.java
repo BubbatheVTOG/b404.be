@@ -16,7 +16,7 @@ public class StepDB {
     }
 
     /**
-     * Get a Stpes information by UUID
+     * Get a Steps information by UUID
      * @param UUID - UUID to search database for
      * @return step object or null if not found
      * @throws SQLException - error connecting to database or executing query
