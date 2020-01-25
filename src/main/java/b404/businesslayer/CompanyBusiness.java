@@ -1,6 +1,7 @@
 package b404.businesslayer;
 
 import b404.datalayer.CompanyDB;
+import b404.utility.ConflictException;
 import b404.utility.objects.Company;
 
 import javax.ws.rs.BadRequestException;
@@ -77,6 +78,67 @@ public class CompanyBusiness {
             }
 
             return company;
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Inserts a new company into the database
+     * @param companyName - New company's name
+     * @return Success string
+     * @throws BadRequestException - CompanyID was an invalid integer format
+     * @throws NotFoundException - No company with provided CompanyId was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public Company insertCompany(String companyName) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+        try {
+            if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided.");}
+
+            if(companyDB.getCompanyByName(companyName) != null){
+                throw new ConflictException("A company with that name already exists.");
+            }
+
+            companyDB.insertCompany(companyName);
+
+            return companyDB.getCompanyByName(companyName);
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Updates an existing company in the database
+     * @param companyName - Company's updated name
+     * @return Success string
+     * @throws BadRequestException - CompanyID was an invalid integer format
+     * @throws NotFoundException - No company with provided CompanyId was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public Company updateCompany(String companyID, String companyName) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+        try {
+            int companyIDInteger = Integer.parseInt(companyID);
+            Company storedCompany = companyDB.getCompanyByID(companyIDInteger);
+            if(storedCompany == null){
+                throw new NotFoundException("No company with that name exists.");
+            }
+
+            if(companyName == null || companyName.isEmpty()){companyName = storedCompany.getCompanyName();}
+            else {
+                Company companyNameCheck = companyDB.getCompanyByName(companyName);
+                if (companyNameCheck != null && companyNameCheck.getCompanyID() != companyIDInteger) {
+                    throw new ConflictException("A company with that name already exists.");
+                }
+            }
+
+            companyDB.updateCompany(companyIDInteger, companyName);
+
+            return new Company(companyIDInteger, companyName);
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("A company ID must be provided.");
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException(sqle.getMessage());

@@ -228,42 +228,30 @@ public class CompanyService {
     }
 
     /**
-     * Update an existing person in the database
-     * @param UUID -  Existing person's UUID
-     * @param username - Person's new username
-     * @param password - Person's new plaintext password
-     * @param fName - updated person first name; can be null
-     * @param lName - updated person last name; can be null
-     * @param email - Person's new email; can be null
-     * @param title - Person's new title; can be null
-     * @param accessLevelID - Person's new accessLevelID
+     * Update an existing company in the database
+     * @param companyID -  Existing person's UUID
+     * @param companyName - Person's new title; can be null
      * @param JWT - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                          403 CONFLICT for username conflict
      *                          404 NOT FOUND for non-existent companyName or accessLevelID
+     *                          409 CONFLICT for username conflict
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @PUT
-    @Operation(summary = "insertPerson", description = "Insert a new person")
+    @Operation(summary = "updateCompany", description = "Update an existing company")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Update person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
-            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 200, message = "Updated company object which contains keys (companyID, companyName)"),
+            @ApiResponse(code = 400, message = "{error: A company ID must be provided.}"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
-            @ApiResponse(code = 404, message = "{error: user/CompanyName/accessLevelID was not found.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
+            @ApiResponse(code = 409, message = "{error: A company with that name already exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updatePerson(@RequestBody(description = "id", required = true)      @FormParam("id") String UUID,
-                                 @RequestBody(description = "username")      @FormParam("username") String username,
-                                 @RequestBody(description = "password")      @FormParam("password") String password,
-                                 @RequestBody(description = "fName")         @FormParam("fName") String fName,
-                                 @RequestBody(description = "lName")         @FormParam("lName") String lName,
-                                 @RequestBody(description = "email")         @FormParam("email") String email,
-                                 @RequestBody(description = "title")         @FormParam("title") String title,
-                                 @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
+    public Response updateCompany(@RequestBody(description = "id", required = true)          @FormParam("id") String companyID,
+                                 @RequestBody(description = "name")                          @FormParam("name") String companyName,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
 
         try {
@@ -272,13 +260,10 @@ public class CompanyService {
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.updatePerson(UUID, username, password, fName, lName, email, title, accessLevelID);
-
-            String jwtToken = JWTUtility.generateToken(person.getUUID());
+            Company company = companyBusiness.updateCompany(companyID, companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toSecureJSON())
-                    .header("Authorization", jwtToken)
+            return Response.ok(company.toJSON())
                     .build();
         }
         //Catch all business logic related errors and return relevant response with message from error

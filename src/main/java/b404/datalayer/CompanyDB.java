@@ -108,20 +108,40 @@ public class CompanyDB {
 
     /**
      * Connect to database and add
-     * @param companyID - companyID of new company to be added
      * @param name - name of new company to be added
      * @throws SQLException - error connecting to database or executing
      */
-    public void insertCompany(int companyID, String name) throws SQLException {
+    public void insertCompany(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO company (companyID, name) VALUES (?, ?);";
+        String query = "INSERT INTO company (name) VALUES (?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setInt(1, companyID);
-        preparedStatement.setString(2, name);
+        preparedStatement.setString(1, name);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        dbConn.close();
+    }
+
+    /**
+     * Connect to database and add
+     * @param name - name of new company to be added
+     * @throws SQLException - error connecting to database or executing
+     */
+    public void updateCompany(int companyID, String name) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "UPDATE company SET company.name = ? WHERE company.companyID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
+        preparedStatement.setInt(2, companyID);
 
         preparedStatement.executeUpdate();
 

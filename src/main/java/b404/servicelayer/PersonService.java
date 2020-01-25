@@ -221,7 +221,7 @@ public class PersonService {
     @PUT
     @Operation(summary = "insertPerson", description = "Insert a new person")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Update person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 200, message = "Inserted person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
