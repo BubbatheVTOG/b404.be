@@ -1,6 +1,7 @@
 package b404.datalayer;
 
 import b404.utility.objects.Company;
+import b404.utility.objects.Person;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,44 @@ public class CompanyDB {
         this.dbConn.close();
 
         return companyList;
+    }
+
+    /**
+     * Connect to database and retrieve all people associated with a specific company
+     * @return ArrayList of all Company objects in database
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public ArrayList<Person> getAllPeopleByCompany(int companyID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM personCompany\n" +
+                "        JOIN person ON (personCompany.UUID= person.UUID)\n" +
+                "        WHERE companyID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+        preparedStatement.setInt(1, companyID);
+
+        //Set parameters and execute query
+        ResultSet result = preparedStatement.executeQuery();
+
+        ArrayList<Person> personList = new ArrayList<>();
+
+        while(result.next()) {
+            personList.add(new Person(result.getString("UUID"),
+                                      result.getString("username"),
+                                      result.getString("passwordHash"),
+                                      result.getString("salt"),
+                                      result.getString("fName"),
+                                      result.getString("lName"),
+                                      result.getString("email"),
+                                      result.getString("title"),
+                                      result.getInt("accessLevelID")));
+        }
+
+        //Close the database
+        this.dbConn.close();
+
+        return personList;
     }
 
     /**

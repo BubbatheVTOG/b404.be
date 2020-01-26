@@ -3,6 +3,7 @@ package b404.businesslayer;
 import b404.datalayer.CompanyDB;
 import b404.utility.ConflictException;
 import b404.utility.objects.Company;
+import b404.utility.objects.Person;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -26,6 +27,29 @@ public class CompanyBusiness {
     public ArrayList<Company> getAllCompanies() throws InternalServerErrorException{
         try {
             return companyDB.getAllCompanies();
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Gets all people for a given company from the database
+     * @return List of Person objects
+     * @throws BadRequestException - CompanyID is not a valid integer
+     * @throws NotFoundException - Company does not exist in the database
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public ArrayList<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
+        try {
+            if(this.getCompanyByID(companyID) == null){
+                throw new NotFoundException("No company with that ID exists.");
+            }
+
+            return companyDB.getAllPeopleByCompany(Integer.parseInt(companyID));
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("CompanyId must be a valid integer.");
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException(sqle.getMessage());
@@ -215,9 +239,10 @@ public class CompanyBusiness {
             if(companyDB.getCompanyByID(companyIDInteger) == null){ throw new NotFoundException("No company with that ID exists. ");}
             if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
 
-            //TODO implement check for if companyID and UUID already exist in the personCompany
-            if(false){
-                throw new ConflictException("That person is already a part of that company.");
+            for(Person person : this.getAllPeopleByCompany(companyID)){
+                if(person.getUUID() == personID) {
+                    throw new ConflictException("That person is already a part of that company.");
+                }
             }
 
             companyDB.addPersonToCompany(companyIDInteger, personID);
