@@ -240,7 +240,7 @@ public class CompanyService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertCompany(@RequestBody(description = "companyName", required = true) @FormParam("companyName") String companyName,
+    public Response insertCompany(@RequestBody(description = "name", required = true) @FormParam("name") String companyName,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
 
         try {
