@@ -1,6 +1,7 @@
 package b404.datalayer;
 
 import b404.utility.objects.Company;
+import b404.utility.objects.Person;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,44 @@ public class CompanyDB {
         this.dbConn.close();
 
         return companyList;
+    }
+
+    /**
+     * Connect to database and retrieve all people associated with a specific company
+     * @return ArrayList of all Company objects in database
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public ArrayList<Person> getAllPeopleByCompany(int companyID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM personCompany\n" +
+                "        JOIN person ON (personCompany.UUID= person.UUID)\n" +
+                "        WHERE companyID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+        preparedStatement.setInt(1, companyID);
+
+        //Set parameters and execute query
+        ResultSet result = preparedStatement.executeQuery();
+
+        ArrayList<Person> personList = new ArrayList<>();
+
+        while(result.next()) {
+            personList.add(new Person(result.getString("UUID"),
+                                      result.getString("username"),
+                                      result.getString("passwordHash"),
+                                      result.getString("salt"),
+                                      result.getString("fName"),
+                                      result.getString("lName"),
+                                      result.getString("email"),
+                                      result.getString("title"),
+                                      result.getInt("accessLevelID")));
+        }
+
+        //Close the database
+        this.dbConn.close();
+
+        return personList;
     }
 
     /**
@@ -108,20 +147,40 @@ public class CompanyDB {
 
     /**
      * Connect to database and add
-     * @param companyID - companyID of new company to be added
      * @param name - name of new company to be added
      * @throws SQLException - error connecting to database or executing
      */
-    public void insertCompany(int companyID, String name) throws SQLException {
+    public void insertCompany(String name) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO company (companyID, name) VALUES (?, ?);";
+        String query = "INSERT INTO company (name) VALUES (?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute query
-        preparedStatement.setInt(1, companyID);
-        preparedStatement.setString(2, name);
+        preparedStatement.setString(1, name);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        dbConn.close();
+    }
+
+    /**
+     * Connect to database and add
+     * @param name - name of new company to be added
+     * @throws SQLException - error connecting to database or executing
+     */
+    public void updateCompany(int companyID, String name) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "UPDATE company SET company.name = ? WHERE company.companyID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setString(1, name);
+        preparedStatement.setInt(2, companyID);
 
         preparedStatement.executeUpdate();
 
@@ -175,5 +234,55 @@ public class CompanyDB {
 
         //Return deleted rows
         return numRowsDeleted;
+    }
+
+    /**
+     * Add a person to a company by adding a row into personCompany
+     * @param companyID - companyID of company to add person to
+     * @param UUID - UUID of person to add to company
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public void addPersonToCompany(int companyID, String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "INSERT INTO personCompany (companyID, UUID) VALUES (?,?);";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        preparedStatement.setString(2, UUID);
+
+        preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+    }
+
+    /**
+     * Delete a person from a company by removing a row in personCompany
+     * @param companyID - companyID of company to add person to
+     * @param UUID - UUID of person to add to company
+     * @return number of rows deleted
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public int removePersonFromCompany(int companyID, String UUID) throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "DELETE FROM personCompany WHERE companyID = ? AND UUID = ?;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Set parameters and execute query
+        preparedStatement.setInt(1, companyID);
+        preparedStatement.setString(2, UUID);
+
+        int numRowsAffected = preparedStatement.executeUpdate();
+
+        //Close the database
+        this.dbConn.close();
+
+        return numRowsAffected;
     }
 }
