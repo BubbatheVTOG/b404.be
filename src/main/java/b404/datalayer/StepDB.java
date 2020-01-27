@@ -5,6 +5,7 @@ import b404.utility.objects.Step;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StepDB {
@@ -35,8 +36,6 @@ public class StepDB {
         Step step = null;
 
         while(result.next()) {
-
-            //Pull response content and map into a Person object
             step = new Step(result.getInt("UUID"),
                     result.getInt("orderNumber"),
                     result.getString("description"),
@@ -48,6 +47,35 @@ public class StepDB {
         this.dbConn.close();
 
         return step;
+    }
+
+    public ArrayList<Step> getHigherLevelSteps() throws SQLException {
+        this.dbConn.connect();
+
+        //Prepare sql statement
+        String query = "SELECT * FROM step WHERE orderNumber IS NOT NULL ORDER BY orderNumber;";
+        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+        //Execute query
+        ResultSet result = preparedStatement.executeQuery();
+
+        ArrayList<Step> steps = null;
+        Step step = null;
+
+        while(result.next()) {
+            step = new Step(result.getInt("UUID"),
+                    result.getInt("orderNumber"),
+                    result.getString("description"),
+                    result.getInt("relatedStep"),
+                    result.getInt("workflowID"));
+            steps.add(step);
+        }
+
+        //Close the database
+        this.dbConn.close();;
+
+        //Return higher level steps
+        return steps;
     }
 
     /**
