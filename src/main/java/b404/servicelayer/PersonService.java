@@ -47,7 +47,7 @@ public class PersonService {
     public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -97,7 +97,7 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -141,8 +141,9 @@ public class PersonService {
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                          403 CONFLICT for username conflict
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND for non-existent accessLevelID
+     *                          409 CONFLICT for username conflict
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @POST
@@ -151,8 +152,9 @@ public class PersonService {
             @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
             @ApiResponse(code = 404, message = "{error: accessLevelID was not found.}"),
+            @ApiResponse(code = 409, message = "{error: A user with that username already exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -167,7 +169,13 @@ public class PersonService {
 
         try {
             if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
+            }
+
+            //Check that this user has the authority to access this endpoint
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            if(requester.getAccessLevelID() > 1){
+                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -214,8 +222,9 @@ public class PersonService {
      * @return - HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                          403 CONFLICT for username conflict
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND for non-existent accessLevelID
+     *                          409 CONFLICT for username conflict
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @PUT
@@ -224,8 +233,9 @@ public class PersonService {
             @ApiResponse(code = 200, message = "Inserted person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 403, message = "{error: A user with that username already exists.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
             @ApiResponse(code = 404, message = "{error: user/accessLevelID was not found.}"),
+            @ApiResponse(code = 409, message = "{error: A user with that username already exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -241,7 +251,13 @@ public class PersonService {
 
         try {
             if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
+            }
+
+            //Check that this user has the authority to access this endpoint
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            if(requester.getAccessLevelID() > 1){
+                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
 
             //Send parameters to business layer and store response
@@ -281,6 +297,7 @@ public class PersonService {
      * @param JWT - JSON Web Token for authorizing request
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND when no user with provided UUID exists
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -290,6 +307,7 @@ public class PersonService {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Successfully deleted person."),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
             @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
@@ -298,7 +316,13 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
+                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
+            }
+
+            //Check that this user has the authority to access this endpoint
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            if(requester.getAccessLevelID() > 1){
+                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
 
             //Send parameters to business layer and store response
