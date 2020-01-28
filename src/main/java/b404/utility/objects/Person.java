@@ -6,9 +6,6 @@ import java.util.List;
 /**
  * Utility class for representing a Person interacting with this system
  */
-/**
- * Utility class for representing a Person interacting with this system
- */
 public class Person {
 	private transient Gson gson = new Gson();
 
