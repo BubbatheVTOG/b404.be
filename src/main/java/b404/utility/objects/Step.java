@@ -1,6 +1,7 @@
 package b404.utility.objects;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Step {
     private int stepID;
@@ -12,7 +13,7 @@ public class Step {
     private int verbID;
     private int fileID;
     private int workflowID;
-    private ArrayList<Step> childSteps;
+    private List<Step> childSteps;
 
     public Step(int stepID, int orderNumber, boolean isHigestLevel, String description, int relatedStep, int UUID, int verbID, int fileID, int workflowID) {
         this.stepID = stepID;
@@ -62,9 +63,9 @@ public class Step {
 
     public void setWorkflowID(int workflowID) { this.workflowID = workflowID; }
 
-    public ArrayList<Step> getChildSteps() { return childSteps; }
+    public List<Step> getChildSteps() { return childSteps; }
 
-    public void setChildSteps(ArrayList<Step> childSteps) { this.childSteps = childSteps; }
+    public void setChildSteps(List<Step> childSteps) { this.childSteps = childSteps; }
 
     /**
      * Add children steps to parent step

@@ -52,7 +52,7 @@ public class StepDB {
         return step;
     }
 
-    public ArrayList<Step> getHigherLevelSteps(int workflowID) throws SQLException {
+    public List<Step> getHigherLevelSteps(int workflowID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -63,7 +63,7 @@ public class StepDB {
         preparedStatement.setInt(1, workflowID);
         ResultSet result = preparedStatement.executeQuery();
 
-        ArrayList<Step> steps = new ArrayList<>();
+        List<Step> steps = new ArrayList<>();
         Step step = null;
 
         while(result.next()) {
@@ -87,7 +87,7 @@ public class StepDB {
         return steps;
     }
 
-    public ArrayList<Step> getRelatedSteps(int stepID) throws SQLException {
+    public List<Step> getRelatedSteps(int stepID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement

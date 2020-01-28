@@ -9,6 +9,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Business layer service for step related logic
@@ -23,11 +24,11 @@ public class StepBusiness {
      * @return Step objects containing data from the database
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Step> getSteps(String workflowID) throws InternalServerErrorException {
+    public List<Step> getSteps(String workflowID) throws InternalServerErrorException {
         try {
-            ArrayList<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
+            List<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
             for (Step step : steps) {
-                step.setChildSteps(this.getRelatedSteps(step));
+                step.setChildSteps((ArrayList<Step>) this.getRelatedSteps(step));
             }
             return steps;
         } catch(NumberFormatException nfe) {
@@ -43,15 +44,15 @@ public class StepBusiness {
      * @return array of steps containing related steps
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Step> getRelatedSteps(Step step) throws InternalServerErrorException {
-        ArrayList<Step> relatedSteps;
+    public List<Step> getRelatedSteps(Step step) throws InternalServerErrorException {
+        List<Step> relatedSteps;
         try {
             relatedSteps = stepDB.getRelatedSteps(step.getStepID());
         } catch(SQLException sqle) {
             throw new InternalServerErrorException("Problem returning related steps.");
         }
         if (relatedSteps != null) {
-            step.setChildSteps(relatedSteps);
+            step.setChildSteps((ArrayList<Step>) relatedSteps);
             for(Step relatedStep : step.getChildSteps()){
                 relatedStep.setChildSteps(this.getRelatedSteps(relatedStep));
             }

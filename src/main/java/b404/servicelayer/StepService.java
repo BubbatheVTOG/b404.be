@@ -16,6 +16,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.List;
 
 @Path("step")
 @Api(value = "/step")
@@ -45,7 +46,7 @@ public class StepService {
             }
 
             //Send parameters to business layer and store response
-            ArrayList<Step> steps = stepBusiness.getSteps(workflowID);
+            List<Step> steps = stepBusiness.getSteps(workflowID);
 
             //Construct response message
             String responseMessage = "[";
