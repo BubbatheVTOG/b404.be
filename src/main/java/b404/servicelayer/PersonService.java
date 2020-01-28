@@ -54,15 +54,18 @@ public class PersonService {
             List<Person> people = personBusiness.getAllPeople();
 
             //Construct response message
-            String responseMessage = "[";
+            StringBuilder responseMessage = new StringBuilder();
+            responseMessage.append("[");
             for(Person person : people){
-                responseMessage += person.toSecureJSON() + ",";
+                responseMessage.append(person.toSecureJSON());
+                responseMessage.append(",");
             }
             //remove trailing comma and add closing bracket
-            responseMessage = responseMessage.substring(0,responseMessage.length() - 1) + "]";
+            responseMessage.setLength(responseMessage.length()-1);
+            responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage)
+            return Response.ok(responseMessage.toString())
                     .build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
@@ -71,7 +74,7 @@ public class PersonService {
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
         }
     }
 
@@ -124,7 +127,7 @@ public class PersonService {
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
         }
     }
 
@@ -204,7 +207,7 @@ public class PersonService {
         }
         //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
         }
     }
 

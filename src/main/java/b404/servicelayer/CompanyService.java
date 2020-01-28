@@ -47,15 +47,18 @@ public class CompanyService {
             List<Company> companyList = companyBusiness.getAllCompanies();
 
             //Construct response message
-            String responseMessage = "[";
+            StringBuilder responseMessage = new StringBuilder();
+            responseMessage.append("[");
             for(Company company : companyList){
-                responseMessage += company.toJSON() + ",";
+                responseMessage.append(company.toJSON());
+                responseMessage.append(",");
             }
             //remove trailing comma and add closing bracket
-            responseMessage = responseMessage.substring(0,responseMessage.length() - 1) + "]";
+            responseMessage.setLength(responseMessage.length()-1);
+            responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage)
+            return Response.ok(responseMessage.toString())
                     .build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
@@ -197,15 +200,18 @@ public class CompanyService {
             List<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
 
             //Construct response message
-            String responseMessage = "[";
+            StringBuilder responseMessage = new StringBuilder();
+            responseMessage.append("[");
             for(Person person : personList){
-                responseMessage += person.toSecureJSON() + ",";
+                responseMessage.append(person.toSecureJSON());
+                responseMessage.append(",");
             }
             //remove trailing comma and add closing bracket
-            responseMessage = responseMessage.substring(0,responseMessage.length() - 1) + "]";
+            responseMessage.setLength(responseMessage.length()-1);
+            responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage)
+            return Response.ok(responseMessage.toString())
                     .build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
