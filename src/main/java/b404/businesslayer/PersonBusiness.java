@@ -2,6 +2,7 @@ package b404.businesslayer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import b404.datalayer.PersonDB;
@@ -68,7 +69,7 @@ public class PersonBusiness {
      * @return ArrayList of people found in database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public ArrayList<Person> getAllPeople() throws InternalServerErrorException {
+    public List<Person> getAllPeople() throws InternalServerErrorException {
         try{
             //Return response from getAllPeople process
             return personDB.getAllPeople();

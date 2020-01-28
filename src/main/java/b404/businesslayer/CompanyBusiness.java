@@ -10,6 +10,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Business layer service for company related logic
@@ -24,7 +25,7 @@ public class CompanyBusiness {
      * @return Company object containing data from the database\
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Company> getAllCompanies() throws InternalServerErrorException{
+    public List<Company> getAllCompanies() throws InternalServerErrorException{
         try {
             return companyDB.getAllCompanies();
         }
@@ -93,7 +94,7 @@ public class CompanyBusiness {
      * @throws NotFoundException - Company does not exist in the database
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
+    public List<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
             Company storedCompany = this.getCompanyByID(companyID);
 

@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
+import java.util.List;
 
 @Path("company")
 @Api(value = "/company")
@@ -44,7 +44,7 @@ public class CompanyService {
             }
 
             //Send parameters to business layer and store response
-            ArrayList<Company> companyList = companyBusiness.getAllCompanies();
+            List<Company> companyList = companyBusiness.getAllCompanies();
 
             //Construct response message
             String responseMessage = "[";
@@ -194,7 +194,7 @@ public class CompanyService {
             }
 
             //Send parameters to business layer and store response
-            ArrayList<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
+            List<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
 
             //Construct response message
             String responseMessage = "[";

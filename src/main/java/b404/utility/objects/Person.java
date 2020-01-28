@@ -1,6 +1,7 @@
 package b404.utility.objects;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for representing a Person interacting with this system
@@ -59,7 +60,7 @@ public class Person {
 		return this.title;
 	}
 
-	public ArrayList<Company> getCompanies() {return companies;}
+	public List<Company> getCompanies() {return companies;}
 
 	public int getAccessLevelID() {
 		return this.accessLevelID;

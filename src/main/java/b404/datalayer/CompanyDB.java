@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CompanyDB {
     private DBConn dbConn;
@@ -22,7 +23,7 @@ public class CompanyDB {
      * @return ArrayList of all Company objects in database
      * @throws SQLException - Error connecting to database or executing query
      */
-    public ArrayList<Company> getAllCompanies() throws SQLException {
+    public List<Company> getAllCompanies() throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
@@ -50,7 +51,7 @@ public class CompanyDB {
      * @return ArrayList of all Company objects in database
      * @throws SQLException - Error connecting to database or executing query
      */
-    public ArrayList<Person> getAllPeopleByCompany(int companyID) throws SQLException {
+    public List<Person> getAllPeopleByCompany(int companyID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement

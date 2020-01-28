@@ -2,6 +2,7 @@ package b404.datalayer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
@@ -19,7 +20,7 @@ public class PersonDB {
      * @return ArrayList of all Person objects
      * @throws SQLException - Error connecting to database or executing query
      */
-    public ArrayList<Person> getAllPeople() throws SQLException {
+    public List<Person> getAllPeople() throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
