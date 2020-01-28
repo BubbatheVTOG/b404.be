@@ -23,13 +23,15 @@ public class StepBusiness {
      * @return Step objects containing data from the database
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Step> getSteps(int workflowID) throws InternalServerErrorException {
+    public ArrayList<Step> getSteps(String workflowID) throws InternalServerErrorException {
         try {
-            ArrayList<Step> steps = stepDB.getHigherLevelSteps(workflowID);
-            for(Step step : steps) {
+            ArrayList<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
+            for (Step step : steps) {
                 step.setChildSteps(this.getRelatedSteps(step));
             }
             return steps;
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("workflowID must be a valid integer.");
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }

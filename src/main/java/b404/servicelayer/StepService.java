@@ -37,7 +37,7 @@ public class StepService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSteps(@Parameter(in = ParameterIn.HEADER, description = "workflowID", required = true) @PathParam("id") int workflowID,
+    public Response getSteps(@Parameter(in = ParameterIn.HEADER, description = "workflowID", required = true) @PathParam("id") String workflowID,
                              @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
         try {
             if(!JWTUtility.validateToken(JWT )){
