@@ -440,7 +440,7 @@ public class CompanyService {
      *                          409 CONFLICT for company name conflict
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @Path("/person ")
+    @Path("/person/add")
     @POST
     @Operation(summary = "addPersonToCompany", description = "Add an existing person to a company")
     @ApiResponses(value = {
@@ -497,7 +497,7 @@ public class CompanyService {
      *                          409 CONFLICT for username conflict
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @Path("/person")
+    @Path("/person/delete")
     @POST
     @Operation(summary = "deletePersonFromCompany", description = "Add an existing person to a company")
     @ApiResponses(value = {
