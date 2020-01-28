@@ -28,9 +28,9 @@ public class PersonDB {
         ResultSet result = preparedStatement.executeQuery();
 
         //Prepare statement to get person companies
-        query = "SELECT * FROM person" +
-                "JOIN personCompany ON (person.UUID = personCompany.UUID)" +
-                "JOIN company ON (personCompany.companyID = company.companyID)" +
+        query = "SELECT * FROM person " +
+                "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                "JOIN company ON (personCompany.companyID = company.companyID) " +
                 "WHERE person.UUID = ?";
         PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
@@ -85,9 +85,9 @@ public class PersonDB {
         ResultSet result = getAllPeopleStatement.executeQuery();
 
         //Prepare statement to get person companies
-        query = "SELECT * FROM person" +
-                    "JOIN personCompany ON (person.UUID = personCompany.UUID)" +
-                    "JOIN company ON (personCompany.companyID = company.companyID)" +
+        query = "SELECT * FROM person " +
+                    "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                    "JOIN company ON (personCompany.companyID = company.companyID) " +
                     "WHERE person.UUID = ?";
         PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
@@ -140,9 +140,9 @@ public class PersonDB {
         ResultSet result = preparedStatement.executeQuery();
 
         //Prepare statement to get person companies
-        query = "SELECT * FROM person" +
-                "JOIN personCompany ON (person.UUID = personCompany.UUID)" +
-                "JOIN company ON (personCompany.companyID = company.companyID)" +
+        query = "SELECT * FROM person " +
+                "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                "JOIN company ON (personCompany.companyID = company.companyID) " +
                 "WHERE person.UUID = ?";
         PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
