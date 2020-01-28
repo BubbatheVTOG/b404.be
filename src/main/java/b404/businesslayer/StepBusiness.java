@@ -125,7 +125,7 @@ public class StepBusiness {
                 throw new BadRequestException("You must provide a workflowID for this step.");
             }
 
-            if(stepDB.getStepByStepID(UUID) != null){
+            if(stepDB.getStepByStepID(stepID) != null){
                 throw new ConflictException("A step with that stepID already exists.");
             }
 
