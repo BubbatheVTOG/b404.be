@@ -67,9 +67,9 @@ public class StepBusiness {
      * @throws NotFoundException - No step with provided UUID was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public Step getStepByStepID(int stepID) throws BadRequestException, NotFoundException, InternalServerErrorException {
+    public Step getStepByStepID(String stepID) throws BadRequestException, NotFoundException, InternalServerErrorException {
         try {
-            Step step = stepDB.getStepByStepID(stepID);
+            Step step = stepDB.getStepByStepID(Integer.parseInt(stepID));
 
             if(step == null) {
                 throw new NotFoundException("No step with that stepID exists.");
@@ -98,14 +98,25 @@ public class StepBusiness {
      * @throws NotFoundException - No step with provided UUID was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public Step insertStep(int stepID, int orderNumber, boolean isHighestLevel, String description, int relatedStep,
-                           int UUID, int verbID, int fileID, int workflowID) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+    public Step insertStep(String stepID, String orderNumber, String isHighestLevel, String description, String relatedStep,
+                           String UUID, String verbID, String fileID, String workflowID) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+
+        int stepIDInteger = Integer.parseInt(stepID);
+        int orderNumberInteger = Integer.parseInt(orderNumber);
+        boolean isHighestLevelBoolean = Boolean.parseBoolean(isHighestLevel);
+        int relatedStepInteger = Integer.parseInt(relatedStep);
+        int UUIDInteger = Integer.parseInt(UUID);
+        int verbIDInteger = Integer.parseInt(verbID);
+        int fileIDInteger = Integer.parseInt(verbID);
+        int workflowIDInteger = Integer.parseInt(workflowID);
+
+
         try {
-            if(Integer.toString(stepID) == null || Integer.toString(stepID).isEmpty()) {
+            if(stepID == null || stepID.isEmpty()) {
                 throw new BadRequestException("A UUID must be provided for the step.");
             }
 
-            if(Boolean.toString(isHighestLevel) == null || Boolean.toString(isHighestLevel).isEmpty()) {
+            if(isHighestLevel == null || isHighestLevel.isEmpty()) {
                 throw new BadRequestException("You must provide a truth value for this step.");
             }
 
@@ -113,25 +124,53 @@ public class StepBusiness {
                 throw new BadRequestException("You must provide a description for this step.");
             }
 
-            if(Integer.toString(verbID) == null || Integer.toString(verbID).isEmpty()) {
+            if(verbID == null || verbID.isEmpty()) {
                 throw new BadRequestException("You must provide a verbID for this step.");
             }
 
-            if(Integer.toString(fileID) == null || Integer.toString(fileID).isEmpty()) {
+            if(fileID == null || fileID.isEmpty()) {
                 throw new BadRequestException("You must provide a fileID for this step.");
             }
 
-            if(Integer.toString(workflowID) == null || Integer.toString(workflowID).isEmpty()) {
+            if(workflowID == null || workflowID.isEmpty()) {
                 throw new BadRequestException("You must provide a workflowID for this step.");
             }
 
-            if(stepDB.getStepByStepID(stepID) != null){
+            if(stepDB.getStepByStepID(Integer.parseInt(stepID)) != null){
                 throw new ConflictException("A step with that stepID already exists.");
             }
 
-            stepDB.insertStep(stepID, orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID);
+            stepDB.insertStep(stepIDInteger, orderNumberInteger, isHighestLevelBoolean,
+                              description, relatedStepInteger, UUIDInteger, verbIDInteger, fileIDInteger, workflowIDInteger);
 
-            return stepDB.getStepByStepID(UUID);
+            return stepDB.getStepByStepID(UUIDInteger);
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a step from the database by stepID
+     * @param stepID - step ID to delete from the database
+     * @return Success string
+     * @throws BadRequestException - stepID was a null or empty
+     * @throws NotFoundException - No step with provided stepID was found
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public String deleteStepByStepID(String stepID) {
+        int stepIDInteger = Integer.parseInt(stepID);
+        try {
+            int numRowsAffected = stepDB.deleteStepByStepID(stepIDInteger);
+
+            if(numRowsAffected == 0){
+                throw new NotFoundException("No step with that ID exists");
+            }
+
+            return "Successfully deleted step.";
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("stepID must be a valid integer.");
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException(sqle.getMessage());
