@@ -55,7 +55,7 @@ public class PersonDB {
             ArrayList<Company> companies = new ArrayList<>();
             while(companiesResult.next()){
                 companies.add(new Company(companiesResult.getInt("companyID"),
-                        companiesResult.getString("companyName"))
+                        companiesResult.getString("name"))
                 );
             }
             person.setCompanies(companies);
@@ -112,7 +112,7 @@ public class PersonDB {
             ArrayList<Company> companies = new ArrayList<>();
             while(companiesResult.next()){
                 companies.add(new Company(companiesResult.getInt("companyID"),
-                                          companiesResult.getString("companyName"))
+                                          companiesResult.getString("name"))
                              );
             }
             person.setCompanies(companies);
@@ -167,7 +167,7 @@ public class PersonDB {
             ArrayList<Company> companies = new ArrayList<>();
             while(companiesResult.next()){
                 companies.add(new Company(companiesResult.getInt("companyID"),
-                        companiesResult.getString("companyName"))
+                        companiesResult.getString("name"))
                 );
             }
             person.setCompanies(companies);
