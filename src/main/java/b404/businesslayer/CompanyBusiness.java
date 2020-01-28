@@ -137,25 +137,21 @@ public class CompanyBusiness {
      * @throws NotFoundException - No company with provided CompanyId was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public Company updateCompany(String companyID, String companyName) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+    public Company updateCompany(String companyID, String companyName) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
         try {
             Company storedCompany = this.getCompanyByID(companyID);
-            if(storedCompany == null){
-                throw new NotFoundException("No company with that id exists.");
-            }
 
-            int companyIDInteger = Integer.parseInt(companyID);
             if(companyName == null || companyName.isEmpty()){companyName = storedCompany.getCompanyName();}
             else {
                 Company companyNameCheck = companyDB.getCompanyByName(companyName);
-                if (companyNameCheck != null && companyNameCheck.getCompanyID() != companyIDInteger) {
+                if (companyNameCheck != null && companyNameCheck.getCompanyID() != storedCompany.getCompanyID()) {
                     throw new ConflictException("A company with that name already exists.");
                 }
             }
 
-            companyDB.updateCompany(companyIDInteger, companyName);
+            companyDB.updateCompany(storedCompany.getCompanyID(), companyName);
 
-            return new Company(companyIDInteger, companyName);
+            return new Company(storedCompany.getCompanyID(), companyName);
         }
         catch(NumberFormatException nfe){
             throw new BadRequestException("A company ID must be provided.");
