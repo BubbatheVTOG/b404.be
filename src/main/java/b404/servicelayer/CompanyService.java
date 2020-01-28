@@ -203,7 +203,7 @@ public class CompanyService {
             StringBuilder responseMessage = new StringBuilder();
             responseMessage.append("[");
             for(Person person : personList){
-                responseMessage.append(person.toSecureJSON());
+                responseMessage.append(person.toJSON());
                 responseMessage.append(",");
             }
             //remove trailing comma and add closing bracket

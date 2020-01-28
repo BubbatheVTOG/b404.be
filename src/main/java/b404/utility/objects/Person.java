@@ -95,7 +95,7 @@ public class Person {
 	 * Puts the Person object into valid json format and removes passwordHash and salt
 	 * @return JSON format String
 	 */
-	public String toSecureJSON() {
+	public String toJSON() {
 		return gson.toJson(this);
 	}
 }

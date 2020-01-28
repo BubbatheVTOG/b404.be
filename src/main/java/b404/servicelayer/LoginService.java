@@ -52,7 +52,7 @@ public class LoginService {
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toSecureJSON())
+            return Response.ok(person.toJSON())
                     .header("Authorization", jwtToken)
                     .build();
         }

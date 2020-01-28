@@ -31,6 +31,7 @@ public class PersonService {
 
     /**
      * Get all people from database
+     * @param jwt - JSON web token for authorization
      * @return - HTTP Response: 200 OK for person found and returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         404 NOT FOUND when requested user is not found
@@ -44,9 +45,9 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+    public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
+            if(!JWTUtility.validateToken(jwt)){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
@@ -57,7 +58,7 @@ public class PersonService {
             StringBuilder responseMessage = new StringBuilder();
             responseMessage.append("[");
             for(Person person : people){
-                responseMessage.append(person.toSecureJSON());
+                responseMessage.append(person.toJSON());
                 responseMessage.append(",");
             }
             //remove trailing comma and add closing bracket
@@ -80,7 +81,7 @@ public class PersonService {
 
     /**
      * Gets a Person by UUID
-     * @param UUID - username from POST request body
+     * @param uuid - username from POST request body
      * @return - HTTP Response: 200 OK for person found and returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         404 NOT FOUND if no user with that UUID exists
@@ -96,20 +97,20 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String UUID,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+    public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
+            if(!JWTUtility.validateToken(jwt)){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.getPersonByUUID(UUID);
+            Person person = personBusiness.getPersonByUUID(uuid);
 
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toSecureJSON())
+            return Response.ok(person.toJSON())
                     .header("Authorization", jwtToken)
                     .build();
         }
@@ -140,7 +141,7 @@ public class PersonService {
      * @param email - New person's email; can be null
      * @param title - New person's title; can be null
      * @param accessLevelID - New person's accessLevelID; can be null
-     * @param JWT - JSON Web Token for authorization; must be valid and not expired
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -168,15 +169,15 @@ public class PersonService {
                                  @RequestBody(description = "email")                          @FormParam("email") String email,
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID", required = true) @FormParam("accessLevelID") String accessLevelID,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
+            if(!JWTUtility.validateToken(jwt)){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
                 return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
@@ -187,7 +188,7 @@ public class PersonService {
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toSecureJSON())
+            return Response.ok(person.toJSON())
                     .header("Authorization", jwtToken)
                     .build();
         }
@@ -213,7 +214,7 @@ public class PersonService {
 
     /**
      * Update an existing person in the database
-     * @param UUID -  Existing person's UUID
+     * @param uuid -  Existing person's UUID
      * @param username - Person's new username
      * @param password - Person's new plaintext password
      * @param fName - updated person first name; can be null
@@ -221,7 +222,7 @@ public class PersonService {
      * @param email - Person's new email; can be null
      * @param title - Person's new title; can be null
      * @param accessLevelID - Person's new accessLevelID
-     * @param JWT - JWT for authorization; must be valid and not expired
+     * @param jwt - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -242,7 +243,7 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updatePerson(@RequestBody(description = "id", required = true)      @FormParam("id") String UUID,
+    public Response updatePerson(@RequestBody(description = "id", required = true)      @FormParam("id") String uuid,
                                  @RequestBody(description = "username")      @FormParam("username") String username,
                                  @RequestBody(description = "password")      @FormParam("password") String password,
                                  @RequestBody(description = "fName")         @FormParam("fName") String fName,
@@ -250,26 +251,26 @@ public class PersonService {
                                  @RequestBody(description = "email")         @FormParam("email") String email,
                                  @RequestBody(description = "title")         @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
-                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
+            if(!JWTUtility.validateToken(jwt)){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
                 return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.updatePerson(UUID, username, password, fName, lName, email, title, accessLevelID);
+            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID);
 
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toSecureJSON())
+            return Response.ok(person.toJSON())
                     .header("Authorization", jwtToken)
                     .build();
         }
@@ -296,8 +297,8 @@ public class PersonService {
     /**
      *
      * Delete a person from the database
-     * @param UUID - UUID of user to delete from the database
-     * @param JWT - JSON Web Token for authorizing request
+     * @param uuid - UUID of user to delete from the database
+     * @param jwt - JSON Web Token for authorizing request
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -315,21 +316,21 @@ public class PersonService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String UUID,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+    public Response deletePersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
+            if(!JWTUtility.validateToken(jwt)){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
             }
 
             //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(JWT));
+            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
                 return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
             }
 
             //Send parameters to business layer and store response
-            String responseMessage = personBusiness.deletePersonByUUID(UUID);
+            String responseMessage = personBusiness.deletePersonByUUID(uuid);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return Response.ok("{\"success\":\"" + responseMessage + "\"}")
