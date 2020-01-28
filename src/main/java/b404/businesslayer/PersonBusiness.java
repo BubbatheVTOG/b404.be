@@ -21,7 +21,6 @@ import b404.utility.security.PasswordEncryption;
  */
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
-    private CompanyBusiness companyBusiness = new CompanyBusiness();
     private AccessLevelBusiness accessLevelBusiness = new AccessLevelBusiness();
 
     /**

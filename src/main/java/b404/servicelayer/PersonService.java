@@ -130,13 +130,13 @@ public class PersonService {
 
     /**
      * Insert a person into the database
-     * @param username - updated person username; can be null
-     * @param password - updated person password; can be null
-     * @param fName - updated person first name; can be null
-     * @param lName - updated person last name; can be null
-     * @param email - updated person email; can be null
-     * @param title - updated person title; can be null
-     * @param accessLevelID - updated person accessLevelID; can be null
+     * @param username - New person's username
+     * @param password - New person's password
+     * @param fName - New person's first name
+     * @param lName - New person's last name
+     * @param email - New person's email; can be null
+     * @param title - New person's title; can be null
+     * @param accessLevelID - New person's accessLevelID; can be null
      * @param JWT - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person inserted successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -231,7 +231,7 @@ public class PersonService {
     @PUT
     @Operation(summary = "insertPerson", description = "Insert a new person")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Update person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 200, message = "Inserted person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
