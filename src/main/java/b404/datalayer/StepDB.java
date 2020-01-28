@@ -52,14 +52,15 @@ public class StepDB {
         return step;
     }
 
-    public ArrayList<Step> getHigherLevelSteps() throws SQLException {
+    public ArrayList<Step> getHigherLevelSteps(int workflowID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM step WHERE isHighestLevel = true;";
+        String query = "SELECT * FROM step WHERE isHighestLevel = true AND workflowID ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Execute query
+        preparedStatement.setInt(1, workflowID);
         ResultSet result = preparedStatement.executeQuery();
 
         ArrayList<Step> steps = new ArrayList<>();

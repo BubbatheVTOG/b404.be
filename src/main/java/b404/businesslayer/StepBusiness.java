@@ -19,12 +19,13 @@ public class StepBusiness {
 
     /**
      * Gets higher level steps from the database
+     * @param workflowID - workflowID of steps to retrieve from database
      * @return Step objects containing data from the database
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public ArrayList<Step> getSteps() throws InternalServerErrorException {
+    public ArrayList<Step> getSteps(int workflowID) throws InternalServerErrorException {
         try {
-            ArrayList<Step> steps = stepDB.getHigherLevelSteps();
+            ArrayList<Step> steps = stepDB.getHigherLevelSteps(workflowID);
             for(Step step : steps) {
                 step.setChildSteps(this.getRelatedSteps(step));
             }
@@ -34,6 +35,12 @@ public class StepBusiness {
         }
     }
 
+    /**
+     * Get related steps from higher level step
+     * @param step - higher level step to retrieve stepID from
+     * @return array of steps containing related steps
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
     public ArrayList<Step> getRelatedSteps(Step step) throws InternalServerErrorException {
         ArrayList<Step> relatedSteps;
         try {
@@ -96,8 +103,20 @@ public class StepBusiness {
                 throw new BadRequestException("A UUID must be provided for the step.");
             }
 
+            if(Boolean.toString(isHighestLevel) == null || Boolean.toString(isHighestLevel).isEmpty()) {
+                throw new BadRequestException("You must provide a truth value for this step.");
+            }
+
             if(description == null || description.isEmpty()) {
                 throw new BadRequestException("You must provide a description for this step.");
+            }
+
+            if(Integer.toString(verbID) == null || Integer.toString(verbID).isEmpty()) {
+                throw new BadRequestException("You must provide a verbID for this step.");
+            }
+
+            if(Integer.toString(fileID) == null || Integer.toString(fileID).isEmpty()) {
+                throw new BadRequestException("You must provide a fileID for this step.");
             }
 
             if(Integer.toString(workflowID) == null || Integer.toString(workflowID).isEmpty()) {
