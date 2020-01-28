@@ -1,30 +1,31 @@
 package b404.utility.objects;
-
-/*
-import java.sql.*;
-import java.util.*;
-import b404.datalayer.PersonDB;
-*/
+import com.google.gson.Gson;
+import java.util.ArrayList;
 
 /**
  * Utility class for representing a Person interacting with this system
  */
+/**
+ * Utility class for representing a Person interacting with this system
+ */
 public class Person {
+	private transient Gson gson = new Gson();
 
 	private String UUID;
-    private String username;
-	private String passwordHash;
-	private String salt;
+	private String username;
+	private transient String passwordHash;
+	private transient String salt;
 	private String fName;
 	private String lName;
 	private String email;
 	private String title;
+	private ArrayList<Company> companies;
 	private int accessLevelID;
 
 	//Fully parameterised constructor
 	public Person(String UUID, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
 		this.UUID = UUID;
-        this.username = username;
+		this.username = username;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
 		this.fName = fName;
@@ -58,6 +59,8 @@ public class Person {
 		return this.title;
 	}
 
+	public ArrayList<Company> getCompanies() {return companies;}
+
 	public int getAccessLevelID() {
 		return this.accessLevelID;
 	}
@@ -86,41 +89,15 @@ public class Person {
 		this.title = title;
 	}
 
-	public void setAccessLevelID(int accessLevelID) {
-		this.accessLevelID = accessLevelID;
-	}
+	public void setCompanies(ArrayList<Company> companies) { this.companies = companies; }
 
-	/**
-	 * Puts the Person object into valid json format
-	 * @return JSON format String
-	 */
-	public String toJSON() {
-		return "{" +
-				"\"UUID\": \"" + this.UUID + "\"," +
-                "\"username\": \"" + this.username + "\"," +
-				"\"passwordHash\": \"" + this.passwordHash + "\"," +
-				"\"salt\": \"" + this.salt + "\"," +
-				"\"fName\": \"" + this.fName + "\"," +
-				"\"lName\": \"" + this.lName + "\"," +
-				"\"email\": \"" + this.email + "\"," +
-				"\"title\": \"" + this.title + "\"," +
-				"\"accessLevelID\": " + this.accessLevelID +
-				"}";
-	}
+	public void setAccessLevelID(int accessLevelID) { this.accessLevelID = accessLevelID; }
 
 	/**
 	 * Puts the Person object into valid json format and removes passwordHash and salt
 	 * @return JSON format String
 	 */
 	public String toSecureJSON() {
-		return "{" +
-				"\"UUID\": \"" + this.UUID + "\"," +
-                "\"username\": \"" + this.username + "\"," +
-				"\"fName\": \"" + this.fName + "\"," +
-				"\"lName\": \"" + this.lName + "\"," +
-				"\"email\": \"" + this.email + "\"," +
-				"\"title\": \"" + this.title + "\"," +
-				"\"accessLevelID\": " + this.accessLevelID +
-				"}";
+		return gson.toJson(this);
 	}
 }
