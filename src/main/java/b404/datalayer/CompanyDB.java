@@ -10,9 +10,11 @@ import java.util.ArrayList;
 
 public class CompanyDB {
     private DBConn dbConn;
+    private PersonDB personDB;
 
     public CompanyDB(){
         this.dbConn = new DBConn();
+        this.personDB = new PersonDB();
     }
 
     /**
@@ -52,9 +54,8 @@ public class CompanyDB {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "SELECT * FROM personCompany\n" +
-                "        JOIN person ON (personCompany.UUID= person.UUID)\n" +
-                "        WHERE companyID = ?;";
+        String query = "SELECT * FROM personCompany " +
+                        "WHERE companyID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
         preparedStatement.setInt(1, companyID);
 
@@ -64,15 +65,7 @@ public class CompanyDB {
         ArrayList<Person> personList = new ArrayList<>();
 
         while(result.next()) {
-            personList.add(new Person(result.getString("UUID"),
-                                      result.getString("username"),
-                                      result.getString("passwordHash"),
-                                      result.getString("salt"),
-                                      result.getString("fName"),
-                                      result.getString("lName"),
-                                      result.getString("email"),
-                                      result.getString("title"),
-                                      result.getInt("accessLevelID")));
+            personList.add(personDB.getPersonByUUID(result.getString("UUID")));
         }
 
         //Close the database
