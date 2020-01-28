@@ -75,4 +75,19 @@ public class Step {
             this.childSteps.add(child[i]);
         }
     }
+
+    public String toJSON(){
+        return "{" +
+                "\"stepID\":" + this.stepID + "," +
+                "\"orderNumber\":\"" + this.orderNumber + "\"," +
+                "\"isHighestLevel\":" + this.isHighestLevel + "," +
+                "\"description\":" + this.description + "," +
+                "\"relatedStep\":" + this.relatedStep + "," +
+                "\"UUID\":" + this.UUID + "," +
+                "\"verbID\":" + this.verbID + "," +
+                "\"fileID\":" + this.fileID + "," +
+                "\"workflowID\":" + this.workflowID + "," +
+                "\"childSteps\":" + this.childSteps + "," +
+                "}";
+    }
 }
