@@ -9,7 +9,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

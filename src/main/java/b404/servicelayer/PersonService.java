@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service Layer entity responsible for receiving requests having to do with person information
@@ -51,7 +51,7 @@ public class PersonService {
             }
 
             //Send parameters to business layer and store response
-            ArrayList<Person> people = personBusiness.getAllPeople();
+            List<Person> people = personBusiness.getAllPeople();
 
             //Construct response message
             String responseMessage = "[";

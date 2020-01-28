@@ -1,18 +1,15 @@
 package b404.businesslayer;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import b404.datalayer.PersonDB;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 import b404.utility.ConflictException;
 import b404.utility.objects.AccessLevel;
-import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
 
