@@ -240,7 +240,7 @@ public class CompanyBusiness {
             if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
 
             for(Person person : this.getAllPeopleByCompany(companyID)){
-                if(person.getUUID() == personID) {
+                if(person.getUUID().equals(personID)) {
                     throw new ConflictException("That person is already a part of that company.");
                 }
             }
