@@ -34,29 +34,6 @@ public class CompanyBusiness {
     }
 
     /**
-     * Gets all people for a given company from the database
-     * @return List of Person objects
-     * @throws BadRequestException - CompanyID is not a valid integer
-     * @throws NotFoundException - Company does not exist in the database
-     * @throws InternalServerErrorException - Error connecting to database or executing query
-     */
-    public ArrayList<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
-        try {
-            if(this.getCompanyByID(companyID) == null){
-                throw new NotFoundException("No company with that ID exists.");
-            }
-
-            return companyDB.getAllPeopleByCompany(Integer.parseInt(companyID));
-        }
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("CompanyId must be a valid integer.");
-        }
-        catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
-
-    /**
      * Gets a company from the database by companyID
      * @param companyID - companyId to search the database for
      * @return Company object containing data from the database
@@ -110,6 +87,24 @@ public class CompanyBusiness {
     }
 
     /**
+     * Gets all people for a given company from the database
+     * @return List of Person objects
+     * @throws BadRequestException - CompanyID is not a valid integer
+     * @throws NotFoundException - Company does not exist in the database
+     * @throws InternalServerErrorException - Error connecting to database or executing query
+     */
+    public ArrayList<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
+        try {
+            Company storedCompany = this.getCompanyByID(companyID);
+
+            return companyDB.getAllPeopleByCompany(storedCompany.getCompanyID());
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
      * Inserts a new company into the database
      * @param companyName - New company's name
      * @return Success string
@@ -144,12 +139,12 @@ public class CompanyBusiness {
      */
     public Company updateCompany(String companyID, String companyName) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
         try {
-            int companyIDInteger = Integer.parseInt(companyID);
-            Company storedCompany = companyDB.getCompanyByID(companyIDInteger);
+            Company storedCompany = this.getCompanyByID(companyID);
             if(storedCompany == null){
-                throw new NotFoundException("No company with that name exists.");
+                throw new NotFoundException("No company with that id exists.");
             }
 
+            int companyIDInteger = Integer.parseInt(companyID);
             if(companyName == null || companyName.isEmpty()){companyName = storedCompany.getCompanyName();}
             else {
                 Company companyNameCheck = companyDB.getCompanyByName(companyName);
@@ -240,7 +235,7 @@ public class CompanyBusiness {
             if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
 
             for(Person person : this.getAllPeopleByCompany(companyID)){
-                if(person.getUUID().equals(personID)) {
+                if(personID.equals(person.getUUID())) {
                     throw new ConflictException("That person is already a part of that company.");
                 }
             }
