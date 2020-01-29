@@ -2,7 +2,9 @@ package b404.datalayer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
+import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 
 public class PersonDB {
@@ -18,15 +20,20 @@ public class PersonDB {
      * @return ArrayList of all Person objects
      * @throws SQLException - Error connecting to database or executing query
      */
-    public ArrayList<Person> getAllPeople() throws SQLException {
+    public List<Person> getAllPeople() throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
         String query = "SELECT * FROM person;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
-
-        //Set parameters and execute query
         ResultSet result = preparedStatement.executeQuery();
+
+        //Prepare statement to get person companies
+        query = "SELECT * FROM person " +
+                "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                "JOIN company ON (personCompany.companyID = company.companyID) " +
+                "WHERE person.UUID = ?";
+        PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
         ArrayList<Person> people = new ArrayList<>();
 
@@ -34,14 +41,25 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             Person person = new Person(result.getString("UUID"),
-                    result.getString("username"),
-                    result.getString("passwordHash"),
-                    result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("email"),
-                    result.getString("title"),
-                    result.getInt("accessLevelID"));
+                                       result.getString("username"),
+                                       result.getString("passwordHash"),
+                                       result.getString("salt"),
+                                       result.getString("fName"),
+                                       result.getString("lName"),
+                                       result.getString("email"),
+                                       result.getString("title"),
+                                       result.getInt("accessLevelID"));
+
+            //Get all companies and add them to person companies list
+            getCompaniesStatement.setString(1, person.getUUID());
+            ResultSet companiesResult = getCompaniesStatement.executeQuery();
+            ArrayList<Company> companies = new ArrayList<>();
+            while(companiesResult.next()){
+                companies.add(new Company(companiesResult.getInt("companyID"),
+                        companiesResult.getString("name"))
+                );
+            }
+            person.setCompanies(companies);
 
             people.add(person);
         }
@@ -61,13 +79,18 @@ public class PersonDB {
     public Person getPersonByUsername(String username) throws SQLException {
         this.dbConn.connect();
 
-        //Prepare sql statement
+        //Prepare sql statement to get all people
         String query = "SELECT * FROM person WHERE person.username = ?";
-        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+        PreparedStatement getAllPeopleStatement = this.dbConn.conn.prepareStatement(query);
+        getAllPeopleStatement.setString(1, username);
+        ResultSet result = getAllPeopleStatement.executeQuery();
 
-        //Set parameters and execute query
-        preparedStatement.setString(1, username);
-        ResultSet result = preparedStatement.executeQuery();
+        //Prepare statement to get person companies
+        query = "SELECT * FROM person " +
+                    "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                    "JOIN company ON (personCompany.companyID = company.companyID) " +
+                    "WHERE person.UUID = ?";
+        PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
         Person person = null;
 
@@ -75,14 +98,25 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("username"),
-                    result.getString("passwordHash"),
-                    result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("email"),
-                    result.getString("title"),
-                    result.getInt("accessLevelID"));
+                                result.getString("username"),
+                                result.getString("passwordHash"),
+                                result.getString("salt"),
+                                result.getString("fName"),
+                                result.getString("lName"),
+                                result.getString("email"),
+                                result.getString("title"),
+                                result.getInt("accessLevelID"));
+
+            //Get all companies and add them to person companies list
+            getCompaniesStatement.setString(1, person.getUUID());
+            ResultSet companiesResult = getCompaniesStatement.executeQuery();
+            ArrayList<Company> companies = new ArrayList<>();
+            while(companiesResult.next()){
+                companies.add(new Company(companiesResult.getInt("companyID"),
+                                          companiesResult.getString("name"))
+                             );
+            }
+            person.setCompanies(companies);
         }
 
         //Close the database
@@ -103,10 +137,15 @@ public class PersonDB {
         //Prepare sql statement
         String query = "SELECT * FROM person WHERE person.UUID = ?;";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
-
-        //Set parameters and execute query
         preparedStatement.setString(1, UUID);
         ResultSet result = preparedStatement.executeQuery();
+
+        //Prepare statement to get person companies
+        query = "SELECT * FROM person " +
+                "JOIN personCompany ON (person.UUID = personCompany.UUID) " +
+                "JOIN company ON (personCompany.companyID = company.companyID) " +
+                "WHERE person.UUID = ?";
+        PreparedStatement getCompaniesStatement = this.dbConn.conn.prepareStatement(query);
 
         Person person = null;
 
@@ -114,14 +153,25 @@ public class PersonDB {
 
             //Pull response content and map into a Person object
             person = new Person(result.getString("UUID"),
-                    result.getString("username"),
-                    result.getString("passwordHash"),
-                    result.getString("salt"),
-                    result.getString("fName"),
-                    result.getString("lName"),
-                    result.getString("email"),
-                    result.getString("title"),
-                    result.getInt("accessLevelID"));
+                                result.getString("username"),
+                                result.getString("passwordHash"),
+                                result.getString("salt"),
+                                result.getString("fName"),
+                                result.getString("lName"),
+                                result.getString("email"),
+                                result.getString("title"),
+                                result.getInt("accessLevelID"));
+
+            //Get all companies and add them to person companies list
+            getCompaniesStatement.setString(1, person.getUUID());
+            ResultSet companiesResult = getCompaniesStatement.executeQuery();
+            ArrayList<Company> companies = new ArrayList<>();
+            while(companiesResult.next()){
+                companies.add(new Company(companiesResult.getInt("companyID"),
+                        companiesResult.getString("name"))
+                );
+            }
+            person.setCompanies(companies);
         }
 
         //Close the database

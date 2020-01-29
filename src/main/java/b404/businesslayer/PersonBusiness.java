@@ -1,17 +1,15 @@
 package b404.businesslayer;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import b404.datalayer.PersonDB;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
 
 import b404.utility.ConflictException;
 import b404.utility.objects.AccessLevel;
-import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 import b404.utility.security.PasswordEncryption;
 
@@ -21,7 +19,6 @@ import b404.utility.security.PasswordEncryption;
  */
 public class PersonBusiness {
     private PersonDB personDB = new PersonDB();
-    private CompanyBusiness companyBusiness = new CompanyBusiness();
     private AccessLevelBusiness accessLevelBusiness = new AccessLevelBusiness();
 
     /**
@@ -69,7 +66,7 @@ public class PersonBusiness {
      * @return ArrayList of people found in database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public ArrayList<Person> getAllPeople() throws InternalServerErrorException {
+    public List<Person> getAllPeople() throws InternalServerErrorException {
         try{
             //Return response from getAllPeople process
             return personDB.getAllPeople();
@@ -82,19 +79,19 @@ public class PersonBusiness {
 
     /**
      * Get a person from the database by UUID
-     * @param UUID - String must be convertible to integer
+     * @param uuid - String must be convertible to integer
      * @return Person object of person found in database
      * @throws NotFoundException - UUID does not exist in database
      * @throws BadRequestException - UUID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public Person getPersonByUUID(String UUID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person getPersonByUUID(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
 
             //Retrieve the person from the database by String
-            Person person = personDB.getPersonByUUID(UUID);
+            Person person = personDB.getPersonByUUID(uuid);
 
             //If null is returned, no user was found with given UUID
             if(person == null){
@@ -173,11 +170,11 @@ public class PersonBusiness {
      * @throws BadRequestException - paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException - error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String UUID, String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            if(UUID == null || UUID.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
+            if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
-            Person person = personDB.getPersonByUUID(UUID);
+            Person person = personDB.getPersonByUUID(uuid);
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
             }
@@ -212,10 +209,10 @@ public class PersonBusiness {
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(UUID, username, password, fName, lName, email, title, accessLevelIDInteger);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(UUID, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
+            return new Person(uuid, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -225,19 +222,19 @@ public class PersonBusiness {
 
     /**
      * Delete a person from the database by UUID
-     * @param UUID String must be convertible to integer
+     * @param uuid String must be convertible to integer
      * @return Success string
      * @throws NotFoundException - UUID does not exist in database
      * @throws BadRequestException - UUID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public String deletePersonByUUID(String UUID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public String deletePersonByUUID(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(UUID == null || UUID.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
 
             //Retrieve the person from the database by UUID
-            int numRowsDeleted = personDB.deletePersonByUUID(UUID);
+            int numRowsDeleted = personDB.deletePersonByUUID(uuid);
 
             //If null is returned, no user was found with given UUID
             if(numRowsDeleted == 0){

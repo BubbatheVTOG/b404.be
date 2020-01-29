@@ -1,12 +1,16 @@
 package b404.utility.objects;
 
+import com.google.gson.Gson;
+
 public class Company {
     private int companyID;
     private String companyName;
+    private transient Gson gson;
 
     public Company(int companyID, String companyName){
         this.companyID = companyID;
         this.companyName = companyName;
+        this.gson = new Gson();
     }
 
     public Company(String companyName){
@@ -27,5 +31,9 @@ public class Company {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String toJSON(){
+        return gson.toJson(this);
     }
 }
