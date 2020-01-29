@@ -15,10 +15,15 @@ class ResponseBuilder {
         //Do nothing as this is meant to be used as a static class
     }
 
+    static Response buildSuccessResponseWithJWT(String message, String jwt){
+        return Response.ok(message)
+                        .header("Authorization", jwt)
+                        .build();
+    }
+
     static Response buildSuccessResponse(String message){
-        JsonObject json = new JsonObject();
-        json.addProperty("success", message);
-        return Response.ok(json.toString()).build();
+        return Response.ok(message)
+                        .build();
     }
 
     /**
@@ -30,7 +35,9 @@ class ResponseBuilder {
     static Response buildErrorResponse(Response.Status status, String message){
         JsonObject json = new JsonObject();
         json.addProperty("error", message);
-        return Response.status(status).entity(json.toString()).build();
+        return Response.status(status)
+                        .entity(json.toString())
+                        .build();
     }
 
     /**
@@ -40,7 +47,9 @@ class ResponseBuilder {
     static Response buildInternalServerErrorResponse(){
         JsonObject json = new JsonObject();
         json.addProperty("error", "Sorry, could not process your request at this time.");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json.toString()).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(json.toString())
+                        .build();
     }
 
     /**
@@ -50,6 +59,8 @@ class ResponseBuilder {
     static Response buildUnexpectedErrorResponse(){
         JsonObject json = new JsonObject();
         json.addProperty("error", "Sorry, an unexpected issue has occurred.");
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json.toString()).build();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(json.toString())
+                        .build();
     }
 }

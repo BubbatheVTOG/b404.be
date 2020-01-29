@@ -5,6 +5,7 @@ import b404.utility.ConflictException;
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
+import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -350,7 +351,9 @@ public class CompanyService {
             this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyID));
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.deleteCompanyByID(companyID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
