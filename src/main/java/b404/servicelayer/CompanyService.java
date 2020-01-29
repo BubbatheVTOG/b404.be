@@ -521,6 +521,10 @@ public class CompanyService {
         }
     }
 
+    /**
+     * Checks that the jwt is valid and throws a notAuthorized exception if not valid
+     * @param jwt - JSON Web Token to validate
+     */
     private void validateToken(String jwt){
         if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
             throw new NotAuthorizedException("Invalid JSON Web Token provided.");

@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
  * Class intended to consolidate logic for building response objects in the service layer
  */
 class ResponseBuilder {
+    static final String FORBIDDEN_MESSAGE = "You do not have access to that request.";
 
     /**
      * default constructor
@@ -15,7 +16,7 @@ class ResponseBuilder {
         //Do nothing as this is meant to be used as a static class
     }
 
-    static Response buildSuccessResponseWithJWT(String message, String jwt){
+    static Response buildSuccessResponse(String message, String jwt){
         return Response.ok(message)
                         .header("Authorization", jwt)
                         .build();
