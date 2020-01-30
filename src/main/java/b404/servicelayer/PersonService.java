@@ -74,7 +74,7 @@ public class PersonService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -123,7 +123,7 @@ public class PersonService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -202,7 +202,7 @@ public class PersonService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -281,7 +281,7 @@ public class PersonService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -338,7 +338,7 @@ public class PersonService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 

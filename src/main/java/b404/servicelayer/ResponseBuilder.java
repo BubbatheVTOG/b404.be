@@ -54,14 +54,15 @@ class ResponseBuilder {
     }
 
     /**
-     * Build a response for an unexpected error
-     * @return Response object containing Internal Server Error status and preset message
+     * Build a response for an internal server error
+     * Allows passing in of custom string
+     * @return Response object containing Internal Server Error status and custom message
      */
-    static Response buildUnexpectedErrorResponse(){
+    static Response buildInternalServerErrorResponse(String message){
         JsonObject json = new JsonObject();
-        json.addProperty("error", "Sorry, an unexpected issue has occurred.");
+        json.addProperty("error", message);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity(json.toString())
-                        .build();
+                .entity(json.toString())
+                .build();
     }
 }

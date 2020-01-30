@@ -141,7 +141,9 @@ public class CompanyBusiness {
         try {
             Company storedCompany = this.getCompanyByID(companyID);
 
-            if(companyName == null || companyName.isEmpty()){companyName = storedCompany.getCompanyName();}
+            if(companyName == null || companyName.isEmpty()){
+                companyName = storedCompany.getCompanyName();
+            }
             else {
                 Company companyNameCheck = companyDB.getCompanyByName(companyName);
                 if (companyNameCheck != null && companyNameCheck.getCompanyID() != storedCompany.getCompanyID()) {

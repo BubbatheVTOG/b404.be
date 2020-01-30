@@ -67,7 +67,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -115,7 +115,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -162,7 +162,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -208,10 +208,10 @@ public class CompanyService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(InternalServerErrorException isee){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse(isee.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -266,7 +266,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -323,7 +323,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -369,7 +369,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -413,7 +413,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -465,7 +465,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -517,7 +517,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildUnexpectedErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
