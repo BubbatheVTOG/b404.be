@@ -207,11 +207,14 @@ public class CompanyService {
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return ResponseBuilder.buildInternalServerErrorResponse(isee.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse(e.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
