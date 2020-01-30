@@ -49,12 +49,10 @@ public class LoginService {
             //Send parameters to business layer and store response
             Person person = personBusiness.login(username, password);
 
-            String jwtToken = JWTUtility.generateToken(person.getUUID());
+            String jwt = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toJSON())
-                    .header("Authorization", jwtToken)
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(person.toJSON(), jwt);
         }
         //Catch an UnauthorizedException and return Unauthorized response with message from error
         catch(NotAuthorizedException ue){

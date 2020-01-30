@@ -141,7 +141,9 @@ public class CompanyBusiness {
         try {
             Company storedCompany = this.getCompanyByID(companyID);
 
-            if(companyName == null || companyName.isEmpty()){companyName = storedCompany.getCompanyName();}
+            if(companyName == null || companyName.isEmpty()){
+                companyName = storedCompany.getCompanyName();
+            }
             else {
                 Company companyNameCheck = companyDB.getCompanyByName(companyName);
                 if (companyNameCheck != null && companyNameCheck.getCompanyID() != storedCompany.getCompanyID()) {
@@ -227,8 +229,8 @@ public class CompanyBusiness {
     public String addPersonToCompany(String companyID, String personID) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
         try {
             int companyIDInteger = Integer.parseInt(companyID);
+            personID = personBusiness.getPersonByUUID(personID).getUUID();
             if(companyDB.getCompanyByID(companyIDInteger) == null){ throw new NotFoundException("No company with that ID exists. ");}
-            if(personBusiness.getPersonByUUID(personID) == null){ throw new NotFoundException("No person with that ID exists. ");}
 
             for(Person person : this.getAllPeopleByCompany(companyID)){
                 if(personID.equals(person.getUUID())) {

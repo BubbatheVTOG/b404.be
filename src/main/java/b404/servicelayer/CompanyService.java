@@ -5,6 +5,7 @@ import b404.utility.ConflictException;
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
 import b404.utility.security.JWTUtility;
+import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -37,11 +38,9 @@ public class CompanyService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllCompanies(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+    public Response getAllCompanies(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             List<Company> companyList = companyBusiness.getAllCompanies();
@@ -58,16 +57,17 @@ public class CompanyService {
             responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage.toString())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        //Catch all business logic related errors and return relevant response with message from error
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -91,34 +91,31 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCompanyByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String companyID,
-                                   @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                   @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.getCompanyByID(companyID);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(company.toJSON())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(company.toJSON());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -142,34 +139,30 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
-                                   @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                   @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.getCompanyByName(companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(company.toJSON())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(company.toJSON());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -190,11 +183,9 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPeopleByCompany(@Parameter(in = ParameterIn.PATH, description = "companyID", required = true) @PathParam("companyID") String companyID,
-                                          @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                          @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             List<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
@@ -211,16 +202,19 @@ public class CompanyService {
             responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage.toString())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -228,7 +222,7 @@ public class CompanyService {
     /**
      * Insert a new company into the database
      * @param companyName - New company's name
-     * @param JWT - JSON Web Token for authorization; must be valid and not expired
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for company inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -247,37 +241,35 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertCompany(@RequestBody(description = "name", required = true) @FormParam("name") String companyName,
-                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.insertCompany(companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(company.toJSON())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(company.toJSON());
         }
         //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -285,7 +277,7 @@ public class CompanyService {
      * Update an existing company in the database
      * @param companyID -  Existing company's UUID
      * @param companyName - company's new name; can be null
-     * @param JWT - JWT for authorization; must be valid and not expired
+     * @param jwt - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for company updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -306,37 +298,35 @@ public class CompanyService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCompany(@RequestBody(description = "id", required = true)          @FormParam("id") String companyID,
                                  @RequestBody(description = "name")                          @FormParam("name") String companyName,
-                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.updateCompany(companyID, companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(company.toJSON())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(company.toJSON());
         }
         //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
-        }
-        catch(NotFoundException bre){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
-        }
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -359,31 +349,30 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCompanyByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String companyID,
-                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + companyBusiness.deleteCompanyByID(companyID) + "\"}")
-                    .build();
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.deleteCompanyByID(companyID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -406,31 +395,28 @@ public class CompanyService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String JWT) {
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + companyBusiness.deleteCompanyByName(companyName) + "\"}")
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyName));
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -438,7 +424,7 @@ public class CompanyService {
      * Add a person to an existing company in the database
      * @param companyID -  Company ID to add person to
      * @param personID - Person's UUID
-     * @param JWT - JWT for authorization; must be valid and not expired
+     * @param jwt - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person added to company successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -460,35 +446,34 @@ public class CompanyService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addPersonToCompany(@RequestBody(description = "companyID", required = true)     @FormParam("companyID") String companyID,
                                        @RequestBody(description = "personID", required = true)      @FormParam("personID") String personID,
-                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String JWT) {
+                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + companyBusiness.addPersonToCompany(companyID, personID) + "\"}")
-                    .build();
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.addPersonToCompany(companyID, personID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
         //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
-        }
-        catch(NotFoundException bre){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
-        }
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + isee.getMessage() + "\"}").build();
-            //return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -496,7 +481,7 @@ public class CompanyService {
      * Delete a person from a company
      * @param companyID -  Company ID to add person to
      * @param personID - Person's UUID
-     * @param JWT - JWT for authorization; must be valid and not expired
+     * @param jwt - JWT for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -518,30 +503,41 @@ public class CompanyService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response removePersonFromCompany(@RequestBody(description = "companyID", required = true)     @FormParam("companyID") String companyID,
                                             @RequestBody(description = "personID", required = true)      @FormParam("personID") String personID,
-                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String JWT) {
+                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(JWT )){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
-            }
+            this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + companyBusiness.removePersonFromCompany(companyID, personID) + "\"}")
-                    .build();
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.removePersonFromCompany(companyID, personID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
-        catch(NotFoundException bre){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
-        }
+        //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Checks that the jwt is valid and throws a notAuthorized exception if not valid
+     * @param jwt - JSON Web Token to validate
+     */
+    private void validateToken(String jwt){
+        if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
+            throw new NotAuthorizedException("Invalid JSON Web Token provided.");
         }
     }
 }

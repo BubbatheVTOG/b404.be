@@ -47,9 +47,7 @@ public class PersonService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(jwt)){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             List<Person> people = personBusiness.getAllPeople();
@@ -66,16 +64,17 @@ public class PersonService {
             responseMessage.append("]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage.toString())
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -100,35 +99,31 @@ public class PersonService {
     public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(jwt)){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Send parameters to business layer and store response
             Person person = personBusiness.getPersonByUUID(uuid);
 
-            String jwtToken = JWTUtility.generateToken(person.getUUID());
+            String newJWT = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toJSON())
-                    .header("Authorization", jwtToken)
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(person.toJSON(), newJWT);
         }
-        //Catch a NotFoundException and return Not Found response with message from error
-        catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
-        }
-        //Catch a BadRequestException and return Bad Request response with message from error
+        //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -172,14 +167,12 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(jwt)){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Check that this user has the authority to access this endpoint
             Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
-                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
+                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
             }
 
             //Send parameters to business layer and store response
@@ -192,23 +185,24 @@ public class PersonService {
                     .header("Authorization", jwtToken)
                     .build();
         }
-        //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, an unexpected issue has occurred.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -254,43 +248,40 @@ public class PersonService {
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(!JWTUtility.validateToken(jwt)){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Check that this user has the authority to access this endpoint
             Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
-                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
+                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
             }
 
             //Send parameters to business layer and store response
             Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID);
 
-            String jwtToken = JWTUtility.generateToken(person.getUUID());
+            String newJWT = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toJSON())
-                    .header("Authorization", jwtToken)
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(person.toJSON(), newJWT);
         }
-        //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
-        }
-        catch(NotFoundException bre){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
-        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -319,37 +310,45 @@ public class PersonService {
     public Response deletePersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(!JWTUtility.validateToken(jwt)){
-                return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided.\"}").build();
-            }
+            this.validateToken(jwt);
 
             //Check that this user has the authority to access this endpoint
             Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
             if(requester.getAccessLevelID() > 1){
-                return Response.status(Response.Status.FORBIDDEN).entity("{\"error\":\"You do not have access to that request.\"}").build();
+                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
             }
 
             //Send parameters to business layer and store response
             String responseMessage = personBusiness.deletePersonByUUID(uuid);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok("{\"success\":\"" + responseMessage + "\"}")
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(responseMessage);
         }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"" + bre.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
-        //Catch a NotFoundException and return Not Found response with message from error
         catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity("{\"error\":\"" + nfe.getMessage() + "\"}").build();
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
-        //Catch an InternalServerErrorException and return Internal Server Error response with standard message
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
         catch(InternalServerErrorException isee){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"Sorry, could not process your request at this time.\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
-        //Catch All to ensure no unexpected internal server errors are being returned to client
         catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{\"error\":\"" + "Sorry, an unexpected issue has occurred." + "\"}").build();
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Checks that the jwt is valid and throws a notAuthorized exception if not valid
+     * @param jwt - JSON Web Token to validate
+     */
+    private void validateToken(String jwt){
+        if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
+            throw new NotAuthorizedException("Invalid JSON Web Token provided.");
         }
     }
 }
