@@ -452,7 +452,7 @@ public class CompanyService {
             this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyID));
+            return ResponseBuilder.buildSuccessResponse(companyBusiness.addPersonToCompany(companyID, personID));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
@@ -463,6 +463,9 @@ public class CompanyService {
         }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(ConflictException ce){
+            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(InternalServerErrorException isee){
             return ResponseBuilder.buildInternalServerErrorResponse();
@@ -504,7 +507,7 @@ public class CompanyService {
             this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyID));
+            return ResponseBuilder.buildSuccessResponse(companyBusiness.removePersonFromCompany(companyID, personID));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
