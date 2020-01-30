@@ -452,7 +452,9 @@ public class CompanyService {
             this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.addPersonToCompany(companyID, personID));
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.addPersonToCompany(companyID, personID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
@@ -507,7 +509,9 @@ public class CompanyService {
             this.validateToken(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.removePersonFromCompany(companyID, personID));
+            JsonObject jsonResponse = new JsonObject();
+            jsonResponse.addProperty("success", companyBusiness.removePersonFromCompany(companyID, personID));
+            return ResponseBuilder.buildSuccessResponse(jsonResponse.toString());
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
