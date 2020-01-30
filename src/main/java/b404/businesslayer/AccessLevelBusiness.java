@@ -22,7 +22,7 @@ public class AccessLevelBusiness {
      * @throws BadRequestException - Access Level ID is not a valid integer format
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public AccessLevel getAccessLevelByID(String accessLevelID) throws NotFoundException, BadRequestException, InternalServerErrorException{
+    public AccessLevel getAccessLevelByID(String accessLevelID){
         try{
             AccessLevel accessLevel = accessLevelDB.getAccessLevel(Integer.parseInt(accessLevelID));
 
