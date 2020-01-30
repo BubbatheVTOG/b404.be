@@ -211,7 +211,7 @@ public class CompanyService {
             return ResponseBuilder.buildInternalServerErrorResponse(isee.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse(e.getMessage());
         }
     }
 
