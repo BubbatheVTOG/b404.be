@@ -124,7 +124,6 @@ public class StepDB {
 
     /**
      * Connect to database and add
-     * @param stepID - stepID of new step to be added
      * @param orderNumber - orderNumber of new step to be added
      * @param description - description of new step to be added
      * @param relatedStep - relatedStep of new step to be added
@@ -134,24 +133,23 @@ public class StepDB {
      * @param workflowID - workflowID of new step to be added
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertStep(int stepID, int orderNumber, boolean isHighestLevel, String description, int relatedStep,
+    public void insertStep(int orderNumber, boolean isHighestLevel, String description, int relatedStep,
                            int UUID, int verbID, int fileID, int workflowID) throws SQLException {
         this.dbConn.connect();
 
         //Prepare sql statement
-        String query = "INSERT INTO step (stepID, orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO step (orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES (?, ?, ?, ?, ?, ?, ?);";
         PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
 
         //Set parameters and execute update
-        preparedStatement.setInt(1, stepID);
-        preparedStatement.setInt(2, orderNumber);
-        preparedStatement.setBoolean(3, isHighestLevel);
-        preparedStatement.setString(4, description);
-        preparedStatement.setInt(5, relatedStep);
-        preparedStatement.setInt(6, UUID);
-        preparedStatement.setInt(7, verbID);
-        preparedStatement.setInt(8, fileID);
-        preparedStatement.setInt(9, workflowID);
+        preparedStatement.setInt(1, orderNumber);
+        preparedStatement.setBoolean(2, isHighestLevel);
+        preparedStatement.setString(3, description);
+        preparedStatement.setInt(4, relatedStep);
+        preparedStatement.setInt(5, UUID);
+        preparedStatement.setInt(6, verbID);
+        preparedStatement.setInt(7, fileID);
+        preparedStatement.setInt(8, workflowID);
 
         preparedStatement.executeUpdate();
 

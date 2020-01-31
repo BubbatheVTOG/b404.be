@@ -86,7 +86,6 @@ public class StepBusiness {
 
     /**
      * Inserts a new company into the database
-     * @param stepID - stepID of the step
      * @param orderNumber - orderNumber of the higher level step
      * @param description - description of the step
      * @param relatedStep - relatedStep to the current step
@@ -99,10 +98,9 @@ public class StepBusiness {
      * @throws NotFoundException - No step with provided UUID was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public Step insertStep(String stepID, String orderNumber, String isHighestLevel, String description, String relatedStep,
+    public Step insertStep(String orderNumber, String isHighestLevel, String description, String relatedStep,
                            String UUID, String verbID, String fileID, String workflowID) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
 
-        int stepIDInteger = Integer.parseInt(stepID);
         int orderNumberInteger = Integer.parseInt(orderNumber);
         boolean isHighestLevelBoolean = Boolean.parseBoolean(isHighestLevel);
         int relatedStepInteger = Integer.parseInt(relatedStep);
@@ -113,10 +111,6 @@ public class StepBusiness {
 
 
         try {
-            if(stepID == null || stepID.isEmpty()) {
-                throw new BadRequestException("A UUID must be provided for the step.");
-            }
-
             if(isHighestLevel == null || isHighestLevel.isEmpty()) {
                 throw new BadRequestException("You must provide a truth value for this step.");
             }
@@ -137,11 +131,7 @@ public class StepBusiness {
                 throw new BadRequestException("You must provide a workflowID for this step.");
             }
 
-            if(stepDB.getStepByStepID(Integer.parseInt(stepID)) != null){
-                throw new ConflictException("A step with that stepID already exists.");
-            }
-
-            stepDB.insertStep(stepIDInteger, orderNumberInteger, isHighestLevelBoolean,
+            stepDB.insertStep(orderNumberInteger, isHighestLevelBoolean,
                               description, relatedStepInteger, UUIDInteger, verbIDInteger, fileIDInteger, workflowIDInteger);
 
             return stepDB.getStepByStepID(UUIDInteger);
