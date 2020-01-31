@@ -57,8 +57,7 @@ public class StepService {
             responseMessage = new StringBuilder(responseMessage.substring(0,responseMessage.length() - 1) + "]");
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(responseMessage)
-                    .build();
+            return Response.ok(responseMessage).build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
