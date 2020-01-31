@@ -121,14 +121,8 @@ public class StepService {
                     .build();
         }
         //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException nfe){
-            return Response.status(Response.Status.CONFLICT).entity(ERROR_STRING + nfe.getMessage() + "\"}").build();
-        }
-        catch(NotFoundException nfe){
-            return Response.status(Response.Status.NOT_FOUND).entity(ERROR_STRING + nfe.getMessage() + "\"}").build();
-        }
-        catch(BadRequestException bre){
-            return Response.status(Response.Status.BAD_REQUEST).entity(ERROR_STRING + bre.getMessage() + "\"}").build();
+        catch(ConflictException | NotFoundException | BadRequestException e) {
+            return Response.status(Response.Status.CONFLICT).entity(ERROR_STRING + e.getMessage() + "\"}").build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message
         catch(InternalServerErrorException isee){
