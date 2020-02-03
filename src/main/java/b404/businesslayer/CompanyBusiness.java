@@ -116,6 +116,15 @@ public class CompanyBusiness {
         try {
             if(companyName == null || companyName.isEmpty()){ throw new BadRequestException("A company name must be provided.");}
 
+
+
+
+
+
+
+
+
+
             if(companyDB.getCompanyByName(companyName) != null){
                 throw new ConflictException("A company with that name already exists.");
             }
