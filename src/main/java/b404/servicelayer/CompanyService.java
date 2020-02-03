@@ -1,10 +1,10 @@
 package b404.servicelayer;
 
+import b404.businesslayer.Authorization;
 import b404.businesslayer.CompanyBusiness;
 import b404.utility.ConflictException;
 import b404.utility.objects.Company;
 import b404.utility.objects.Person;
-import b404.utility.security.JWTUtility;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -40,7 +40,7 @@ public class CompanyService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCompanies(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             List<Company> companyList = companyBusiness.getAllCompanies();
@@ -93,7 +93,7 @@ public class CompanyService {
     public Response getCompanyByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String companyID,
                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.getCompanyByID(companyID);
@@ -141,7 +141,7 @@ public class CompanyService {
     public Response getCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.getCompanyByName(companyName);
@@ -185,7 +185,7 @@ public class CompanyService {
     public Response getAllPeopleByCompany(@Parameter(in = ParameterIn.PATH, description = "companyID", required = true) @PathParam("companyID") String companyID,
                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             List<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
@@ -244,7 +244,7 @@ public class CompanyService {
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.insertCompany(companyName);
@@ -301,7 +301,7 @@ public class CompanyService {
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
             Company company = companyBusiness.updateCompany(companyID, companyName);
@@ -351,7 +351,7 @@ public class CompanyService {
     public Response deleteCompanyByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String companyID,
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject jsonResponse = new JsonObject();
@@ -397,7 +397,7 @@ public class CompanyService {
     public Response deleteCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyName));
@@ -449,7 +449,7 @@ public class CompanyService {
                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject jsonResponse = new JsonObject();
@@ -506,7 +506,7 @@ public class CompanyService {
                                             @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
+            Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject jsonResponse = new JsonObject();
@@ -528,16 +528,6 @@ public class CompanyService {
         }
         catch(Exception e){
             return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
-    /**
-     * Checks that the jwt is valid and throws a notAuthorized exception if not valid
-     * @param jwt - JSON Web Token to validate
-     */
-    private void validateToken(String jwt){
-        if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
-            throw new NotAuthorizedException("Invalid JSON Web Token provided.");
         }
     }
 }

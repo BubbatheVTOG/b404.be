@@ -1,5 +1,6 @@
 package b404.servicelayer;
 
+import b404.businesslayer.Authorization;
 import b404.businesslayer.PersonBusiness;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -47,7 +48,7 @@ public class PersonService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPeople(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             List<Person> people = personBusiness.getAllPeople();
@@ -99,7 +100,7 @@ public class PersonService {
     public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             Person person = personBusiness.getPersonByUUID(uuid);
@@ -167,13 +168,7 @@ public class PersonService {
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
-
-            //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
-            if(requester.getAccessLevelID() > 1){
-                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
-            }
+            Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
             Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID);
@@ -248,7 +243,7 @@ public class PersonService {
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            this.validateToken(jwt);
+            Authorization.isAdminOrSelf(jwt, uuid);
 
             //Check that this user has the authority to access this endpoint
             Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
@@ -310,13 +305,7 @@ public class PersonService {
     public Response deletePersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            this.validateToken(jwt);
-
-            //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
-            if(requester.getAccessLevelID() > 1){
-                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
-            }
+            Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
             String responseMessage = personBusiness.deletePersonByUUID(uuid);
@@ -339,16 +328,6 @@ public class PersonService {
         }
         catch(Exception e){
             return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
-    /**
-     * Checks that the jwt is valid and throws a notAuthorized exception if not valid
-     * @param jwt - JSON Web Token to validate
-     */
-    private void validateToken(String jwt){
-        if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
-            throw new NotAuthorizedException("Invalid JSON Web Token provided.");
         }
     }
 }
