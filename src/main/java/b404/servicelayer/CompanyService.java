@@ -256,6 +256,9 @@ public class CompanyService {
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
@@ -313,6 +316,9 @@ public class CompanyService {
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
@@ -362,6 +368,9 @@ public class CompanyService {
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
@@ -405,6 +414,9 @@ public class CompanyService {
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
@@ -459,6 +471,9 @@ public class CompanyService {
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
@@ -516,6 +531,9 @@ public class CompanyService {
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());

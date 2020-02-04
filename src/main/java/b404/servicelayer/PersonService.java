@@ -184,6 +184,9 @@ public class PersonService {
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
@@ -263,6 +266,9 @@ public class PersonService {
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
@@ -316,6 +322,9 @@ public class PersonService {
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
         }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
