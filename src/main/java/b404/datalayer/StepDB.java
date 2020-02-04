@@ -180,4 +180,70 @@ public class StepDB {
         //Return number of deleted steps
         return numRowsDeleted;
     }
+
+    public int swapSteps(int stepOneID, int stepTwoID) throws SQLException {
+        int numRowsUpdated = 0;
+
+        Step stepOne = this.getStepByStepID(stepOneID);
+        Step stepTwo = this.getStepByStepID(stepTwoID);
+
+        try {
+            // Connecting to database and setting up transaction
+            this.dbConn.connect();
+            this.dbConn.conn.setAutoCommit(false);
+
+            // Prepare sql statement
+            String query = "UPDATE step SET orderNumber = ?, isHighestLevel = ?, description = ?, relatedStep = ?, uuid = ?, verbID = ?, fileID = ?, workflowID = ? WHERE stepID = ?";
+            PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
+
+            // Set parameters and execute update
+            preparedStatement.setInt(1, stepTwo.getOrderNumber());
+            preparedStatement.setBoolean(2, stepTwo.getIsHighestLevel());
+            preparedStatement.setString(3, stepTwo.getDescription());
+            preparedStatement.setInt(4, stepTwo.getRelatedStep());
+            preparedStatement.setInt(5, stepTwo.getUUID());
+            preparedStatement.setInt(6, stepTwo.getVerbID());
+            preparedStatement.setInt(7, stepTwo.getFileID());
+            preparedStatement.setInt(8, stepTwo.getWorkflowID());
+            preparedStatement.setInt(9, stepOne.getStepID());
+
+            numRowsUpdated = preparedStatement.executeUpdate();
+
+            //Set parameters and execute update
+            preparedStatement.setInt(1, stepOne.getOrderNumber());
+            preparedStatement.setBoolean(2, stepOne.getIsHighestLevel());
+            preparedStatement.setString(3, stepOne.getDescription());
+            preparedStatement.setInt(4, stepOne.getRelatedStep());
+            preparedStatement.setInt(5, stepOne.getUUID());
+            preparedStatement.setInt(6, stepOne.getVerbID());
+            preparedStatement.setInt(7, stepOne.getFileID());
+            preparedStatement.setInt(8, stepOne.getWorkflowID());
+            preparedStatement.setInt(9, stepTwo.getStepID());
+
+            numRowsUpdated += preparedStatement.executeUpdate();
+
+            // Commit to the database
+            this.dbConn.conn.commit();
+
+            // Close the database
+            this.dbConn.conn.close();
+
+            // Return the number of updated rows
+            return numRowsUpdated;
+
+        } catch (SQLException sqle) {
+            if(this.dbConn.conn != null) {
+                // Rollback in case of failure
+                System.err.println("Transaction is being rolled back.");
+                this.dbConn.conn.rollback();
+            }
+        } finally {
+            // End of transaction
+            if(this.dbConn.conn != null) {
+                this.dbConn.conn.close();
+            }
+            this.dbConn.conn.setAutoCommit(true);
+            return numRowsUpdated;
+        }
+    }
 }

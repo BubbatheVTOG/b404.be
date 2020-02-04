@@ -6,6 +6,7 @@ import b404.utility.objects.Step;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,36 @@ public class StepBusiness {
             throw new BadRequestException("stepID must be a valid integer.");
         }
         catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Swaps step attributes
+     * @param stepOneID - step one to swap with step two
+     * @param stepTwoID - step two to swap with step one
+     * @return List of steps that have their attributes swapped
+     */
+    public List<Step> swapSteps(String stepOneID, String stepTwoID) {
+        int stepOneIDInteger = Integer.parseInt(stepOneID);
+        int stepTwoIDInteger = Integer.parseInt(stepTwoID);
+        Step stepOne, stepTwo;
+
+        try {
+            int numRowsAffected = stepDB.swapSteps(stepOneIDInteger, stepTwoIDInteger);
+
+            if(numRowsAffected == 0) {
+                throw new NotFoundException("No step with that ID exists");
+            }
+            stepOne = stepDB.getStepByStepID(stepOneIDInteger);
+            stepTwo = stepDB.getStepByStepID(stepTwoIDInteger);
+            List<Step> steps = new ArrayList<>();
+            steps.add(stepOne); steps.add(stepTwo);
+
+            return steps;
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("stepID must be a valid integer.");
+        } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
     }
