@@ -56,7 +56,7 @@ public class Authorization {
         //Check that this user has the authority to access this endpoint
         Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
 
-        if(!requester.getUUID().equals(targetUUID) || requester.getAccessLevelID() != 1) {
+        if(!requester.getUUID().equals(targetUUID) && requester.getAccessLevelID() != 1) {
             throw new ForbiddenException("You do not have access to this functionality");
         }
     }
