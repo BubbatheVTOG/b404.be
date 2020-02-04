@@ -1,7 +1,6 @@
 package b404.servicelayer;
 
 import b404.businesslayer.StepBusiness;
-import b404.utility.ConflictException;
 import b404.utility.objects.Step;
 import b404.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
@@ -41,7 +40,7 @@ public class StepService {
     public Response getSteps(@Parameter(in = ParameterIn.PATH, description = "workflowID", required = true) @PathParam("id") String workflowID,
                              @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            if(Boolean.TRUE.equals(JWTUtility.validateToken(jwt))){
+            if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
@@ -97,7 +96,7 @@ public class StepService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertCompany(@RequestBody(description = "orderNumber", required = true) @FormParam("orderNumber") String orderNumber,
+    public Response insertStep(@RequestBody(description = "orderNumber", required = true) @FormParam("orderNumber") String orderNumber,
                                   @RequestBody(description = "isHighestLevel", required = true) @FormParam("isHighestLevel") String isHighestLevel,
                                   @RequestBody(description = "description", required = false) @FormParam("description") String description,
                                   @RequestBody(description = "relatedStep", required = false) @FormParam("relatedStep") String relatedStep,
@@ -108,7 +107,7 @@ public class StepService {
                                   @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            if(Boolean.TRUE.equals(JWTUtility.validateToken(jwt))){
+            if(Boolean.FALSE.equals(JWTUtility.validateToken(jwt))){
                 return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":\"Invalid JSON Web Token provided\"}").build();
             }
 
@@ -120,7 +119,7 @@ public class StepService {
                     .build();
         }
         //Catch all business logic related errors and return relevant response with message from error
-        catch(ConflictException | NotFoundException | BadRequestException e) {
+        catch(NotFoundException | BadRequestException e) {
             return Response.status(Response.Status.CONFLICT).entity(ERROR_STRING + e.getMessage() + "\"}").build();
         }
         //Catch an InternalServerErrorException and return Internal Server Error response with standard message

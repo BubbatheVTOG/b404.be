@@ -1,7 +1,6 @@
 package b404.businesslayer;
 
 import b404.datalayer.StepDB;
-import b404.utility.ConflictException;
 import b404.utility.objects.Step;
 
 import javax.ws.rs.BadRequestException;
@@ -89,7 +88,7 @@ public class StepBusiness {
      * @param orderNumber - orderNumber of the higher level step
      * @param description - description of the step
      * @param relatedStep - relatedStep to the current step
-     * @param UUID - UUID of the step
+     * @param uuid - UUID of the step
      * @param verbID - verbID of the step
      * @param fileID - fileID of the step
      * @param workflowID - workflowID of the step
@@ -99,16 +98,57 @@ public class StepBusiness {
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
     public Step insertStep(String orderNumber, String isHighestLevel, String description, String relatedStep,
-                           String UUID, String verbID, String fileID, String workflowID) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
+                           String uuid, String verbID, String fileID, String workflowID) throws BadRequestException, NotFoundException, InternalServerErrorException{
 
-        int orderNumberInteger = Integer.parseInt(orderNumber);
-        boolean isHighestLevelBoolean = Boolean.parseBoolean(isHighestLevel);
-        int relatedStepInteger = Integer.parseInt(relatedStep);
-        int UUIDInteger = Integer.parseInt(UUID);
-        int verbIDInteger = Integer.parseInt(verbID);
-        int fileIDInteger = Integer.parseInt(verbID);
-        int workflowIDInteger = Integer.parseInt(workflowID);
+        boolean isHighestLevelBoolean;
+        int orderNumberInteger;
+        int relatedStepInteger;
+        int UUIDInteger;
+        int verbIDInteger;
+        int fileIDInteger;
+        int workflowIDInteger;
 
+        try {
+            isHighestLevelBoolean = Boolean.parseBoolean(isHighestLevel);
+        } catch (NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid isHighestLevel.");
+        }
+
+        try {
+            orderNumberInteger = Integer.parseInt(orderNumber);
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid orderNumber.");
+        }
+
+        try {
+            relatedStepInteger = Integer.parseInt(relatedStep);
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid relatedStep.");
+        }
+
+        try {
+            UUIDInteger = Integer.parseInt(uuid);
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid uuid.");
+        }
+
+        try {
+            verbIDInteger = Integer.parseInt(verbID);
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid verbID.");
+        }
+
+        try {
+            fileIDInteger = Integer.parseInt(fileID);
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid fileID.");
+        }
+
+        try {
+            workflowIDInteger = Integer.parseInt(workflowID);
+        } catch (NumberFormatException nfe) {
+            throw new BadRequestException("You have not entered a valid workflowID.");
+        }
 
         try {
             if(isHighestLevel == null || isHighestLevel.isEmpty()) {
@@ -135,11 +175,12 @@ public class StepBusiness {
                               description, relatedStepInteger, UUIDInteger, verbIDInteger, fileIDInteger, workflowIDInteger);
 
             return stepDB.getStepByStepID(UUIDInteger);
-        }
-        catch(SQLException sqle){
+        } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
     }
+
+
 
     /**
      * Deletes a step from the database by stepID
