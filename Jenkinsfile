@@ -21,8 +21,9 @@ pipeline {
     }
 
     stage('Stage 3: SonarQube analysis') {
-      withSonarQubeEnv(installationName: 'sonar.b404') { // You can override the credential to be used
+      withSonarQubeEnv(installationName: 'sonar.b404') {
         sh 'mvn sonar:sonar'
+      }
     }
 
     stage ('Stage 4: Build and Publish Docker Image'){
