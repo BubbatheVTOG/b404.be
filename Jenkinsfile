@@ -22,7 +22,7 @@ pipeline {
 
     stage('Stage 3: SonarQube analysis') {
       steps {
-        withSonarQubeEnv(installationName: 'sonar.b404') {
+        withSonarQubeEnv() {
           sh 'mvn sonar:sonar'
         }
       }
