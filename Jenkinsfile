@@ -21,8 +21,10 @@ pipeline {
     }
 
     stage('Stage 3: SonarQube analysis') {
-      withSonarQubeEnv(installationName: 'sonar.b404') {
-        sh 'mvn sonar:sonar'
+      steps {
+        withSonarQubeEnv(installationName: 'sonar.b404') {
+          sh 'mvn sonar:sonar'
+        }
       }
     }
 
