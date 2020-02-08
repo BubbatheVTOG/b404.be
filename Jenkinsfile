@@ -20,15 +20,7 @@ pipeline {
       }
     }
 
-    stage('Stage 3: SonarQube analysis') {
-      steps {
-        withSonarQubeEnv(installationName: 'sonar.b404') {
-          sh 'mvn sonar:sonar'
-        }
-      }
-    }
-
-    stage ('Stage 4: Build and Publish Docker Image'){
+    stage ('Stage 3: Build and Publish Docker Image'){
       stages {
         stage ("When on Designated Branch") {
           when {
@@ -46,6 +38,14 @@ pipeline {
               }
             }
           }
+        }
+      }
+    }
+
+    stage('Stage 4: SonarQube analysis') {
+      steps {
+        withSonarQubeEnv(installationName: 'sonar.b404') {
+          sh 'mvn sonar:sonar'
         }
       }
     }
