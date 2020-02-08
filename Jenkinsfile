@@ -43,9 +43,18 @@ pipeline {
     }
 
     stage('Stage 4: SonarQube analysis') {
-      steps {
-        withSonarQubeEnv(installationName: 'sonar.b404') {
-          sh 'mvn sonar:sonar'
+      stages {
+        stage ("When on Designated Branch") {
+          when {
+            anyOf {
+              branch 'dev'
+            }
+          }
+          steps {
+            withSonarQubeEnv(installationName: 'sonar.b404') {
+              sh 'mvn sonar:sonar'
+            }
+          }
         }
       }
     }
