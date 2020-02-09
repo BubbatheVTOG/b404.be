@@ -33,7 +33,7 @@ pipeline {
           steps {
             script {
               docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                app = docker.build("znl2181/b404.be:"+env.BRANCH_NAME)
+                app = docker.build("znl2181/blink.be:"+env.BRANCH_NAME)
                 app.push()
               }
             }
@@ -52,7 +52,7 @@ pipeline {
           }
           steps {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              withSonarQubeEnv(installationName: 'sonar.b404') {
+              withSonarQubeEnv(installationName: 'sonar.blink') {
                 sh 'mvn sonar:sonar'
               }
             }
