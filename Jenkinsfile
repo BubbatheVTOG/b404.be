@@ -51,8 +51,10 @@ pipeline {
             }
           }
           steps {
-            withSonarQubeEnv(installationName: 'sonar.b404') {
-              sh 'mvn sonar:sonar'
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              withSonarQubeEnv(installationName: 'sonar.b404') {
+                sh 'mvn sonar:sonar'
+              }
             }
           }
         }
