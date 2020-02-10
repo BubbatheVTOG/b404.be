@@ -15,6 +15,10 @@ public class JWTUtility {
     private static final String ISSUER = "venture_creations";
     private static final int JWT_TOKEN_VALIDITY_DURATION = 8 * 60 * 60 * 1000;
 
+    private JWTUtility(){
+        //Empty constructor because this class is meant to be used statically
+    }
+
     //Externally accessible function for creating a JWT using a UUID
     public static String generateToken(String UUID){
         Map<String, Object> claims = new HashMap<>();

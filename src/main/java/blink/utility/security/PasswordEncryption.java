@@ -15,6 +15,10 @@ public class PasswordEncryption {
     private static final int NUM_ITERATIONS = 1000;
     private static final int KEY_LENGTH = 64 * 8;
 
+    private PasswordEncryption(){
+        //Empty default constructor as this class is meant to be used statically
+    }
+
     /**
      * Hashes a password given a plain text password and salt
      * @param password - password to hash
