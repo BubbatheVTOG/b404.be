@@ -207,30 +207,6 @@ public class CompanyDB {
     }
 
     /**
-     * Connect to database and delete a company by company name
-     * @param companyName - company name of company to delete from the database
-     * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
-     */
-    public int deleteCompany(String companyName) throws SQLException {
-        this.dbConn.connect();
-
-        //Prepare sql statement
-        String query = "DELETE FROM company WHERE company.name = ?;";
-        PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query);
-
-        //Set parameters and execute query
-        preparedStatement.setString(1, companyName);
-        int numRowsDeleted = preparedStatement.executeUpdate();
-
-        //Close the database
-        this.dbConn.close();
-
-        //Return deleted rows
-        return numRowsDeleted;
-    }
-
-    /**
      * Add a person to a company by adding a row into personCompany
      * @param companyID - companyID of company to add person to
      * @param UUID - UUID of person to add to company
