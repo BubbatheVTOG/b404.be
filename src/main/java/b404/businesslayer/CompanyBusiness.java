@@ -209,9 +209,6 @@ public class CompanyBusiness {
 
             return "Successfully deleted company.";
         }
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("CompanyID must be a valid integer");
-        }
         catch(SQLException sqle){
             throw new InternalServerErrorException(sqle.getMessage());
         }

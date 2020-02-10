@@ -409,7 +409,7 @@ public class CompanyService {
             Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyName));
+            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByName(companyName));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
