@@ -29,9 +29,13 @@ public class EnvManager {
     private void fillWithProperties() {
         // Environment Properties here.
         EnvironmentProperty dbName = new DBHostName();
+        EnvironmentProperty dbUserName = new DBUserName();
+        EnvironmentProperty dbUserPass = new DBUserPass();
 
         // Add properties to the map.
         envProps.put(dbName.getKey(), dbName);
+        envProps.put(dbUserName.getKey(), dbUserName);
+        envProps.put(dbUserPass.getKey(), dbUserPass);
     }
 
     /**

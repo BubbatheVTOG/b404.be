@@ -190,34 +190,6 @@ public class CompanyBusiness {
     }
 
     /**
-     * Deletes a company from the database by companyName
-     * @param companyName - company name to delete from the database
-     * @return Success string
-     * @throws BadRequestException - CompanyName was null or empty
-     * @throws NotFoundException - No company with provided Company name was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
-     */
-    public String deleteCompanyByName(String companyName) throws BadRequestException, NotFoundException, InternalServerErrorException{
-        try {
-            if(companyName == null || companyName.isEmpty()){throw new BadRequestException("A company name must be provided.");}
-
-            int numRowsAffected = companyDB.deleteCompany(companyName);
-
-            if(numRowsAffected == 0){
-                throw new NotFoundException("No company with that id exists");
-            }
-
-            return "Successfully deleted company.";
-        }
-        catch(NumberFormatException nfe){
-            throw new BadRequestException("CompanyID must be a valid integer");
-        }
-        catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
-
-    /**
      * Adds a person to a company
      * @param companyID - ID of company to add person to
      * @param personID - ID of person to add to company

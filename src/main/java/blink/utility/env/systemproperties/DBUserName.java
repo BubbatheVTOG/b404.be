@@ -1,9 +1,9 @@
-package blink.utility.env.systemproperties;
+package b404.utility.env.systemproperties;
 
-public class DBHostName implements EnvironmentProperty {
+public class DBUserName implements EnvironmentProperty {
 
-    private final String key = "DB_NAME";
-    private String value = "db";
+    private final String key = "DB_USER_NAME";
+    private String value = "b404";
 
     @Override
     public String getKey() {
@@ -24,10 +24,10 @@ public class DBHostName implements EnvironmentProperty {
     @Override
     public void getSystemValue() {
         String tempVal = System.getenv(key);
-        if (tempVal != null) {
-            if (tempVal.length() > 0) {
-                this.value = tempVal;
+            if (tempVal != null) {
+                if (tempVal.length() > 0) {
+                    this.value = tempVal;
+                }
             }
-        }
     }
 }
