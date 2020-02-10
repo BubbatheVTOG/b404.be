@@ -386,53 +386,6 @@ public class CompanyService {
     }
 
     /**
-     * Delete a company from the database by companyName
-     * @return - HTTP Response: 200 OK for company found and deleted
-     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                          404 NOT FOUND if company id does not exist
-     *                          500 INTERNAL SERVER ERROR for backend error
-     */
-    @Path("/id/{id}")
-    @DELETE
-    @Operation(summary = "deleteCompanyByName", description = "Delete a company from the database by companyID")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
-            @ApiResponse(code = 400, message = "{error: A company name must be provided.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
-            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
-    })
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteCompanyByName(@Parameter(in = ParameterIn.PATH, description = "name", required = true) @PathParam("name") String companyName,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
-        try {
-            Authorization.isAdmin(jwt);
-
-            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyName));
-        }
-        //Catch all business logic related errors and return relevant response with message from error
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
-        catch(ForbiddenException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
-        }
-        catch(NotAuthorizedException nae){
-            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
-        }
-        catch(NotFoundException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
-        }
-        catch(InternalServerErrorException isee){
-            return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-        catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
-    /**
      * Add a person to an existing company in the database
      * @param companyID -  Company ID to add person to
      * @param personID - Person's UUID
