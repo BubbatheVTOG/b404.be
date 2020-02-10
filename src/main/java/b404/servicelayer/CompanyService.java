@@ -392,7 +392,7 @@ public class CompanyService {
      *                          404 NOT FOUND if company id does not exist
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @Path("/id/{id}")
+    @Path("/name/{name}")
     @DELETE
     @Operation(summary = "deleteCompanyByName", description = "Delete a company from the database by companyID")
     @ApiResponses(value = {
