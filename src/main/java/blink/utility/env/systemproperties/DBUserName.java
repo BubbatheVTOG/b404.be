@@ -1,4 +1,4 @@
-package b404.utility.env.systemproperties;
+package blink.utility.env.systemproperties;
 
 public class DBUserName implements EnvironmentProperty {
 

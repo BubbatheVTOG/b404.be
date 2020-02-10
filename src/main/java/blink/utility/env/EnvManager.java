@@ -1,6 +1,8 @@
 package blink.utility.env;
 
 import blink.utility.env.systemproperties.DBHostName;
+import blink.utility.env.systemproperties.DBUserName;
+import blink.utility.env.systemproperties.DBUserPass;
 import blink.utility.env.systemproperties.EnvironmentProperty;
 
 import java.util.HashMap;
