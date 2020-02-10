@@ -2,13 +2,10 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
-import java.sql.Blob;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class FileDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     /**
      * Get file information based on the fileID
@@ -17,12 +14,11 @@ public class FileDB {
      * @throws SQLException - Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, fileID);
@@ -52,12 +48,11 @@ public class FileDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertFile(final int fileID, final String name, final Blob file, final int stepID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO file (fileID, name, file, stepID) VALUES (?, ?, ?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, fileID);
@@ -76,12 +71,11 @@ public class FileDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteFileByFileID(final int fileID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare the sql statement
         String query = "DELETE FROM file WHERE file.fileID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, fileID);

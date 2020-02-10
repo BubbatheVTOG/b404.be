@@ -2,13 +2,10 @@ package blink.datalayer;
 
 import blink.utility.objects.Milestone;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MilestoneDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     /**
      * Get milestone information based on the milestoneID
@@ -17,30 +14,31 @@ public class MilestoneDB {
      * @throws SQLException - Error connecting to database or executing query
      */
     public Milestone getMilestoneByID(final int milestoneID) throws SQLException {
-        this.dbConn.connect();
+        try(Connection conn = this.dbConn.connect()) {
 
-        //Prepare sql statement
-        String query = "SELECT * FROM milestone WHERE milestone.milestoneID = ?;";
+            //Prepare sql statement
+            String query = "SELECT * FROM milestone WHERE milestone.milestoneID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-            //Set parameters and execute query
-            preparedStatement.setInt(1, milestoneID);
-            try (ResultSet result = preparedStatement.executeQuery()) {
+                //Set parameters and execute query
+                preparedStatement.setInt(1, milestoneID);
+                try (ResultSet result = preparedStatement.executeQuery()) {
 
-                Milestone milestone = null;
+                    Milestone milestone = null;
 
-                while (result.next()) {
-                    milestone = new Milestone(result.getInt("milestoneID"),
-                            result.getInt("orderNumber"),
-                            result.getString("name"),
-                            result.getString("description"),
-                            result.getDate("deliveryDate"),
-                            result.getInt("companyID"));
+                    while (result.next()) {
+                        milestone = new Milestone(result.getInt("milestoneID"),
+                                result.getInt("orderNumber"),
+                                result.getString("name"),
+                                result.getString("description"),
+                                result.getDate("deliveryDate"),
+                                result.getInt("companyID"));
+                    }
+
+                    //Return milestone
+                    return milestone;
                 }
-
-                //Return milestone
-                return milestone;
             }
         }
     }
@@ -56,12 +54,11 @@ public class MilestoneDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertMilestone(final int milestoneID, final int orderNumber, final String name, final String description, final Date deliveryDate, final int companyID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO milestone (milestoneID, orderNumber, name, description, deliveryDate, companyID) VALUES (?, ?, ?, ?, ?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, milestoneID);
@@ -82,12 +79,11 @@ public class MilestoneDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteMilestoneByID(final int milestoneID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM milestone WHERE milestone.milestoneID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, milestoneID);

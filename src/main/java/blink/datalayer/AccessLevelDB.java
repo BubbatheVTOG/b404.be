@@ -2,6 +2,7 @@ package blink.datalayer;
 
 import blink.utility.objects.AccessLevel;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,15 +18,15 @@ public class AccessLevelDB {
      * Get access level information based on accessLevelID
      * @param accessLevelID - accessLevelID to search database for
      * @return AccessLevel object or null if not found
-     * @throws SQLException
+     * @throws SQLException - Issue with connecting to database or executing statement
      */
     public AccessLevel getAccessLevel(final int accessLevelID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM accessLevel WHERE accessLevel.accessLevelID = ?";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
             //Set parameters and execute query
             preparedStatement.setInt(1, accessLevelID);
 
@@ -50,12 +51,11 @@ public class AccessLevelDB {
      * @throws SQLException - Error connecting to database or executing query
      */
     public AccessLevel getAccessLevel(final String name) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM accessLevel WHERE accessLevel.name = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setString(1, name);
@@ -83,12 +83,11 @@ public class AccessLevelDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertAccessLevel(final int accessLevelID, final String name) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO accessLevel (accessLevelID, name) VALUES (?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, accessLevelID);
@@ -104,12 +103,11 @@ public class AccessLevelDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteAccessLevel(final int accessLevelID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM accessLevel WHERE accessLevel.accessLevelID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, accessLevelID);
@@ -125,12 +123,11 @@ public class AccessLevelDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteAccessLevel(final String name) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM accessLevel WHERE accessLevel.name = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setString(1, name);

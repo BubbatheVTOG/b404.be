@@ -7,8 +7,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 class DBConn {
-    Connection conn;
-
     private EnvManager env;
 
     private String driver;
@@ -31,12 +29,10 @@ class DBConn {
      * Opens a connection to the database
      * Throws a custom SQLException on error
      */
-    void connect() throws SQLException {
-        conn = null;
-
+    Connection connect() throws SQLException {
         try{
             Class.forName(this.driver);
-            conn = DriverManager.getConnection(this.url, this.user, this.password);
+            return DriverManager.getConnection(this.url, this.user, this.password);
         }
         //return false on error connecting
         catch(SQLException sqle){
@@ -44,19 +40,6 @@ class DBConn {
         }
         catch(ClassNotFoundException cnfe){
             throw new SQLException("Mariadb driver not found");
-        }
-    }
-
-    /**
-     * Closes the database connection
-     * Throws a custom SQLException on error
-     */
-    void close() throws SQLException{
-        try{
-            this.conn.close();
-        }
-        catch(SQLException e){
-            throw new SQLException("Error closing the database connection");
         }
     }
 }

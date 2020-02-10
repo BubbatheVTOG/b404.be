@@ -2,13 +2,10 @@ package blink.datalayer;
 
 import blink.utility.objects.Workflow;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class WorkflowDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     public WorkflowDB() {
         this.dbConn = new DBConn();
@@ -21,12 +18,11 @@ public class WorkflowDB {
      * @throws SQLException - Error connecting to database or executing query
      */
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM workflow WHERE workflow.workflowID = ?;";
 
-        try (PreparedStatement preparedStatement = dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, workflowID);
@@ -59,12 +55,11 @@ public class WorkflowDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertWorkflow(final int workflowID, final String name, final Date startDate, final Date endDate, final int milestoneID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO workflow (workflowID, name, startDate, endDate, milestoneID) VALUES (?, ?, ?, ?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, workflowID);
@@ -84,12 +79,11 @@ public class WorkflowDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteWorkflowByWorkflowID(final int workflowID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM workflow WHERE workflow.workflowID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, workflowID);

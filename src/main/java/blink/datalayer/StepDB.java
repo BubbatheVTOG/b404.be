@@ -2,6 +2,7 @@ package blink.datalayer;
 
 import blink.utility.objects.Step;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,12 +21,11 @@ public class StepDB {
      * @throws SQLException - error connecting to database or executing query
      */
     public Step getStepByUUID(final int UUID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM step WHERE step.UUID = ?";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, UUID);
@@ -59,12 +59,11 @@ public class StepDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertStep(final int UUID, final int orderNumber, final String description, final int relatedStep, final int workflowID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO step (UUID, orderNumber, description, relatedStep, workflowID) VALUES (?, ?, ?, ?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, UUID);
@@ -84,12 +83,11 @@ public class StepDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteStepByUUID(final int UUID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM step WHERE step.UUID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, UUID);

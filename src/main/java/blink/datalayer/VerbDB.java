@@ -2,12 +2,13 @@ package blink.datalayer;
 
 import blink.utility.objects.Verb;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerbDB {
-    DBConn dbConn;
+    private DBConn dbConn;
 
     /**
      * Get verb information based on verbID
@@ -16,12 +17,11 @@ public class VerbDB {
      * @throws SQLException - Error connecting to database or executing query
      */
     public Verb getVerbByID(final int verbID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "SELECT * FROM verb WHERE verb.verbID = ?;";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, verbID);
@@ -50,12 +50,11 @@ public class VerbDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public void insertVerb(final int verbID, final String name, final String description) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "INSERT INTO verb (verbID, name, description) VALUES (?, ?, ?);";
 
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, verbID);
@@ -73,11 +72,11 @@ public class VerbDB {
      * @throws SQLException - Error connecting to database or executing update
      */
     public int deleteVerbByID(final int verbID) throws SQLException {
-        this.dbConn.connect();
-
         //Prepare sql statement
         String query = "DELETE FROM verb WHERE verb.verbID = ?;";
-        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setInt(1, verbID);
