@@ -1,9 +1,9 @@
 package b404.utility.env.systemproperties;
 
-public class DBHostName implements EnvironmentProperty {
+public class DBUserPass implements EnvironmentProperty {
 
-    private final String key = "DB_NAME";
-    private String value = "db";
+    private final String key = "DB_USER_PASSWD";
+    private String value = "b404";
 
     @Override
     public String getKey() {

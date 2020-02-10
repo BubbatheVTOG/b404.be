@@ -1,6 +1,8 @@
 package b404.utility.env;
 
 import b404.utility.env.systemproperties.DBHostName;
+import b404.utility.env.systemproperties.DBUserName;
+import b404.utility.env.systemproperties.DBUserPass;
 import b404.utility.env.systemproperties.EnvironmentProperty;
 
 import java.util.HashMap;
@@ -29,9 +31,13 @@ public class EnvManager {
     private void fillWithProperties() {
         // Environment Properties here.
         EnvironmentProperty dbName = new DBHostName();
+        EnvironmentProperty dbUserName = new DBUserName();
+        EnvironmentProperty dbUserPass = new DBUserPass();
 
         // Add properties to the map.
         envProps.put(dbName.getKey(), dbName);
+        envProps.put(dbUserName.getKey(), dbUserName);
+        envProps.put(dbUserPass.getKey(), dbUserPass);
     }
 
     /**
