@@ -6,7 +6,6 @@ import b404.utility.objects.Step;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +78,8 @@ public class StepBusiness {
             }
         } catch(NumberFormatException nfe){
             throw new BadRequestException("stepID must be a valid integer.");
-        } catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
+        } catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
@@ -89,13 +88,14 @@ public class StepBusiness {
      * @param steps - list of steps to insert into the database
      * @return Success Message
      */
-    public String insertSteps(List<Step> steps) {
+    public int insertSteps(List<Step> steps) throws InternalServerErrorException {
+        int numInsertedSteps = 0;
         try {
-            stepDB.insertSteps(steps);
-        } catch(Exception e) {
-            e.printStackTrace();
+            numInsertedSteps = stepDB.insertSteps(steps);
+        } catch(SQLException ex) {
+            throw new InternalServerErrorException(ex.getMessage());
         }
-        return "Some string";
+        return numInsertedSteps;
     }
 
     /**
@@ -104,13 +104,20 @@ public class StepBusiness {
      * @param workflowID - workflowID to delete existing steps by
      * @return Success Message
      */
-    public String updateSteps(List<Step> steps, String workflowID) {
+    public int updateSteps(List<Step> steps, String workflowID) throws BadRequestException, NumberFormatException, InternalServerErrorException {
+        int numUpdatedSteps = 0;
         try {
-            stepDB.updateSteps(steps, workflowID);
-        } catch(Exception e) {
-            e.printStackTrace();
+            numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
+
+            if(numUpdatedSteps <= 0) {
+                throw new NotFoundException("No records with that workflowID exist.");
+            }
+        } catch(NumberFormatException ex) {
+            throw new BadRequestException("workflowID must be a valid integer.");
+        } catch(SQLException ex) {
+            throw new InternalServerErrorException(ex.getMessage());
         }
-        return "Some string.";
+        return numUpdatedSteps;
     }
 
     /**
@@ -118,12 +125,18 @@ public class StepBusiness {
      * @param workflowID - workflowID to delete steps by
      * @return Success Message
      */
-    public String deleteStepsByWorkflowID(String workflowID) {
+    public int deleteStepsByWorkflowID(String workflowID) throws BadRequestException, NumberFormatException, InternalServerErrorException {
+        int numDeletedSteps = 0;
         try {
-            stepDB.deleteStepsByWorkflowID(workflowID);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if(stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID)) <= 0) {
+                throw new NotFoundException("No records with that workflowID exist.");
+            }
+        } catch (NumberFormatException ex) {
+            throw new BadRequestException("workflowID must be a valid integer.");
+        } catch (SQLException ex) {
+            throw new InternalServerErrorException(ex.getMessage());
         }
-        return "Some string.";
+        return numDeletedSteps;
     }
 }

@@ -133,9 +133,11 @@ public class StepDB {
      * @param steps - list of steps to insert into the database
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertSteps(List<Step> steps) throws SQLException {
+    public int insertSteps(List<Step> steps) throws SQLException {
         this.dbConn.connect();
         this.dbConn.conn.setAutoCommit(false);
+
+        int numInsertedSteps = 0;
 
         String query = "INSERT INTO step (orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
@@ -151,14 +153,17 @@ public class StepDB {
                 preparedStatement.setInt(8, step.getWorkflowID());
                 preparedStatement.executeUpdate();
 
+                numInsertedSteps += 1;
+
                 if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
-                    insertChildSteps(step.getChildSteps(), preparedStatement);
+                    numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
                 }
             }
             this.dbConn.conn.commit();
         } finally {
             this.dbConn.conn.setAutoCommit(true);
         }
+        return numInsertedSteps;
     }
 
     /**
@@ -167,7 +172,8 @@ public class StepDB {
      * @param preparedStatement - preparedStatement created in insertSteps
      * @throws SQLException - Error connecting to the database or executing update
      */
-    public void insertChildSteps(List<Step> steps, PreparedStatement preparedStatement) throws SQLException {
+    public int insertChildSteps(List<Step> steps, PreparedStatement preparedStatement, int numInsertedSteps) throws SQLException {
+
         for (Step step : steps) {
             preparedStatement.setInt(1, step.getOrderNumber());
             preparedStatement.setBoolean(2, step.getIsHighestLevel());
@@ -179,10 +185,13 @@ public class StepDB {
             preparedStatement.setInt(8, step.getWorkflowID());
             preparedStatement.executeUpdate();
 
+            numInsertedSteps += 1;
+
             if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
-                insertChildSteps(step.getChildSteps(), preparedStatement);
+                numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
             }
         }
+        return numInsertedSteps;
     }
 
     /**
@@ -191,9 +200,11 @@ public class StepDB {
      * @param workflowID - workflowID to delete steps by before inserting updated list
      * @throws SQLException - Error connecting to the database or executing update
      */
-    public void updateSteps(List<Step> steps, String workflowID) throws SQLException {
+    public int updateSteps(List<Step> steps, String workflowID) throws SQLException {
         this.dbConn.connect();
         this.dbConn.conn.setAutoCommit(false);
+
+        int numUpdatedSteps = 0;
 
         //Prepare sql statement
         String query = "DELETE FROM step WHERE step.workflowID = ?;";
@@ -217,17 +228,18 @@ public class StepDB {
                     preparedStatement.executeUpdate();
 
                     if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
-                        insertChildSteps(step.getChildSteps(), preparedStatement);
+                        numUpdatedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numUpdatedSteps);
                     }
                 }
                 this.dbConn.conn.commit();
             }
-        } catch (SQLException sqle) {
+        } catch (SQLException ex) {
             this.dbConn.conn.rollback();
-            throw new SQLException(sqle.getMessage());
+            throw new SQLException(ex.getMessage());
         } finally {
             this.dbConn.conn.setAutoCommit(true);
         }
+        return numUpdatedSteps;
     }
 
     /**
@@ -236,24 +248,15 @@ public class StepDB {
      * @return number of deleted steps
      * @throws SQLException - Error connecting to database or executing update
      */
-    public int deleteStepsByWorkflowID(String workflowID) throws SQLException {
-        try {
-            this.dbConn.connect();
-            this.dbConn.conn.setAutoCommit(false);
+    public int deleteStepsByWorkflowID(int workflowID) throws SQLException {
+        this.dbConn.connect();
 
-            //Prepare sql statement
-            String query = "DELETE FROM step WHERE step.workflowID = ?;";
-            try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, Integer.parseInt(workflowID));
-                int numRowsDeleted = preparedStatement.executeUpdate();
-                this.dbConn.conn.commit();
-                return numRowsDeleted;
-            }
-        } catch(SQLException sqle) {
-            this.dbConn.conn.rollback();
-            throw new SQLException(sqle.getMessage());
-        } finally {
-            this.dbConn.conn.setAutoCommit(true);
+        //Prepare sql statement
+        String query = "DELETE FROM step WHERE step.workflowID = ?;";
+        try (PreparedStatement preparedStatement = this.dbConn.conn.prepareStatement(query)) {
+            preparedStatement.setInt(1, workflowID);
+            int numRowsDeleted = preparedStatement.executeUpdate();
+            return numRowsDeleted;
         }
     }
 }

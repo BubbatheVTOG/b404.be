@@ -1,6 +1,5 @@
 package b404.utility.objects;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Step {
