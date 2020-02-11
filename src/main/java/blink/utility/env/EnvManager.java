@@ -1,9 +1,6 @@
 package blink.utility.env;
 
-import blink.utility.env.systemproperties.DBHostName;
-import blink.utility.env.systemproperties.DBUserName;
-import blink.utility.env.systemproperties.DBUserPass;
-import blink.utility.env.systemproperties.EnvironmentProperty;
+import blink.utility.env.systemproperties.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,15 +26,13 @@ public class EnvManager {
      * Fill the map with known good kv pairs of our environment properties.
      */
     private void fillWithProperties() {
-        // Environment Properties here.
-        EnvironmentProperty dbName = new DBHostName();
-        EnvironmentProperty dbUserName = new DBUserName();
-        EnvironmentProperty dbUserPass = new DBUserPass();
-
         // Add properties to the map.
-        envProps.put(dbName.getKey(), dbName);
-        envProps.put(dbUserName.getKey(), dbUserName);
-        envProps.put(dbUserPass.getKey(), dbUserPass);
+        envProps.put(EnvKeyValues.DB_HOSTNAME, new DBHostName());
+        envProps.put(EnvKeyValues.DB_USER_NAME, new DBUserName());
+        envProps.put(EnvKeyValues.DB_USER_PASS, new DBUserPass());
+        envProps.put(EnvKeyValues.JWT_KEY, new JWTKey());
+        envProps.put(EnvKeyValues.JWT_ISSUER, new JWTIssuer());
+        envProps.put(EnvKeyValues.JWT_EXPIRE_TIME, new JWTExpireTime());
     }
 
     /**

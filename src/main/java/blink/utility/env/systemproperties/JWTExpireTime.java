@@ -1,9 +1,10 @@
 package blink.utility.env.systemproperties;
 
-public class DBHostName implements EnvironmentProperty {
+public class JWTExpireTime implements EnvironmentProperty {
 
-    private static final String KEY = EnvKeyValues.DB_HOSTNAME;
-    private String value = "db";
+    // 8 Hours
+    private String value = Integer.toString(8 * 60 * 60 * 1000);
+    private static final String KEY = EnvKeyValues.JWT_EXPIRE_TIME;
 
     @Override
     public String getKey() {
@@ -24,6 +25,14 @@ public class DBHostName implements EnvironmentProperty {
     @Override
     public void getSystemValue() {
         String tempVal = System.getenv(KEY);
+
+        try {
+            Integer.parseInt(tempVal);
+        // This cannot return an invalid number. We need to validate when querying the environment.
+        } catch (NumberFormatException nfe) {
+            tempVal = null;
+        }
+
         if (tempVal != null) {
             if (tempVal.length() > 0) {
                 this.value = tempVal;

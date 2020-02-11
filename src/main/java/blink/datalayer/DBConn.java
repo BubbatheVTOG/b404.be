@@ -1,6 +1,7 @@
 package blink.datalayer;
 
 import blink.utility.env.EnvManager;
+import blink.utility.env.systemproperties.EnvKeyValues;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,9 +19,9 @@ class DBConn {
         this.env = new EnvManager();
 
         this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://" + env.getValue("DB_NAME") + ":3306/venture_creations?allowPublicKeyRetrieval=true";
-        this.user = env.getValue("DB_USER_NAME");
-        this.password = env.getValue("DB_USER_PASSWD");
+        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME) + ":3306/venture_creations?allowPublicKeyRetrieval=true";
+        this.user = env.getValue(EnvKeyValues.DB_USER_NAME);
+        this.password = env.getValue(EnvKeyValues.DB_USER_PASS);
     }
 
     /**
