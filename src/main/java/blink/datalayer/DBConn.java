@@ -1,7 +1,7 @@
 package blink.datalayer;
 
 import blink.utility.env.EnvManager;
-import blink.utility.env.systemproperties.EnvKeyValues;
+import blink.utility.env.EnvKeyValues;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

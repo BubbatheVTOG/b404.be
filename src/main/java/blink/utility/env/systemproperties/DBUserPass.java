@@ -1,9 +1,15 @@
 package blink.utility.env.systemproperties;
 
+import blink.utility.env.EnvKeyValues;
+
 public class DBUserPass implements EnvironmentProperty {
 
     private static final String KEY = EnvKeyValues.DB_USER_PASS;
     private String value = "b404";
+
+    public DBUserPass() {
+        this.getSystemValue();
+    }
 
     @Override
     public String getKey() {

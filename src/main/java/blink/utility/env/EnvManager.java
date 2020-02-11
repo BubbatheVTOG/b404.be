@@ -18,7 +18,6 @@ public class EnvManager {
     public EnvManager() {
         if (envProps.size() == 0) {
             this.fillWithProperties();
-            this.getSystemEnvVars();
         }
     }
 
@@ -32,14 +31,7 @@ public class EnvManager {
         envProps.put(EnvKeyValues.DB_USER_PASS, new DBUserPass());
         envProps.put(EnvKeyValues.JWT_KEY, new JWTKey());
         envProps.put(EnvKeyValues.JWT_ISSUER, new JWTIssuer());
-        envProps.put(EnvKeyValues.JWT_EXPIRE_TIME, new JWTExpireTime());
-    }
-
-    /**
-     * If the operating environment contains a value, get it.
-     */
-    private void getSystemEnvVars() {
-        envProps.forEach( (key,value) -> value.getSystemValue());
+        envProps.put(EnvKeyValues.JWT_EXPIRE_DURATION, new JWTExpireTime());
     }
 
     /**

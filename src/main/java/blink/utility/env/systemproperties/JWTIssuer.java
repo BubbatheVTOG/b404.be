@@ -1,9 +1,15 @@
 package blink.utility.env.systemproperties;
 
+import blink.utility.env.EnvKeyValues;
+
 public class JWTIssuer implements EnvironmentProperty {
 
     private static final String KEY = EnvKeyValues.JWT_ISSUER;
     private String value = "venture_creations";
+
+    public JWTIssuer(){
+        this.getSystemValue();
+    }
 
     @Override
     public String getKey() {

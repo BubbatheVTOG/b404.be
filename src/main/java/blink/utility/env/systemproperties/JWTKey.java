@@ -1,5 +1,7 @@
 package blink.utility.env.systemproperties;
 
+import blink.utility.env.EnvKeyValues;
+
 import java.security.SecureRandom;
 
 public class JWTKey implements EnvironmentProperty {
@@ -7,6 +9,10 @@ public class JWTKey implements EnvironmentProperty {
     private static final String KEY = EnvKeyValues.JWT_KEY;
     private static final int KEY_LENGTH = 64;
     private String value;
+
+    public JWTKey() {
+        this.getSystemValue();
+    }
 
     @Override
     public String getKey() {
@@ -43,6 +49,6 @@ public class JWTKey implements EnvironmentProperty {
         while (sb.length() < length) {
             sb.append(Integer.toHexString(random.nextInt()));
         }
-        return sb.toString();
+        return sb.toString().toUpperCase();
     }
 }

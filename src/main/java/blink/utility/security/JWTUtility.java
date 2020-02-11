@@ -1,9 +1,10 @@
 package blink.utility.security;
 
 import blink.utility.env.EnvManager;
-import blink.utility.env.systemproperties.EnvKeyValues;
+import blink.utility.env.EnvKeyValues;
 import io.jsonwebtoken.*;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +12,13 @@ import java.util.Map;
 /**
  * Utility class for constructing, decoding and parsing JSON Web Tokens
  */
-public class JWTUtility {
+public final class JWTUtility {
 
     private static final EnvManager ENV_MANAGER = new EnvManager();
     private static final String SECRET_KEY = ENV_MANAGER.getValue(EnvKeyValues.JWT_KEY);
     private static final String ISSUER = ENV_MANAGER.getValue(EnvKeyValues.JWT_ISSUER);
-    private static final int JWT_TOKEN_VALIDITY_DURATION = Integer.parseInt(ENV_MANAGER.getValue(EnvKeyValues.JWT_EXPIRE_TIME));
+    private static final long JWT_TOKEN_VALIDITY_DURATION =
+            Duration.parse(ENV_MANAGER.getValue(EnvKeyValues.JWT_EXPIRE_DURATION)).toSeconds();
 
     //Empty constructor because this class is meant to be used statically
     private JWTUtility() {}
