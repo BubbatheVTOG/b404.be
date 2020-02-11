@@ -83,4 +83,47 @@ public class StepBusiness {
             throw new InternalServerErrorException(sqle.getMessage());
         }
     }
+
+    /**
+     * Insert a list of ste[s into the database
+     * @param steps - list of steps to insert into the database
+     * @return Success Message
+     */
+    public String insertSteps(List<Step> steps) {
+        try {
+            stepDB.insertSteps(steps);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return "Some string";
+    }
+
+    /**
+     * Deletes existing steps by workflowID and adds updated step list
+     * @param steps - updated list of steps
+     * @param workflowID - workflowID to delete existing steps by
+     * @return Success Message
+     */
+    public String updateSteps(List<Step> steps, String workflowID) {
+        try {
+            stepDB.updateSteps(steps, workflowID);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return "Some string.";
+    }
+
+    /**
+     * Delete steps by workflowID
+     * @param workflowID - workflowID to delete steps by
+     * @return Success Message
+     */
+    public String deleteStepsByWorkflowID(String workflowID) {
+        try {
+            stepDB.deleteStepsByWorkflowID(workflowID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Some string.";
+    }
 }
