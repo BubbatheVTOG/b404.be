@@ -151,9 +151,7 @@ public class StepDB {
                 preparedStatement.setInt(6, step.getVerbID());
                 preparedStatement.setInt(7, step.getFileID());
                 preparedStatement.setInt(8, step.getWorkflowID());
-                preparedStatement.executeUpdate();
-
-                numInsertedSteps += 1;
+                numInsertedSteps += preparedStatement.executeUpdate();
 
                 if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
                     numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
@@ -183,12 +181,12 @@ public class StepDB {
             preparedStatement.setInt(6, step.getVerbID());
             preparedStatement.setInt(7, step.getFileID());
             preparedStatement.setInt(8, step.getWorkflowID());
-            preparedStatement.executeUpdate();
+            numInsertedSteps += preparedStatement.executeUpdate();
 
-            numInsertedSteps += 1;
+
 
             if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
-                numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
+                numInsertedSteps = insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
             }
         }
         return numInsertedSteps;
@@ -225,10 +223,10 @@ public class StepDB {
                     preparedStatement.setInt(6, step.getVerbID());
                     preparedStatement.setInt(7, step.getFileID());
                     preparedStatement.setInt(8, step.getWorkflowID());
-                    preparedStatement.executeUpdate();
+                    numUpdatedSteps += preparedStatement.executeUpdate();
 
                     if (!Integer.toString(step.getRelatedStep()).equals(null) || !Integer.toString(step.getRelatedStep()).isEmpty()) {
-                        numUpdatedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numUpdatedSteps);
+                        numUpdatedSteps = insertChildSteps(step.getChildSteps(), preparedStatement, numUpdatedSteps);
                     }
                 }
                 this.dbConn.conn.commit();
