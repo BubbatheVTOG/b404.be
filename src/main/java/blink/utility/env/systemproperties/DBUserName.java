@@ -8,7 +8,7 @@ public class DBUserName implements EnvironmentProperty {
     private String value = "b404";
 
     public DBUserName() {
-        this.getSystemValue();
+        this.getValueFromSystem();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DBUserName implements EnvironmentProperty {
     }
 
     @Override
-    public void getSystemValue() {
+    public void getValueFromSystem() {
         String tempVal = System.getenv(KEY);
         if (tempVal != null) {
             if (tempVal.length() > 0) {

@@ -10,15 +10,26 @@ public class JWTKey implements EnvironmentProperty {
     private static final int KEY_LENGTH = 64;
     private String value;
 
+    /**
+     * Default Constructor
+     */
     public JWTKey() {
-        this.getSystemValue();
+        this.getValueFromSystem();
     }
 
+    /**
+     * Returns the key value of this property.
+     * @return The key value of this property.
+     */
     @Override
     public String getKey() {
         return KEY;
     }
 
+    /**
+     * Returns the value of this property.
+     * @return The value of this property.
+     */
     @Override
     public String getValue() {
         if (this.value == null) {
@@ -27,14 +38,22 @@ public class JWTKey implements EnvironmentProperty {
         return this.value;
     }
 
+    /**
+     * Sets the property value.
+     * @param propertyName The value of the property.
+     * @return The property value.
+     */
     @Override
     public String setValue(String propertyName) {
         this.value = propertyName;
         return this.value;
     }
 
+    /**
+     * Get the value from the system.
+     */
     @Override
-    public void getSystemValue() {
+    public void getValueFromSystem() {
         String tempVal = System.getenv(KEY);
         if (tempVal != null) {
             if (tempVal.length() > 0) {

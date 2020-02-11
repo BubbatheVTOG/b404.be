@@ -14,7 +14,7 @@ public class JWTExpireTime implements EnvironmentProperty {
     private static final String KEY = EnvKeyValues.JWT_EXPIRE_DURATION;
 
     public JWTExpireTime(){
-        this.getSystemValue();
+        this.getValueFromSystem();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class JWTExpireTime implements EnvironmentProperty {
     }
 
     @Override
-    public void getSystemValue() {
+    public void getValueFromSystem() {
         String tempVal = System.getenv(KEY);
 
         // Check to see if the systems environment has a value that we can parse.

@@ -39,11 +39,20 @@ public class EnvManager {
      * @param key The environment variable key.
      * @return The associated value of the environment variable. Empty string if key is not found.
      */
-    public String getValue(String key){
+    public String getValue(final String key){
         if (envProps.containsKey(key)) {
             return envProps.get(key).getValue();
         }
 
         return "";
+    }
+
+    /**
+     * Returns the environmental property.
+     * @param key The key name of the environmental property.
+     * @return A property object. Returns null if key is not found.
+     */
+    public EnvironmentProperty getEnvProp(final String key) {
+        return envProps.get(key);
     }
 }

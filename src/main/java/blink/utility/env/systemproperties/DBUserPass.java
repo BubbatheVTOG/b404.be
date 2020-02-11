@@ -8,7 +8,7 @@ public class DBUserPass implements EnvironmentProperty {
     private String value = "b404";
 
     public DBUserPass() {
-        this.getSystemValue();
+        this.getValueFromSystem();
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DBUserPass implements EnvironmentProperty {
     }
 
     @Override
-    public void getSystemValue() {
+    public void getValueFromSystem() {
         String tempVal = System.getenv(KEY);
         if (tempVal != null) {
             if (tempVal.length() > 0) {
