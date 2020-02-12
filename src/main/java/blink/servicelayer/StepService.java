@@ -1,15 +1,14 @@
-package b404.servicelayer;
+package blink.servicelayer;
 
-import b404.businesslayer.StepBusiness;
-import b404.utility.objects.Step;
-import b404.utility.security.JWTUtility;
+import blink.businesslayer.StepBusiness;
+import blink.utility.objects.Step;
+import blink.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

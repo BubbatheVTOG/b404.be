@@ -8,19 +8,19 @@ public class Step {
     private boolean isHighestLevel;
     private String description;
     private int relatedStep;
-    private int UUID;
+    private int uuid;
     private int verbID;
     private int fileID;
     private int workflowID;
     private List<Step> childSteps;
 
-    public Step(int stepID, int orderNumber, boolean isHigestLevel, String description, int relatedStep, int UUID, int verbID, int fileID, int workflowID) {
+    public Step(int stepID, int orderNumber, boolean isHigestLevel, String description, int relatedStep, int uuid, int verbID, int fileID, int workflowID) {
         this.stepID = stepID;
         this.orderNumber = orderNumber;
-        this.isHighestLevel = isHighestLevel;
+        this.isHighestLevel = isHigestLevel;
         this.description = description;
         this.relatedStep = relatedStep;
-        this.UUID = UUID;
+        this.uuid = uuid;
         this.verbID = verbID;
         this.fileID = fileID;
         this.workflowID = workflowID;
@@ -46,9 +46,9 @@ public class Step {
 
     public void setRelatedStep(int relatedStep) { this.relatedStep = relatedStep; }
 
-    public int getUUID() { return UUID; }
+    public int getUUID() { return uuid; }
 
-    public void setUUID(int UUID) { this.UUID = UUID; }
+    public void setUUID(int uuid) { this.uuid = uuid; }
 
     public int getVerbID() { return verbID; }
 
@@ -83,7 +83,7 @@ public class Step {
                 "\"isHighestLevel\":" + this.isHighestLevel + "," +
                 "\"description\":" + this.description + "," +
                 "\"relatedStep\":" + this.relatedStep + "," +
-                "\"UUID\":" + this.UUID + "," +
+                "\"UUID\":" + this.uuid + "," +
                 "\"verbID\":" + this.verbID + "," +
                 "\"fileID\":" + this.fileID + "," +
                 "\"workflowID\":" + this.workflowID + "," +

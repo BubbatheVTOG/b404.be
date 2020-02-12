@@ -1,7 +1,7 @@
-package b404.businesslayer;
+package blink.businesslayer;
 
-import b404.datalayer.StepDB;
-import b404.utility.objects.Step;
+import blink.datalayer.StepDB;
+import blink.utility.objects.Step;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -15,6 +15,9 @@ import java.util.List;
  * Enforces business rules and leverages datalayer to manipulate database
  */
 public class StepBusiness {
+
+    private static final String WORKFLOWID_ERROR = "workflowID must be a valid integer.";
+
     private StepDB stepDB = new StepDB();
 
     /**
@@ -23,7 +26,7 @@ public class StepBusiness {
      * @return Step objects containing data from the database
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public List<Step> getSteps(String workflowID) throws InternalServerErrorException {
+    public List<Step> getSteps(String workflowID) {
         try {
             List<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
             for (Step step : steps) {
@@ -31,7 +34,7 @@ public class StepBusiness {
             }
             return steps;
         } catch(NumberFormatException nfe) {
-            throw new BadRequestException("workflowID must be a valid integer.");
+            throw new BadRequestException(WORKFLOWID_ERROR);
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -43,7 +46,7 @@ public class StepBusiness {
      * @return array of steps containing related steps
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public List<Step> getRelatedSteps(Step step) throws InternalServerErrorException {
+    public List<Step> getRelatedSteps(Step step) {
         List<Step> relatedSteps;
         try {
             relatedSteps = stepDB.getRelatedSteps(step.getStepID());
@@ -67,7 +70,7 @@ public class StepBusiness {
      * @throws NotFoundException - No step with provided UUID was found
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public Step getStepByStepID(String stepID) throws BadRequestException, NotFoundException, InternalServerErrorException {
+    public Step getStepByStepID(String stepID) {
         try {
             Step step = stepDB.getStepByStepID(Integer.parseInt(stepID));
 
@@ -88,7 +91,7 @@ public class StepBusiness {
      * @param steps - list of steps to insert into the database
      * @return Success Message
      */
-    public int insertSteps(List<Step> steps) throws InternalServerErrorException {
+    public int insertSteps(List<Step> steps) {
         int numInsertedSteps = 0;
         try {
             numInsertedSteps = stepDB.insertSteps(steps);
@@ -104,7 +107,7 @@ public class StepBusiness {
      * @param workflowID - workflowID to delete existing steps by
      * @return Success Message
      */
-    public int updateSteps(List<Step> steps, String workflowID) throws BadRequestException, NumberFormatException, InternalServerErrorException {
+    public int updateSteps(List<Step> steps, String workflowID) {
         int numUpdatedSteps = 0;
         try {
             numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
@@ -113,7 +116,7 @@ public class StepBusiness {
                 throw new NotFoundException("No records with that workflowID exist.");
             }
         } catch(NumberFormatException ex) {
-            throw new BadRequestException("workflowID must be a valid integer.");
+            throw new BadRequestException(WORKFLOWID_ERROR);
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -125,15 +128,14 @@ public class StepBusiness {
      * @param workflowID - workflowID to delete steps by
      * @return Success Message
      */
-    public int deleteStepsByWorkflowID(String workflowID) throws BadRequestException, NumberFormatException, InternalServerErrorException {
+    public int deleteStepsByWorkflowID(String workflowID) {
         int numDeletedSteps = 0;
         try {
-
             if(stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID)) <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
             }
         } catch (NumberFormatException ex) {
-            throw new BadRequestException("workflowID must be a valid integer.");
+            throw new BadRequestException(WORKFLOWID_ERROR);
         } catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
