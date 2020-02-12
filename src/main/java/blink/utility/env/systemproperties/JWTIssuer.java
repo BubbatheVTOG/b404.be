@@ -2,12 +2,12 @@ package blink.utility.env.systemproperties;
 
 import blink.utility.env.EnvKeyValues;
 
-public class DBUserName implements EnvironmentProperty {
+public class JWTIssuer implements EnvironmentProperty {
 
-    private static final String KEY = EnvKeyValues.DB_USER_NAME;
-    private String value = "b404";
+    private static final String KEY = EnvKeyValues.JWT_ISSUER;
+    private String value = "venture_creations";
 
-    public DBUserName() {
+    public JWTIssuer(){
         this.getValueFromSystem();
     }
 
