@@ -1,29 +1,39 @@
 package blink.datalayer;
 
+import blink.utility.ResourceReader;
 import blink.utility.env.EnvManager;
+import blink.utility.exceptions.DBInitException;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBInit {
     private DBConn dBconn;
 
-    private static final EnvManager env = new EnvManager();
-
     public DBInit() {
         this.dBconn = new DBConn();
     }
 
-    public void initialize() {
-        if (!this.tableExists()) {
-
+    public void initializeDB() throws DBInitException {
+        try {
+            if (!this.tableExists()) {
+                this.createDB();
+            }
+        } catch (SQLException sqle) {
+            throw new DBInitException("Could not initialize the database!");
+        } catch (IOException ioe) {
+            throw new DBInitException("Could not read needed resource files.");
         }
     }
 
     private boolean tableExists() throws SQLException {
         boolean retVal = false;
         String databaseName = "";
+        EnvManager env = new EnvManager();
+
         try (Connection conn = this.dBconn.connect();
             ResultSet resultSet = conn.getMetaData().getCatalogs()) {
 
@@ -38,5 +48,15 @@ public class DBInit {
             }
         }
         return retVal;
+    }
+
+    private void createDB() throws IOException, SQLException {
+        ResourceReader rectReader = new ResourceReader("create.sql");
+        String dbCreateString = rectReader.getResourceAsString();
+
+        try (Connection conn = this.dBconn.connect();
+            PreparedStatement statement = conn.prepareStatement(dbCreateString)) {
+            statement.execute();
+        }
     }
 }

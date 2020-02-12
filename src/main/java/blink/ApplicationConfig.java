@@ -1,5 +1,8 @@
 package blink;
 
+import blink.datalayer.DBInit;
+import blink.utility.exceptions.DBInitException;
+
 import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -8,6 +11,14 @@ import javax.ws.rs.core.Application;
 public class ApplicationConfig extends Application {
     @Override
     public Set<Class<?>> getClasses() {
+        try {
+            DBInit db = new DBInit();
+            // If we throw here we're completely hosed.
+            db.initializeDB();
+        } catch (DBInitException dbie) {
+            System.err.println(dbie.toString());
+            //System.exit(1);
+        }
         return getRestResourceClasses();
     }
 

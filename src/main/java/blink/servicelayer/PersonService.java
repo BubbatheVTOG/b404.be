@@ -5,7 +5,7 @@ import blink.businesslayer.PersonBusiness;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
-import blink.utility.ConflictException;
+import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Person;
 import blink.utility.security.JWTUtility;
 import io.swagger.annotations.Api;
