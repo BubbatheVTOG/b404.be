@@ -4,7 +4,7 @@ import blink.utility.env.EnvKeyValues;
 
 import java.time.Duration;
 
-public class JWTExpireTime implements EnvironmentProperty {
+public class JWTExpirationDuration implements EnvironmentProperty {
 
     // ISO-8601
     // https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html#parse-java.lang.CharSequence-
@@ -13,7 +13,7 @@ public class JWTExpireTime implements EnvironmentProperty {
     private String value = Duration.parse(EIGHT_HOURS).toString();
     private static final String KEY = EnvKeyValues.JWT_EXPIRE_DURATION;
 
-    public JWTExpireTime(){
+    public JWTExpirationDuration(){
         this.getValueFromSystem();
     }
 

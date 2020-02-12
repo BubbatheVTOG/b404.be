@@ -31,7 +31,7 @@ public class EnvManager {
         envProps.put(EnvKeyValues.DB_USER_PASS, new DBUserPass());
         envProps.put(EnvKeyValues.JWT_KEY, new JWTKey());
         envProps.put(EnvKeyValues.JWT_ISSUER, new JWTIssuer());
-        envProps.put(EnvKeyValues.JWT_EXPIRE_DURATION, new JWTExpireTime());
+        envProps.put(EnvKeyValues.JWT_EXPIRE_DURATION, new JWTExpirationDuration());
     }
 
     /**
