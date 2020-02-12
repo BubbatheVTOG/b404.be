@@ -1,13 +1,19 @@
 package blink.utility.env.systemproperties;
 
+import blink.utility.env.EnvKeyValues;
+
 public class DBHostName implements EnvironmentProperty {
 
-    private final String key = "DB_NAME";
+    private static final String KEY = EnvKeyValues.DB_HOSTNAME;
     private String value = "db";
+
+    public DBHostName() {
+        this.getValueFromSystem();
+    }
 
     @Override
     public String getKey() {
-        return this.key;
+        return KEY;
     }
 
     @Override
@@ -22,8 +28,8 @@ public class DBHostName implements EnvironmentProperty {
     }
 
     @Override
-    public void getSystemValue() {
-        String tempVal = System.getenv(key);
+    public void getValueFromSystem() {
+        String tempVal = System.getenv(KEY);
         if (tempVal != null) {
             if (tempVal.length() > 0) {
                 this.value = tempVal;

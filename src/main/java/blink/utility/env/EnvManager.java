@@ -1,9 +1,6 @@
 package blink.utility.env;
 
-import blink.utility.env.systemproperties.DBHostName;
-import blink.utility.env.systemproperties.DBUserName;
-import blink.utility.env.systemproperties.DBUserPass;
-import blink.utility.env.systemproperties.EnvironmentProperty;
+import blink.utility.env.systemproperties.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +18,6 @@ public class EnvManager {
     public EnvManager() {
         if (envProps.size() == 0) {
             this.fillWithProperties();
-            this.getSystemEnvVars();
         }
     }
 
@@ -29,22 +25,13 @@ public class EnvManager {
      * Fill the map with known good kv pairs of our environment properties.
      */
     private void fillWithProperties() {
-        // Environment Properties here.
-        EnvironmentProperty dbName = new DBHostName();
-        EnvironmentProperty dbUserName = new DBUserName();
-        EnvironmentProperty dbUserPass = new DBUserPass();
-
         // Add properties to the map.
-        envProps.put(dbName.getKey(), dbName);
-        envProps.put(dbUserName.getKey(), dbUserName);
-        envProps.put(dbUserPass.getKey(), dbUserPass);
-    }
-
-    /**
-     * If the operating environment contains a value, get it.
-     */
-    private void getSystemEnvVars() {
-        envProps.forEach( (key,value) -> value.getSystemValue());
+        envProps.put(EnvKeyValues.DB_HOSTNAME, new DBHostName());
+        envProps.put(EnvKeyValues.DB_USER_NAME, new DBUserName());
+        envProps.put(EnvKeyValues.DB_USER_PASS, new DBUserPass());
+        envProps.put(EnvKeyValues.JWT_KEY, new JWTKey());
+        envProps.put(EnvKeyValues.JWT_ISSUER, new JWTIssuer());
+        envProps.put(EnvKeyValues.JWT_EXPIRE_DURATION, new JWTExpireTime());
     }
 
     /**
@@ -52,11 +39,20 @@ public class EnvManager {
      * @param key The environment variable key.
      * @return The associated value of the environment variable. Empty string if key is not found.
      */
-    public String getValue(String key){
+    public String getValue(final String key){
         if (envProps.containsKey(key)) {
             return envProps.get(key).getValue();
         }
 
         return "";
+    }
+
+    /**
+     * Returns the environmental property.
+     * @param key The key name of the environmental property.
+     * @return A property object. Returns null if key is not found.
+     */
+    public EnvironmentProperty getEnvProp(final String key) {
+        return envProps.get(key);
     }
 }
