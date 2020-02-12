@@ -33,24 +33,6 @@ public class Ping {
             description = "A pong."
     )
     public Response ping() {
-
-        StringBuilder sb = new StringBuilder();
-        //InputStream inputStream = getClass().getResourceAsStream("/WEB-INF/classes/LameFile.txt");
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("../LameFile.txt");
-        if (inputStream != null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-                String buf;
-                while ((buf = reader.readLine()) != null) {
-                    sb.append(buf);
-                }
-            } catch (IOException fnfe) {
-            }
-        } else {
-            sb.append("fuck");
-        }
-
-
-        return Response.ok().entity("{\"success\":"+sb.toString()+"}").build();
+        return Response.ok().entity("{\"success\":\"pong\"}").build();
     }
 }
