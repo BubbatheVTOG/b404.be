@@ -17,7 +17,10 @@ class DBConn {
         EnvManager env = new EnvManager();
 
         this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME) + ":3306/venture_creations?allowPublicKeyRetrieval=true";
+        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME)
+                + ":3306/"
+                + env.getValue(EnvKeyValues.DB_TABLE_NAME)
+                + "?allowPublicKeyRetrieval=true";
         this.user = env.getValue(EnvKeyValues.DB_USER_NAME);
         this.password = env.getValue(EnvKeyValues.DB_USER_PASS);
     }
