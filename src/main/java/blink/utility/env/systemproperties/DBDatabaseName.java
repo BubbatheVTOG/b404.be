@@ -2,12 +2,12 @@ package blink.utility.env.systemproperties;
 
 import blink.utility.env.EnvKeyValues;
 
-public class DBTableName implements EnvironmentProperty {
+public class DBDatabaseName implements EnvironmentProperty {
 
-    private static final String KEY = EnvKeyValues.DB_TABLE_NAME;
+    private static final String KEY = EnvKeyValues.DB_DATABASE;
     private String value = "venture_creations";
 
-    public DBTableName() {
+    public DBDatabaseName() {
         this.getValueFromSystem();
     }
 

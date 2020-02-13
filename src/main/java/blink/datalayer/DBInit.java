@@ -1,6 +1,8 @@
 package blink.datalayer;
 
 import blink.utility.ResourceReader;
+import blink.utility.env.EnvKeyValues;
+import blink.utility.env.EnvManager;
 
 import java.io.IOException;
 import java.sql.*;
@@ -8,6 +10,7 @@ import java.sql.*;
 public class DBInit {
 
     private DBConn dBconn;
+    private EnvManager env = new EnvManager();
 
     public DBInit() {
         this.dBconn = new DBConn();
@@ -15,8 +18,7 @@ public class DBInit {
 
     public void initializeDB() throws IOException, SQLException {
         try {
-            if (this.tablesExist()) {
-            } else {
+            if (!this.tablesExist()) {
                 this.createDB();
             }
         } catch (SQLException sqle) {
@@ -44,7 +46,9 @@ public class DBInit {
 
     private void createDB() throws IOException, SQLException {
         ResourceReader rectReader = new ResourceReader("create.sql");
+
         String dbCreateString = rectReader.getResourceAsString();
+        dbCreateString = dbCreateString.replace("DB_DATABASE", env.getValue(EnvKeyValues.DB_DATABASE));
 
         try (Connection conn = this.dBconn.connect()) {
             try (Statement st = conn.createStatement()) {
