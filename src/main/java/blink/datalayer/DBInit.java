@@ -7,15 +7,27 @@ import blink.utility.env.EnvManager;
 import java.io.IOException;
 import java.sql.*;
 
+/**
+ * This is used for determining the inital state of the database and creating the desired state if needed.
+ */
 public class DBInit {
 
     private DBConn dBconn;
     private EnvManager env = new EnvManager();
 
+    /**
+     * Creates a DBInit object.
+     */
     public DBInit() {
         this.dBconn = new DBConn();
     }
 
+    /**
+     * This will attempt to initialize the database.
+     * @throws IOException Thrown if we can connect to the database, but the resource file needed to provision
+     * the database cannot be found.
+     * @throws SQLException Thrown if the connection made to the database is invalid.
+     */
     public void initializeDB() throws IOException, SQLException {
         try {
             if (!this.tablesExist()) {
@@ -28,6 +40,11 @@ public class DBInit {
         }
     }
 
+    /**
+     * Checks if the required tables are in the database.
+     * @return Returns true if the tables needed are found.
+     * @throws SQLException Thrown if the SQL connection is invalid.
+     */
     private boolean tablesExist() throws SQLException {
         boolean retVal = false;
         String query = "SHOW TABLES;";
@@ -44,6 +61,11 @@ public class DBInit {
         return retVal;
     }
 
+    /**
+     * Creates database tables.
+     * @throws IOException Thrown if the resource file needed cannot be found.
+     * @throws SQLException Thrown if the SQL connection is invalid.
+     */
     private void createDB() throws IOException, SQLException {
         ResourceReader rectReader = new ResourceReader("create.sql");
 
@@ -63,6 +85,10 @@ public class DBInit {
         }
     }
 
+    /**
+     * Trys to connect to the database.
+     * @return Returns true if we can connect. Returns false if we cannot connect to the database.
+     */
     public boolean tryDBConnect() {
         try (Connection conn = this.dBconn.connect()) {
             return true;

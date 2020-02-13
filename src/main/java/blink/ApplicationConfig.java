@@ -27,6 +27,15 @@ public class ApplicationConfig extends Application {
         return resources;
     }
 
+    /**
+     * This will check for the database connection.
+     * If we cannot connect we will wait here until we can.
+     *  - If we can connect we will inspect the database for our our database.
+     *    - If we can't fine it, we must exit.
+     *    - If we can find we will inspect it.
+     *      - If it is empty we will fill it with the required tables.
+     *      - If it is not empty we will leave it alone.
+     */
     private void dBCheck() {
         try {
             DBInit db = new DBInit();
