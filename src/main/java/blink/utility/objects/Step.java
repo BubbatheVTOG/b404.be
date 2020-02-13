@@ -1,5 +1,6 @@
 package blink.utility.objects;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Step {
@@ -12,18 +13,69 @@ public class Step {
     private int verbID;
     private int fileID;
     private int workflowID;
+    private boolean completed;
     private List<Step> childSteps;
 
-    public Step(int stepID, int orderNumber, boolean isHigestLevel, String description, int relatedStep, int uuid, int verbID, int fileID, int workflowID) {
-        this.stepID = stepID;
-        this.orderNumber = orderNumber;
-        this.isHighestLevel = isHigestLevel;
-        this.description = description;
-        this.relatedStep = relatedStep;
-        this.uuid = uuid;
-        this.verbID = verbID;
-        this.fileID = fileID;
-        this.workflowID = workflowID;
+    private  Step(StepBuilder stepBuilder) {
+        this.stepID = stepBuilder.stepID;
+        this.orderNumber = stepBuilder.orderNumber;
+        this.isHighestLevel = stepBuilder.isHighestLevel;
+        this.description = stepBuilder.description;
+        this.relatedStep = stepBuilder.relatedStep;
+        this.uuid = stepBuilder.uuid;
+        this.verbID = stepBuilder.verbID;
+        this.fileID = stepBuilder.fileID;
+        this.workflowID = stepBuilder.workflowID;
+        this.completed = stepBuilder.completed;
+        this.childSteps = stepBuilder.childSteps;
+    }
+
+    public static class StepBuilder {
+        private int stepID;
+        private int orderNumber;
+        private boolean isHighestLevel;
+        private String description;
+        private int relatedStep;
+        private int uuid;
+        private int verbID;
+        private int fileID;
+        private int workflowID;
+        private boolean completed;
+        private List<Step> childSteps;
+
+        public StepBuilder(int stepID, int orderNumber, boolean isHighestLevel, int verbID, int fileID, int workflowID, boolean completed) {
+            this.stepID = stepID;
+            this.orderNumber = orderNumber;
+            this.isHighestLevel = isHighestLevel;
+            this.verbID = verbID;
+            this.fileID = fileID;
+            this.workflowID = workflowID;
+            this.completed = completed;
+        }
+
+        public StepBuilder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public StepBuilder relatedStep(int relatedStep) {
+            this.relatedStep = relatedStep;
+            return this;
+        }
+
+        public StepBuilder uuid(int uuid) {
+            this.uuid = uuid;
+            return this;
+        }
+
+        public StepBuilder childSteps(List<Step> childSteps) {
+            this.childSteps = childSteps;
+            return this;
+        }
+
+        public Step build() {
+            return new Step(this);
+        }
     }
 
     public int getStepID() { return  stepID; }
@@ -62,6 +114,10 @@ public class Step {
 
     public void setWorkflowID(int workflowID) { this.workflowID = workflowID; }
 
+    public boolean getCompleted() { return completed; }
+
+    public void setCompleted(boolean completed) { this.completed = completed; }
+
     public List<Step> getChildSteps() { return childSteps; }
 
     public void setChildSteps(List<Step> childSteps) { this.childSteps = childSteps; }
@@ -69,11 +125,9 @@ public class Step {
     /**
      * Add children steps to parent step
      * @param child - x number of child steps to add to parent step
-     */
+     **/
     public void addChild(Step... child) {
-        for(int i = 0; i < child.length; i++) {
-            this.childSteps.add(child[i]);
-        }
+        this.childSteps.addAll(0, Arrays.asList(child));
     }
 
     public String toJSON(){

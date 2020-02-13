@@ -20,6 +20,7 @@ public class StepDB {
     private static final String VERBID = "verbID";
     private static final String FILEID = "fileID";
     private static final String WORKFLOWID = "workflowID";
+    private static final String COMPLETED = "completed";
 
     private DBConn dbConn;
 
@@ -43,15 +44,17 @@ public class StepDB {
                     Step step = null;
 
                     while (result.next()) {
-                        step = new Step(result.getInt(STEPID),
+                        step = new Step.StepBuilder(result.getInt(STEPID),
                                 result.getInt(ORDERNUMBER),
                                 result.getBoolean(ISHIGHESTLEVEL),
-                                result.getString(DESCRIPTION),
-                                result.getInt(RELATEDSTEP),
-                                result.getInt(UUID),
                                 result.getInt(VERBID),
                                 result.getInt(FILEID),
-                                result.getInt(WORKFLOWID));
+                                result.getInt(WORKFLOWID),
+                                result.getBoolean(COMPLETED))
+                                .description(result.getString(DESCRIPTION))
+                                .relatedStep(result.getInt(RELATEDSTEP))
+                                .uuid(result.getInt(UUID))
+                                .build();
                     }
                     return step;
                 }
@@ -77,18 +80,20 @@ public class StepDB {
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     List<Step> steps = new ArrayList<>();
-                    Step step = null;
+                    Step step;
 
                     while (result.next()) {
-                        step = new Step(result.getInt(STEPID),
+                        step = new Step.StepBuilder(result.getInt(STEPID),
                                 result.getInt(ORDERNUMBER),
                                 result.getBoolean(ISHIGHESTLEVEL),
-                                result.getString(DESCRIPTION),
-                                result.getInt(RELATEDSTEP),
-                                result.getInt(UUID),
                                 result.getInt(VERBID),
                                 result.getInt(FILEID),
-                                result.getInt(WORKFLOWID));
+                                result.getInt(WORKFLOWID),
+                                result.getBoolean(COMPLETED))
+                                .description(result.getString(DESCRIPTION))
+                                .relatedStep(result.getInt(RELATEDSTEP))
+                                .uuid(result.getInt(UUID))
+                                .build();
 
                         steps.add(step);
                     }
@@ -103,7 +108,7 @@ public class StepDB {
      * Recursive function to getRelatedSteps to the stepID provided
      * @param stepID - stepID to check against relatedStep
      * @return - Return a list of steps
-     * @throws SQLException
+     * @throws SQLException - Error connecting to database or executing query
      */
     public List<Step> getRelatedSteps(int stepID) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -117,18 +122,20 @@ public class StepDB {
 
                 try (ResultSet result = preparedStatement.executeQuery()) {
                     ArrayList<Step> steps = new ArrayList<>();
-                    Step step = null;
+                    Step step;
 
                     while (result.next()) {
-                        step = new Step(result.getInt(STEPID),
+                        step = new Step.StepBuilder(result.getInt(STEPID),
                                 result.getInt(ORDERNUMBER),
                                 result.getBoolean(ISHIGHESTLEVEL),
-                                result.getString(DESCRIPTION),
-                                result.getInt(RELATEDSTEP),
-                                result.getInt(UUID),
                                 result.getInt(VERBID),
                                 result.getInt(FILEID),
-                                result.getInt(WORKFLOWID));
+                                result.getInt(WORKFLOWID),
+                                result.getBoolean(COMPLETED))
+                                .description(result.getString(DESCRIPTION))
+                                .relatedStep(result.getInt(RELATEDSTEP))
+                                .uuid(result.getInt(UUID))
+                                .build();
 
                         steps.add(step);
                     }
@@ -164,7 +171,7 @@ public class StepDB {
                     preparedStatement.setInt(8, step.getWorkflowID());
                     numInsertedSteps += preparedStatement.executeUpdate();
 
-                    if (Integer.toString(step.getRelatedStep()) == null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
+                    if (Integer.toString(step.getRelatedStep()) != null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
                         numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
                     }
                 }
@@ -195,7 +202,7 @@ public class StepDB {
             preparedStatement.setInt(8, step.getWorkflowID());
             numInsertedSteps += preparedStatement.executeUpdate();
 
-            if (Integer.toString(step.getRelatedStep()) == null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
+            if (Integer.toString(step.getRelatedStep()) != null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
                 numInsertedSteps = insertChildSteps(step.getChildSteps(), preparedStatement, numInsertedSteps);
             }
         }
@@ -235,7 +242,7 @@ public class StepDB {
                         preparedStatement.setInt(8, step.getWorkflowID());
                         numUpdatedSteps += preparedStatement.executeUpdate();
 
-                        if (Integer.toString(step.getRelatedStep()) == null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
+                        if (Integer.toString(step.getRelatedStep()) != null || !Integer.toString(step.getRelatedStep()).isEmpty()) {
                             numUpdatedSteps = insertChildSteps(step.getChildSteps(), preparedStatement, numUpdatedSteps);
                         }
                     }
