@@ -1,49 +1,41 @@
 package blink.datalayer;
 
 import blink.utility.ResourceReader;
-import blink.utility.env.EnvManager;
-import blink.utility.exceptions.DBInitException;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DBInit {
+
     private DBConn dBconn;
 
     public DBInit() {
         this.dBconn = new DBConn();
     }
 
-    public void initializeDB() throws DBInitException {
+    public void initializeDB() throws IOException, SQLException {
         try {
-            if (!this.tableExists()) {
+            if (this.tablesExist()) {
+            } else {
                 this.createDB();
             }
         } catch (SQLException sqle) {
-            throw new DBInitException("Could not initialize the database!");
+            throw new SQLException("FATAL - Could not initialize the database!");
         } catch (IOException ioe) {
-            throw new DBInitException("Could not read needed resource files.");
+            throw new IOException("FATAL - Could not read needed resource files!");
         }
     }
 
-    private boolean tableExists() throws SQLException {
+    private boolean tablesExist() throws SQLException {
         boolean retVal = false;
-        String databaseName = "";
-        EnvManager env = new EnvManager();
+        String query = "SHOW TABLES;";
 
         try (Connection conn = this.dBconn.connect();
-            ResultSet resultSet = conn.getMetaData().getCatalogs()) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
-            //iterate each catalog in the ResultSet
-            while (resultSet.next()) {
-                // Get the database name, which is at position 1
-                databaseName = resultSet.getString(1);
-            }
-
-            if (databaseName.equals(env.getValue("DB_TABLE"))) {
+            rs.last();
+            if (rs.getRow() > 0) {
                 retVal = true;
             }
         }
@@ -54,9 +46,24 @@ public class DBInit {
         ResourceReader rectReader = new ResourceReader("create.sql");
         String dbCreateString = rectReader.getResourceAsString();
 
-        try (Connection conn = this.dBconn.connect();
-            PreparedStatement statement = conn.prepareStatement(dbCreateString)) {
-            statement.execute();
+        try (Connection conn = this.dBconn.connect()) {
+            try (Statement st = conn.createStatement()) {
+                for (String s : dbCreateString.split(";")) {
+                    // Ensure that there is no spaces before or after the request string
+                    // in order to not execute empty statements.
+                    if (!s.trim().equals("")) {
+                        st.executeUpdate(s);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean tryDBConnect() {
+        try (Connection conn = this.dBconn.connect()) {
+            return true;
+        } catch (SQLException sqle) {
+            return false;
         }
     }
 }
