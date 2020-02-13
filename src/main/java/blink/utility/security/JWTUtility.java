@@ -18,7 +18,7 @@ public final class JWTUtility {
     private static final String SECRET_KEY = ENV_MANAGER.getValue(EnvKeyValues.JWT_KEY);
     private static final String ISSUER = ENV_MANAGER.getValue(EnvKeyValues.JWT_ISSUER);
     private static final long JWT_TOKEN_VALIDITY_DURATION =
-            Duration.parse(ENV_MANAGER.getValue(EnvKeyValues.JWT_EXPIRE_DURATION)).toSeconds();
+            Duration.parse(ENV_MANAGER.getValue(EnvKeyValues.JWT_EXPIRE_DURATION)).toMillis();
 
     //Empty constructor because this class is meant to be used statically
     private JWTUtility() {}
