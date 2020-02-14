@@ -8,12 +8,13 @@ import java.io.IOException;
 import java.sql.*;
 
 /**
- * This is used for determining the inital state of the database and creating the desired state if needed.
+ * This is used for determining the initial state of the database and creating the desired state if needed.
  */
 public class DBInit {
 
     private DBConn dBconn;
     private EnvManager env = new EnvManager();
+    public static final int MAX_ATTEMPTS = 100;
 
     /**
      * Creates a DBInit object.
@@ -70,7 +71,7 @@ public class DBInit {
         ResourceReader rectReader = new ResourceReader("create.sql");
 
         String dbCreateString = rectReader.getResourceAsString();
-        dbCreateString = dbCreateString.replace("DB_DATABASE", env.getValue(EnvKeyValues.DB_DATABASE));
+        dbCreateString = dbCreateString.replace(EnvKeyValues.DB_DATABASE, env.getValue(EnvKeyValues.DB_DATABASE));
 
         try (Connection conn = this.dBconn.connect()) {
             try (Statement st = conn.createStatement()) {
@@ -86,10 +87,10 @@ public class DBInit {
     }
 
     /**
-     * Trys to connect to the database.
+     * Attempts to connect to the database.
      * @return Returns true if we can connect. Returns false if we cannot connect to the database.
      */
-    public boolean tryDBConnect() {
+    public boolean canConnect() {
         try (Connection conn = this.dBconn.connect()) {
             return true;
         } catch (SQLException sqle) {

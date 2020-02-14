@@ -2,6 +2,7 @@ package blink;
 
 import blink.datalayer.DBInit;
 
+import java.sql.SQLException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.ApplicationPath;
@@ -40,12 +41,21 @@ public class ApplicationConfig extends Application {
         try {
             DBInit db = new DBInit();
 
-            while (!db.tryDBConnect()) {
-                System.out.println("DB connection could not be initialized. Trying again in 5 seconds...");
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+            for (int attempts = 1; attempts <= DBInit.MAX_ATTEMPTS; attempts++) {
+                if (db.canConnect()) {
+                    db.initializeDB();
+                    break;
+                } else {
+                    System.out.println("DB connection could not be initialized. Attempt "
+                            + attempts +"/" + DBInit.MAX_ATTEMPTS
+                            + ". Trying again in 5 seconds...");
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                }
             }
 
-            db.initializeDB();
+            if (!db.canConnect()) {
+                throw new SQLException("Could not connect to database in allotted attempts.");
+            }
         } catch (Exception E) {
         // If we are here we're completely hosed.
             E.printStackTrace();
