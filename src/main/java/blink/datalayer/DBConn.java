@@ -8,18 +8,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 class DBConn {
-    private EnvManager env;
-
     private String driver;
     private String url;
     private String user;
     private String password;
 
-    DBConn(){
-        this.env = new EnvManager();
+    DBConn() {
+        EnvManager env = new EnvManager();
 
         this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME) + ":3306/venture_creations?allowPublicKeyRetrieval=true";
+        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME)
+                + ":3306/"
+                + env.getValue(EnvKeyValues.DB_DATABASE)
+                + "?allowPublicKeyRetrieval=true";
         this.user = env.getValue(EnvKeyValues.DB_USER_NAME);
         this.password = env.getValue(EnvKeyValues.DB_USER_PASS);
     }

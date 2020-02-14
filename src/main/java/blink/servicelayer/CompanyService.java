@@ -2,7 +2,7 @@ package blink.servicelayer;
 
 import blink.businesslayer.Authorization;
 import blink.businesslayer.CompanyBusiness;
-import blink.utility.ConflictException;
+import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
 import com.google.gson.JsonObject;

@@ -27,6 +27,7 @@ public class EnvManager {
     private void fillWithProperties() {
         // Add properties to the map.
         envProps.put(EnvKeyValues.DB_HOSTNAME, new DBHostName());
+        envProps.put(EnvKeyValues.DB_DATABASE, new DBDatabaseName());
         envProps.put(EnvKeyValues.DB_USER_NAME, new DBUserName());
         envProps.put(EnvKeyValues.DB_USER_PASS, new DBUserPass());
         envProps.put(EnvKeyValues.JWT_KEY, new JWTKey());

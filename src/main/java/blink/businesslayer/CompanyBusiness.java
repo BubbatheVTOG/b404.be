@@ -1,7 +1,7 @@
 package blink.businesslayer;
 
 import blink.datalayer.CompanyDB;
-import blink.utility.ConflictException;
+import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
 

@@ -8,7 +8,7 @@ import blink.datalayer.PersonDB;
 
 import javax.ws.rs.*;
 
-import blink.utility.ConflictException;
+import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
 import blink.utility.objects.Person;
 import blink.utility.security.PasswordEncryption;
