@@ -43,7 +43,9 @@ public class ApplicationConfig extends Application {
 
             for (int attempts = 1; attempts <= DBInit.MAX_ATTEMPTS; attempts++) {
                 if (db.canConnect()) {
+                    System.out.println("DB connected.");
                     db.initializeDB();
+                    System.out.println("DB completed initialization.");
                     break;
                 } else {
                     System.out.println("DB connection could not be initialized. Attempt "

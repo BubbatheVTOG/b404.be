@@ -32,7 +32,11 @@ public class DBInit {
     public void initializeDB() throws IOException, SQLException {
         try {
             if (!this.tablesExist()) {
+                System.out.println("DB tables did not exist. Making them...");
                 this.createDB();
+                System.out.println("DB tables created.");
+            } else {
+                System.out.println("DB tables already exist.");
             }
         } catch (SQLException sqle) {
             throw new SQLException("FATAL - Could not initialize the database!");
