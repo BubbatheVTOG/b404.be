@@ -16,8 +16,13 @@ import java.util.List;
  * Enforces business rules and leverages datalayer to manipulate database
  */
 public class CompanyBusiness {
-    private CompanyDB companyDB = new CompanyDB();
-    private PersonBusiness personBusiness = new PersonBusiness();
+    private CompanyDB companyDB;
+    private PersonBusiness personBusiness;
+
+    public CompanyBusiness(){
+        this.companyDB = new CompanyDB();
+        this.personBusiness = new PersonBusiness();
+    }
 
     /**
      * Gets all companies from the database

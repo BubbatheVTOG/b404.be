@@ -18,8 +18,13 @@ import blink.utility.security.PasswordEncryption;
  * Includes login as well as business operations for people
  */
 public class PersonBusiness {
-    private PersonDB personDB = new PersonDB();
-    private AccessLevelBusiness accessLevelBusiness = new AccessLevelBusiness();
+    private PersonDB personDB;
+    private AccessLevelBusiness accessLevelBusiness;
+
+    public PersonBusiness(){
+        this.personDB = new PersonDB();
+        this.accessLevelBusiness =  new AccessLevelBusiness();
+    }
 
     /**
      * Checks that a username and password matches an entry in the database
@@ -79,7 +84,7 @@ public class PersonBusiness {
 
     /**
      * Get a person from the database by UUID
-     * @param uuid - String must be convertible to integer
+     * @param uuid - Person UUID
      * @return Person object of person found in database
      * @throws NotFoundException - UUID does not exist in database
      * @throws BadRequestException - UUID was either null or invalid integer

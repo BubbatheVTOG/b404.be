@@ -11,8 +11,12 @@ import java.sql.SQLException;
 /**
  * Business layer service for handling access level logic
  */
-public class AccessLevelBusiness {
-    private AccessLevelDB accessLevelDB = new AccessLevelDB();
+class AccessLevelBusiness {
+    private AccessLevelDB accessLevelDB;
+
+    AccessLevelBusiness(){
+        this.accessLevelDB = new AccessLevelDB();
+    }
 
     /**
      * Retrieves access level information from the database
@@ -22,7 +26,7 @@ public class AccessLevelBusiness {
      * @throws BadRequestException - Access Level ID is not a valid integer format
      * @throws InternalServerErrorException - Error connecting to database or executing query
      */
-    public AccessLevel getAccessLevelByID(String accessLevelID){
+    AccessLevel getAccessLevelByID(String accessLevelID){
         try{
             AccessLevel accessLevel = accessLevelDB.getAccessLevel(Integer.parseInt(accessLevelID));
 
