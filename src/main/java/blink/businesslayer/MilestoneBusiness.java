@@ -229,6 +229,37 @@ public class MilestoneBusiness {
     }
 
     /**
+     * Archive or unarchive an existing milestone
+     * @param milestoneID - ID of milestone to archive
+     * @return Success string
+     * @throws NotFoundException - Milestone ID does not exist
+     * @throws BadRequestException - MilestoneID is formatted improperly
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public String updateMilestoneArchiveStatus(String milestoneID, boolean status) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Validate milestone ID
+            int milestoneIDInteger;
+            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
+            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
+
+            //Check that milestone exists
+            if(this.milestoneDB.getMilestoneByID(milestoneIDInteger) == null){
+                throw new NotFoundException("No milestone with that ID exists");
+            }
+
+            milestoneDB.updateMilestoneArchiveStatus(milestoneIDInteger, status);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return "Successfully archived milestone.";
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Delete a person from the database by UUID
      * @param milestoneID - ID of milestone to delete
      * @return Success string
@@ -255,7 +286,6 @@ public class MilestoneBusiness {
             return "Successfully deleted milestone.";
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        //ArithmeticException - If the password encryption process fails
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }

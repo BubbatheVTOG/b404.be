@@ -196,6 +196,27 @@ public class MilestoneDB {
     }
 
     /**
+     * Update archive status of an existing milestone
+     * @param milestoneID - ID of milestone to update
+     * @param archiveStatus - boolean to set archive status to
+     * @throws SQLException - Error connecting to database or executing statement
+     */
+    public void updateMilestoneArchiveStatus(final int milestoneID, boolean archiveStatus) throws SQLException {
+        //Prepare sql statement
+        String query = "UPDATE milestone SET archived = ? WHERE milestoneID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setInt(1, milestoneID);
+            preparedStatement.setBoolean(2, archiveStatus);
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    /**
      * Connect to database and delete a milestone by milestoneID
      * @param milestoneID - milestoneID to delete from database
      * @return number of deleted rows
