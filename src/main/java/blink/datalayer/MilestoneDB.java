@@ -128,24 +128,22 @@ public class MilestoneDB {
 
     /**
      * Connect to database and add a new milestone template
-     * @param milestoneID - milestoneID of new milestone to be added
      * @param name - name of new milestone to be added
      * @param description - description of new milestone to be added
      * @param createdDate - The date that this milestone has been created
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertMilestone(final int milestoneID, final String name, final String description, final Date createdDate) throws SQLException {
+    public void insertMilestone(final String name, final String description, final Date createdDate) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO milestone (milestoneID, name, description, createdDate) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO milestone (name, description, createdDate) VALUES (?, ?, ?);";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
-            preparedStatement.setInt(1, milestoneID);
-            preparedStatement.setString(2, name);
-            preparedStatement.setString(3, description);
-            preparedStatement.setDate(4, createdDate);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, createdDate);
 
             preparedStatement.executeUpdate();
         }
@@ -153,29 +151,27 @@ public class MilestoneDB {
 
     /**
      * Connect to database and add a new concrete milestone
-     * @param milestoneID - milestoneID of new milestone to be added
      * @param name - name of new milestone to be added
      * @param description - description of new milestone to be added
      * @param deliveryDate - deliveryDate of new milestone to be added
      * @param companyID - companyID of new milestone to be added
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertMilestone(final int milestoneID, final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
+    public void insertMilestone(final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO milestone (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO milestone (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
-            preparedStatement.setInt(1, milestoneID);
-            preparedStatement.setString(2, name);
-            preparedStatement.setString(3, description);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, createdDate);
             preparedStatement.setDate(4, createdDate);
-            preparedStatement.setDate(5, createdDate);
-            preparedStatement.setDate(6, startDate);
-            preparedStatement.setDate(7, deliveryDate);
-            preparedStatement.setInt(8, companyID);
+            preparedStatement.setDate(5, startDate);
+            preparedStatement.setDate(6, deliveryDate);
+            preparedStatement.setInt(7, companyID);
 
             preparedStatement.executeUpdate();
         }
