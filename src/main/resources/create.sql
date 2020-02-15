@@ -92,7 +92,7 @@ CREATE TABLE `milestone` (
   `startDate` date DEFAULT NULL,
   `deliveryDate` date DEFAULT NULL,
   `completedDate` date DEFAULT NULL,
-  `archived` boolean DEFAULT NULL,
+  `archived` boolean DEFAULT 0,
   `companyID` int(11) DEFAULT NULL,
   PRIMARY KEY (`milestoneID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -107,7 +107,7 @@ CREATE TABLE `workflow` (
   `startDate` date DEFAULT NULL,
   `deliveryDate` date DEFAULT NULL,
   `completedDate` date DEFAULT NULL,
-  `archived` boolean DEFAULT NULL,
+  `archived` boolean DEFAULT 0,
   `milestoneID` int(11) NOT NULL,
   PRIMARY KEY (`workflowID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
