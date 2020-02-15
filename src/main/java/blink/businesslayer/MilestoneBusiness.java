@@ -217,10 +217,10 @@ public class MilestoneBusiness {
 
             //Retrieve the person from the database by UUID
             Date today = new Date();
-            int insertedMilestoneID = milestoneDB.updateMilestone(milestoneIDInteger, name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+            milestoneDB.updateMilestone(milestoneIDInteger, name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+            return new Milestone(milestoneIDInteger, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
