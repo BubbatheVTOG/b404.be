@@ -228,6 +228,39 @@ public class MilestoneBusiness {
         }
     }
 
+    /**
+     * Delete a person from the database by UUID
+     * @param milestoneID - ID of milestone to delete
+     * @return Success string
+     * @throws NotFoundException - UUID does not exist in database
+     * @throws BadRequestException - UUID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public String deleteMilestoneByID(String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Validate milestone ID
+            int milestoneIDInteger;
+            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
+            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
+
+            //Retrieve the person from the database by UUID
+            int numRowsDeleted = milestoneDB.deleteMilestoneByID(milestoneIDInteger);
+
+            //If null is returned, no user was found with given UUID
+            if(numRowsDeleted == 0){
+                throw new NotFoundException("No milestone with that id exists.");
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return "Successfully deleted milestone.";
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //ArithmeticException - If the password encryption process fails
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
     private Date validateDate(String dateString){
         try{
             return dateParser.parse(dateString);
