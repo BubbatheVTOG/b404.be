@@ -2,7 +2,7 @@ package blink.utility.objects;
 
 import com.google.gson.Gson;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class Milestone {
     private int mileStoneID;

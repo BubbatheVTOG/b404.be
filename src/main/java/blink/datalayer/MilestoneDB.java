@@ -4,6 +4,7 @@ import blink.utility.objects.Milestone;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MilestoneDB {
@@ -127,29 +128,6 @@ public class MilestoneDB {
     }
 
     /**
-     * Connect to database and add a new milestone template
-     * @param name - name of new milestone to be added
-     * @param description - description of new milestone to be added
-     * @param createdDate - The date that this milestone has been created
-     * @throws SQLException - Error connecting to database or executing update
-     */
-    public void insertMilestone(final String name, final String description, final Date createdDate) throws SQLException {
-        //Prepare sql statement
-        String query = "INSERT INTO milestone (name, description, createdDate) VALUES (?, ?, ?);";
-
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-            //Set parameters and execute update
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, createdDate);
-
-            preparedStatement.executeUpdate();
-        }
-    }
-
-    /**
      * Connect to database and add a new concrete milestone
      * @param name - name of new milestone to be added
      * @param description - description of new milestone to be added
@@ -157,23 +135,27 @@ public class MilestoneDB {
      * @param companyID - companyID of new milestone to be added
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertMilestone(final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
+    public int insertMilestone(final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
         //Prepare sql statement
         String query = "INSERT INTO milestone (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
         try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, createdDate);
-            preparedStatement.setDate(4, createdDate);
-            preparedStatement.setDate(5, startDate);
-            preparedStatement.setDate(6, deliveryDate);
+            preparedStatement.setDate(3, (java.sql.Date)createdDate);
+            preparedStatement.setDate(4, (java.sql.Date)createdDate);
+            preparedStatement.setDate(5, (java.sql.Date)startDate);
+            preparedStatement.setDate(6, (java.sql.Date)deliveryDate);
             preparedStatement.setInt(7, companyID);
 
             preparedStatement.executeUpdate();
+
+            ResultSet insertedKeys = preparedStatement.getGeneratedKeys();
+            insertedKeys.next();
+            return insertedKeys.getInt(1);
         }
     }
 

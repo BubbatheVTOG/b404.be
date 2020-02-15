@@ -1,19 +1,27 @@
 package blink.businesslayer;
 
+import blink.datalayer.CompanyDB;
 import blink.datalayer.MilestoneDB;
 import blink.utility.objects.Milestone;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import java.util.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
+    private CompanyDB companyDB;
+    private SimpleDateFormat dateParser;
 
     public MilestoneBusiness(){
         this.milestoneDB = new MilestoneDB();
+        this.companyDB = new CompanyDB();
+        this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
     }
 
 
@@ -95,6 +103,48 @@ public class MilestoneBusiness {
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+
+    public Milestone insertMilestone(String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(name == null || name.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
+
+            Date parsedStartDate = this.validateDate(startDate);
+            if(parsedStartDate == null){throw new BadRequestException("Start date is an invalid format.");}
+            Date parsedDeliveryDate = this.validateDate(deliveryDate);
+            if(parsedDeliveryDate == null){throw new BadRequestException("Delivery date is an invalid format.");}
+
+            int companyIDInteger;
+            try{companyIDInteger = Integer.parseInt(companyID);}
+            catch(NumberFormatException nfe){throw new BadRequestException("Company ID must be a valid integer");}
+
+            //Check that company does not already exist in the database
+            if(companyDB.getCompanyByID(companyIDInteger) == null){
+                throw new NotFoundException("No company with that companyID exists.");
+            }
+
+            //Retrieve the person from the database by UUID
+            Date today = new Date();
+            int insertedMilestoneID = milestoneDB.insertMilestone(name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    private Date validateDate(String dateString){
+        try{
+            return dateParser.parse(dateString);
+        }
+        catch(ParseException pe){
+            return null;
         }
     }
 }
