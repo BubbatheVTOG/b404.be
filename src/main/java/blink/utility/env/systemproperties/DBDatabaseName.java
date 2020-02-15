@@ -2,6 +2,8 @@ package blink.utility.env.systemproperties;
 
 import blink.utility.env.EnvKeyValues;
 
+import java.util.logging.Logger;
+
 public class DBDatabaseName implements EnvironmentProperty {
 
     private static final String KEY = EnvKeyValues.DB_DATABASE;
@@ -9,6 +11,9 @@ public class DBDatabaseName implements EnvironmentProperty {
 
     public DBDatabaseName() {
         this.getValueFromSystem();
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        String msg = String.format("DB_DATABASE determined to be: %s",this.value);
+        logger.info(msg);
     }
 
     @Override

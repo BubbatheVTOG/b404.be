@@ -2,14 +2,22 @@ package blink;
 
 import blink.datalayer.DBInit;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 @ApplicationPath("api")
 public class ApplicationConfig extends Application {
+
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+
     @Override
     public Set<Class<?>> getClasses() {
         this.dBCheck();
@@ -43,14 +51,15 @@ public class ApplicationConfig extends Application {
 
             for (int attempts = 1; attempts <= DBInit.MAX_ATTEMPTS; attempts++) {
                 if (db.canConnect()) {
-                    System.out.println("DB connected.");
+                    logger.info("DB connected.");
                     db.initializeDB();
-                    System.out.println("DB completed initialization.");
+                    logger.info("DB completed initialization.");
                     break;
                 } else {
-                    System.out.println("DB connection could not be initialized. Attempt "
+                    String msg = "DB connection could not be initialized. Attempt "
                             + attempts +"/" + DBInit.MAX_ATTEMPTS
-                            + ". Trying again in 5 seconds...");
+                            + ". Trying again in 5 seconds...";
+                    logger.info(msg);
                     Thread.sleep(TimeUnit.SECONDS.toMillis(5));
                 }
             }
@@ -60,7 +69,9 @@ public class ApplicationConfig extends Application {
             }
         } catch (Exception E) {
         // If we are here we're completely hosed.
-            E.printStackTrace();
+            StringWriter sw = new StringWriter();
+            E.printStackTrace(new PrintWriter(sw));
+            logger.log(Level.SEVERE, sw.toString());
             System.exit(1);
         }
     }
