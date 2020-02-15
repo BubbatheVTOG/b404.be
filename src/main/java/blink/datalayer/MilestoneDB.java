@@ -28,11 +28,15 @@ public class MilestoneDB {
                     List<Milestone> milestoneList = new ArrayList<>();
                     while (result.next()) {
                         milestoneList.add(new Milestone(result.getInt("milestoneID"),
-                                result.getInt("orderNumber"),
-                                result.getString("name"),
-                                result.getString("description"),
-                                result.getDate("deliveryDate"),
-                                result.getInt("companyID")));
+                                                        result.getString("name"),
+                                                        result.getString("description"),
+                                                        result.getDate("createdDate"),
+                                                        result.getDate("lastUpdatedDate"),
+                                                        result.getDate("startDate"),
+                                                        result.getDate("deliveryDate"),
+                                                        result.getDate("completedDate"),
+                                                        result.getBoolean("archived"),
+                                                        result.getInt("companyID")));
                     }
 
                     //Return milestone
@@ -64,10 +68,14 @@ public class MilestoneDB {
                     List<Milestone> milestoneList = new ArrayList<>();
                     while (result.next()) {
                         milestoneList.add(new Milestone(result.getInt("milestoneID"),
-                                result.getInt("orderNumber"),
                                 result.getString("name"),
                                 result.getString("description"),
+                                result.getDate("createdDate"),
+                                result.getDate("lastUpdatedDate"),
+                                result.getDate("startDate"),
                                 result.getDate("deliveryDate"),
+                                result.getDate("completedDate"),
+                                result.getBoolean("archived"),
                                 result.getInt("companyID")));
                     }
 
@@ -100,10 +108,14 @@ public class MilestoneDB {
 
                     while (result.next()) {
                         milestone = new Milestone(result.getInt("milestoneID"),
-                                result.getInt("orderNumber"),
                                 result.getString("name"),
                                 result.getString("description"),
+                                result.getDate("createdDate"),
+                                result.getDate("lastUpdatedDate"),
+                                result.getDate("startDate"),
                                 result.getDate("deliveryDate"),
+                                result.getDate("completedDate"),
+                                result.getBoolean("archived"),
                                 result.getInt("companyID"));
                     }
 

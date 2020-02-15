@@ -6,11 +6,11 @@ import java.sql.Date;
 
 public class Milestone {
     private int mileStoneID;
-    private int orderNumber;
     private String name;
     private String description;
     private Date createdDate;
     private Date lastUpdatedDate;
+    private Date startDate;
     private Date deliveryDate;
     private Date completedDate;
     private boolean archived;
@@ -20,7 +20,6 @@ public class Milestone {
     /**
      * Construct a milestone and provide all information necessary
      * @param mileStoneID - ID for the milestone
-     * @param orderNumber - Order for the workflow
      * @param name - name for the workflow
      * @param description - general description for the workflow
      * @param createdDate - date workflow was created
@@ -30,29 +29,28 @@ public class Milestone {
      * @param archived - whether the workflow is archived or not
      * @param companyID - company that the workflow is assigned to
      */
-    public Milestone(int mileStoneID, int orderNumber, String name, String description, Date createdDate, Date lastUpdatedDate, Date deliveryDate, Date completedDate, int archived, int companyID) {
+    public Milestone(int mileStoneID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, int companyID) {
         this.mileStoneID = mileStoneID;
-        this.orderNumber = orderNumber;
         this.name = name;
         this.description = description;
         this.createdDate = createdDate;
         this.lastUpdatedDate = lastUpdatedDate;
+        this.startDate = startDate;
         this.deliveryDate = deliveryDate;
         this.completedDate = completedDate;
-        this.archived = (archived == 1 ? Boolean.TRUE : Boolean.FALSE);
+        this.archived = archived;
         this.companyID = companyID;
 
         this.gson = new Gson();
     }
 
-    public Milestone(int mileStoneID, int orderNumber, String name, String description, Date deliveryDate, int companyID) {
+    public Milestone(int mileStoneID, String name, String description, Date startDate, Date deliveryDate, int companyID) {
         this.mileStoneID = mileStoneID;
-        this.orderNumber = orderNumber;
         this.name = name;
         this.description = description;
+        this.startDate = startDate;
         this.deliveryDate = deliveryDate;
         this.companyID = companyID;
-        this.archived = Boolean.FALSE;
 
         this.gson = new Gson();
     }
@@ -63,14 +61,6 @@ public class Milestone {
 
     public void setMileStoneID(int mileStoneID) {
         this.mileStoneID = mileStoneID;
-    }
-
-    public int getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(int orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public String getName() {
@@ -103,6 +93,14 @@ public class Milestone {
 
     public void setLastUpdatedDate(Date lastUpdatedDate) {
         this.lastUpdatedDate = lastUpdatedDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getDeliveryDate() {
