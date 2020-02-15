@@ -106,7 +106,18 @@ public class MilestoneBusiness {
         }
     }
 
-
+    /**
+     * Insert a new milestone
+     * @param name - Name for the new milestone
+     * @param description - Description for the new milestone
+     * @param startDate - Start date for the new milestone
+     * @param deliveryDate - Delivery date for the new milestone
+     * @param companyID - Company ID of company to assign milestone to
+     * @return Inserted Milestone object
+     * @throws NotFoundException - companyID does not exist in the database
+     * @throws BadRequestException - One of the parameter was not in the expected format
+     * @throws InternalServerErrorException - Error in the data layer
+     */
     public Milestone insertMilestone(String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
