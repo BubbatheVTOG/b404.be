@@ -251,7 +251,7 @@ public class MilestoneBusiness {
             milestoneDB.updateMilestoneArchiveStatus(milestoneIDInteger, status);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return "Successfully archived milestone.";
+            return (status) ? "Successfully archived milestone." : "Successfully unarchived milestone.";
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
