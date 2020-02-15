@@ -2,6 +2,9 @@ package blink.datalayer;
 
 import blink.utility.objects.Milestone;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,6 +136,7 @@ public class MilestoneDB {
      * @param description - description of new milestone to be added
      * @param deliveryDate - deliveryDate of new milestone to be added
      * @param companyID - companyID of new milestone to be added
+     * @return inserted milestones generated milestoneID
      * @throws SQLException - Error connecting to database or executing update
      */
     public int insertMilestone(final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
@@ -153,9 +157,41 @@ public class MilestoneDB {
 
             preparedStatement.executeUpdate();
 
-            ResultSet insertedKeys = preparedStatement.getGeneratedKeys();
-            insertedKeys.next();
-            return insertedKeys.getInt(1);
+            try(ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
+                insertedKeys.next();
+                return insertedKeys.getInt(1);
+            }
+        }
+    }
+
+    /**
+     * Update an existing milestone
+     * @param milestoneID - ID of milestone to update
+     * @param name - Updated name for the milestone
+     * @param description - Updated description for the new milestone
+     * @param startDate - Updated start date for the new milestone
+     * @param deliveryDate - Updated delivery date for the new milestone
+     * @param companyID - Updated company ID of company to assign milestone to
+     * @throws SQLException - Error connecting to database or executing statement
+     */
+    public void updateMilestone(final int milestoneID, final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
+        //Prepare sql statement
+        String query = "UPDATE milestone SET name = ?, description = ?, createdDate = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, companyID = ? WHERE milestoneID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, (java.sql.Date)createdDate);
+            preparedStatement.setDate(4, (java.sql.Date)createdDate);
+            preparedStatement.setDate(5, (java.sql.Date)startDate);
+            preparedStatement.setDate(6, (java.sql.Date)deliveryDate);
+            preparedStatement.setInt(7, companyID);
+            preparedStatement.setInt(8, milestoneID);
+
+            preparedStatement.executeUpdate();
         }
     }
 

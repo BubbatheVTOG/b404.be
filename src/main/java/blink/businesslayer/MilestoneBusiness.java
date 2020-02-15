@@ -115,7 +115,7 @@ public class MilestoneBusiness {
      * @param companyID - Company ID of company to assign milestone to
      * @return Inserted Milestone object
      * @throws NotFoundException - companyID does not exist in the database
-     * @throws BadRequestException - One of the parameter was not in the expected format
+     * @throws BadRequestException - One of the parameters was not in the expected format
      * @throws InternalServerErrorException - Error in the data layer
      */
     public Milestone insertMilestone(String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
@@ -140,6 +140,84 @@ public class MilestoneBusiness {
             //Retrieve the person from the database by UUID
             Date today = new Date();
             int insertedMilestoneID = milestoneDB.insertMilestone(name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Update an existing milestone
+     * @param name - Updated name for the milestone; cannot be null
+     * @param description - Updated description for the new milestone; can be null
+     * @param startDate - Updated start date for the new milestone; can be null
+     * @param deliveryDate - Updated delivery date for the new milestone; can be null
+     * @param companyID - Updated company ID of company to assign milestone to; can be null
+     * @return Updated Milestone object
+     * @throws NotFoundException - companyID does not exist in the database
+     * @throws BadRequestException - One of the parameters was not in the expected format
+     * @throws InternalServerErrorException - Error in the data layer
+     */
+    public Milestone updateMilestone(String milestoneID, String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Validate milestone ID
+            int milestoneIDInteger;
+            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
+            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
+
+            //Retrieve existing milestone from database
+            Milestone existingMilestone = this.milestoneDB.getMilestoneByID(milestoneIDInteger);
+
+            if(name == null || name.isEmpty()){ name = existingMilestone.getName(); }
+
+            //If start date is null, set to existing value; otherwise, validate start date
+            Date parsedStartDate;
+            if(startDate == null || startDate.isEmpty()){
+                parsedStartDate = existingMilestone.getStartDate();
+            }
+            else {
+                parsedStartDate = this.validateDate(startDate);
+                if (parsedStartDate == null) {
+                    throw new BadRequestException("Start date is an invalid format.");
+                }
+            }
+
+            //If delivery date is null, set to existing value; otherwise, validate delivery date
+            Date parsedDeliveryDate;
+            if(deliveryDate == null || deliveryDate.isEmpty()){
+                parsedDeliveryDate = existingMilestone.getDeliveryDate();
+            }
+            else {
+                parsedDeliveryDate = this.validateDate(startDate);
+                if (parsedDeliveryDate == null) {
+                    throw new BadRequestException("Start date is an invalid format.");
+                }
+            }
+
+            int companyIDInteger;
+            if(companyID == null || companyID.isEmpty()){
+                companyIDInteger = existingMilestone.getCompanyID();
+            }
+            else {
+                try {
+                    companyIDInteger = Integer.parseInt(companyID);
+                } catch (NumberFormatException nfe) {
+                    throw new BadRequestException("Company ID must be a valid integer");
+                }
+            }
+
+            //Check that company exists in the database
+            if(companyDB.getCompanyByID(companyIDInteger) == null){
+                throw new NotFoundException("No company with that companyID exists.");
+            }
+
+            //Retrieve the person from the database by UUID
+            Date today = new Date();
+            int insertedMilestoneID = milestoneDB.updateMilestone(milestoneIDInteger, name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
