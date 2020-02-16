@@ -176,9 +176,7 @@ public class MilestoneBusiness {
             }
             else {
                 parsedStartDate = this.validateDate(startDate);
-                if (parsedStartDate == null) {
-                    throw new BadRequestException("Start date is an invalid format.");
-                }
+                if (parsedStartDate == null) {throw new BadRequestException("Start date is an invalid format.");}
             }
 
             //If delivery date is null, set to existing value; otherwise, validate delivery date
@@ -188,9 +186,7 @@ public class MilestoneBusiness {
             }
             else {
                 parsedDeliveryDate = this.validateDate(startDate);
-                if (parsedDeliveryDate == null) {
-                    throw new BadRequestException("Start date is an invalid format.");
-                }
+                if (parsedDeliveryDate == null) {throw new BadRequestException("Delivery date is an invalid format.");}
             }
 
             int companyIDInteger;

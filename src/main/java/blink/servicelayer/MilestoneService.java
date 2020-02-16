@@ -303,7 +303,7 @@ public class MilestoneService {
     /**
      * Archive a milestone
      * @param milestoneID - ID of milestone to archive
-     * @return - HTTP Response: 200 OK for milestone inserted successfully
+     * @return - HTTP Response: 200 OK for milestone archived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -315,7 +315,7 @@ public class MilestoneService {
     @Operation(summary = "archiveMilestone", description = "Archive an existing milestone")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: successfully archived milestone}"),
-            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 400, message = "{error: Milestone ID must be a valid integer.}"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
             @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
@@ -352,9 +352,9 @@ public class MilestoneService {
     }
 
     /**
-     * Archive a milestone
+     * Unarchive a milestone
      * @param milestoneID - ID of milestone to unarchive
-     * @return - HTTP Response: 200 OK for milestone inserted successfully
+     * @return - HTTP Response: 200 OK for milestone unarchived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -366,7 +366,7 @@ public class MilestoneService {
     @Operation(summary = "archiveMilestone", description = "Unarchive an existing milestone")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: successfully unarchived milestone}"),
-            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 400, message = "{error: Milestone ID must be a valid integer.}"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
             @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
