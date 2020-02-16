@@ -51,20 +51,43 @@ public class MilestoneDB {
     }
 
     /**
+     * Get all archived milestones.
+     * @return A list of archived milestones.
+     * @throws SQLException Thrown if database cannot connect.
+     */
+    public List<Milestone> getAllArchivedMilestones() throws SQLException {
+        return this.getAllMilestones(true);
+    }
+
+    /**
+     * Get all active milestones.
+     * @return A list of archived milestones.
+     * @throws SQLException Thrown if database cannot connect.
+     */
+    public List<Milestone> getAllActiveMilstones() throws SQLException {
+        return this.getAllMilestones(false);
+    }
+
+    /**
      * Get all milestones based on archived or not archived
-     * 1 - archived milestones
-     * 0 - active milestones
+     * true - archived milestones
+     * false - active milestones
      * @return List of milestone objects
      * @throws SQLException - Error connecting to database or executing query
      */
-    public List<Milestone> getAllMilestones(int archived) throws SQLException {
+    private List<Milestone> getAllMilestones(boolean incluedArchived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
             String query = "SELECT * FROM milestone WHERE archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, archived);
+
+                if (incluedArchived) {
+                    preparedStatement.setInt(1, 1);
+                } else {
+                    preparedStatement.setInt(1, 0);
+                }
 
                 //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
