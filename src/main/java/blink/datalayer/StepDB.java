@@ -153,8 +153,9 @@ public class StepDB {
             String query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                int counter = 1;
                 for (Step step : steps) {
-                    preparedStatement.setInt(1, step.getOrderNumber());
+                    preparedStatement.setInt(1, counter);
                     preparedStatement.setString(2, step.getDescription());
                     preparedStatement.setInt(3, 0);
                     preparedStatement.setInt(4, step.getUUID());
@@ -169,6 +170,7 @@ public class StepDB {
                             numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
                         }
                     }
+                    counter++;
                 }
                 conn.commit();
             } finally {
@@ -186,8 +188,9 @@ public class StepDB {
      */
     public int insertChildSteps(List<Step> steps, PreparedStatement preparedStatement, int parentStepID, int numInsertedSteps) throws SQLException {
 
+        int counter = 1;
         for (Step step : steps) {
-            preparedStatement.setInt(1, step.getOrderNumber());
+            preparedStatement.setInt(1, counter);
             preparedStatement.setString(3, step.getDescription());
             preparedStatement.setInt(4, parentStepID);
             preparedStatement.setInt(5, step.getUUID());
@@ -202,6 +205,7 @@ public class StepDB {
                     numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
                 }
             }
+            counter++;
         }
         return numInsertedSteps;
     }
@@ -228,8 +232,9 @@ public class StepDB {
                 query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES (?, ?, ?, ?, ?, ?, ?);";
 
                 try (PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                    int counter = 1;
                     for (Step step : steps) {
-                        preparedStatement.setInt(1, step.getOrderNumber());
+                        preparedStatement.setInt(1, counter);
                         preparedStatement.setString(2, step.getDescription());
                         preparedStatement.setInt(3, 0);
                         preparedStatement.setInt(4, step.getUUID());
@@ -244,6 +249,7 @@ public class StepDB {
                                 numUpdatedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numUpdatedSteps);
                             }
                         }
+                        counter++;
                     }
                     conn.commit();
                 }
