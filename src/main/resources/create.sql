@@ -177,7 +177,7 @@ INSERT INTO DB_DATABASE.workflow (workflowID, name, createdDate, lastUpdatedDate
   (6, "Milestone 2 Workflow 2", "2019-05-01", "2020-02-01", "2020-03-01", "2020-06-01", null,         0, 2),      -- In progress workflow to milestone 2
   (7, "Milestone 2 Workflow 3", "2020-01-01", "2020-01-01", "2020-06-01", "2020-08-01", null,         0, 2),      -- Not Started workflow to milestone 2
   (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null,         0, 3),      -- Not started workflow to milestone 3
-  (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3),      -- Not started workflow to milestone 3
+  (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3);      -- Not started workflow to milestone 3
 
 INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES
   ("c5877b03-ac76-4e71-9a88-1c2d9122d474", "admin", "d0c010cb69151b85bfd3f8b97cd87e336392efdd4b01d3d3c0bdb44e47c02729d51ce46348a98e23364dcf278df7090c35f944e43748f9f2691e252456b69816", "a760a131668ad5883b50e5b78aa53b27", "The", "Admin", "Admin@boss.com", "ADMIN", 1),
