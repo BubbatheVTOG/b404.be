@@ -21,43 +21,6 @@ public class StepDB {
     private DBConn dbConn;
 
     /**
-     * Get a Steps information by stepID
-     * @param stepID - stepID to search database for
-     * @return step object or null if not found
-     * @throws SQLException - error connecting to database or executing query
-     */
-    public Step getStepByStepID(int stepID) throws SQLException {
-        try (Connection conn = this.dbConn.connect()) {
-
-            //Prepare sql statement
-            String query = "SELECT * FROM step WHERE step.stepID = ?";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                //Set parameters and execute query
-                preparedStatement.setInt(1, stepID);
-
-                try (ResultSet result = preparedStatement.executeQuery()) {
-                    Step step = null;
-
-                    while (result.next()) {
-                        step = new Step.StepBuilder(result.getInt(STEPID),
-                                result.getInt(ORDERNUMBER),
-                                result.getInt(VERBID),
-                                result.getInt(FILEID),
-                                result.getInt(WORKFLOWID),
-                                result.getBoolean(COMPLETED))
-                                .description(result.getString(DESCRIPTION))
-                                .parentStep(result.getInt(PARENTSTEPID))
-                                .uuid(result.getInt(UUID))
-                                .build();
-                    }
-                    return step;
-                }
-            }
-        }
-    }
-
-    /**
      * Retrieves all higher level steps from the database
      * @param workflowID - workflowID of higher level steps to retrieve
      * @return - list of higher level steps containing lists of lower level steps
@@ -67,7 +30,7 @@ public class StepDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM step WHERE parentStepID = 0 AND workflowID = ?;";
+            String query = "SELECT * FROM step WHERE parentStepID = 0 AND workflowID = ? ORDER BY step.orderNumber;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 //Execute query
@@ -108,7 +71,7 @@ public class StepDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM step WHERE relatedStep = ?;";
+            String query = "SELECT * FROM step WHERE relatedStep = ? ORDER BY step.orderNumber;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 //Set parameters and execute query
