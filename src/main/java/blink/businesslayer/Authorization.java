@@ -5,9 +5,15 @@ import blink.utility.security.JWTUtility;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Authorization {
     private static PersonBusiness personBusiness = new PersonBusiness();
+    //TODO discuss the access levels of internal and external users
+    public static List<Integer> INTERNAL_USER_LEVELS = Arrays.asList(1,2,3);
+    public static List<Integer> EXTERNAL_USER_LEVELS = Arrays.asList(4,5,6);
 
     private Authorization(){
         //this is not used as this class is meant to be used as a static utility class
