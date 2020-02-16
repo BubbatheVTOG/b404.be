@@ -15,7 +15,7 @@ public class Milestone {
     private Date completedDate;
     private boolean archived;
     private int companyID;
-    private transient Gson gson;
+    private  transient Gson gson;
 
     /**
      * Construct a milestone and provide all information necessary

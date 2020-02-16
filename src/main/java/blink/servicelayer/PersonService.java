@@ -92,10 +92,8 @@ public class PersonService {
             //Send parameters to business layer and store response
             Person person = personBusiness.getPersonByUUID(uuid);
 
-            String newJWT = JWTUtility.generateToken(person.getUUID());
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(person), newJWT);
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -157,12 +155,8 @@ public class PersonService {
             //Send parameters to business layer and store response
             Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID);
 
-            String jwtToken = JWTUtility.generateToken(person.getUUID());
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(gson.toJson(person))
-                    .header("Authorization", jwtToken)
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -238,10 +232,8 @@ public class PersonService {
             //Send parameters to business layer and store response
             Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID);
 
-            String newJWT = JWTUtility.generateToken(person.getUUID());
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(person), newJWT);
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
