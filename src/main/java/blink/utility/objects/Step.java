@@ -1,14 +1,12 @@
 package blink.utility.objects;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Step {
     private int stepID;
     private int orderNumber;
-    private boolean isHighestLevel;
     private String description;
-    private int relatedStep;
+    private int parentStepID;
     private int uuid;
     private int verbID;
     private int fileID;
@@ -19,9 +17,8 @@ public class Step {
     private  Step(StepBuilder stepBuilder) {
         this.stepID = stepBuilder.stepID;
         this.orderNumber = stepBuilder.orderNumber;
-        this.isHighestLevel = stepBuilder.isHighestLevel;
         this.description = stepBuilder.description;
-        this.relatedStep = stepBuilder.relatedStep;
+        this.parentStepID = stepBuilder.parentStepID;
         this.uuid = stepBuilder.uuid;
         this.verbID = stepBuilder.verbID;
         this.fileID = stepBuilder.fileID;
@@ -33,9 +30,8 @@ public class Step {
     public static class StepBuilder {
         private int stepID;
         private int orderNumber;
-        private boolean isHighestLevel;
         private String description;
-        private int relatedStep;
+        private int parentStepID;
         private int uuid;
         private int verbID;
         private int fileID;
@@ -43,10 +39,10 @@ public class Step {
         private boolean completed;
         private List<Step> childSteps;
 
-        public StepBuilder(int stepID, int orderNumber, boolean isHighestLevel, int verbID, int fileID, int workflowID, boolean completed) {
+        public StepBuilder(int stepID, int orderNumber, int verbID, int fileID, int workflowID, boolean completed) {
             this.stepID = stepID;
             this.orderNumber = orderNumber;
-            this.isHighestLevel = isHighestLevel;
+            this.parentStepID = 0;
             this.verbID = verbID;
             this.fileID = fileID;
             this.workflowID = workflowID;
@@ -58,8 +54,8 @@ public class Step {
             return this;
         }
 
-        public StepBuilder relatedStep(int relatedStep) {
-            this.relatedStep = relatedStep;
+        public StepBuilder parentStep(int parentStepID) {
+            this.parentStepID = parentStepID;
             return this;
         }
 
@@ -86,17 +82,13 @@ public class Step {
 
     public void setOrderNumber(int orderNumber) { this.orderNumber = orderNumber; }
 
-    public boolean getIsHighestLevel() { return isHighestLevel; }
-
-    public void setHighestLevel(boolean isHighestLevel) { this.isHighestLevel = isHighestLevel; }
-
     public String getDescription() { return description; }
 
     public void setDescription(String description) { this.description = description; }
 
-    public int getRelatedStep() { return relatedStep; }
+    public int getParentStepID() { return parentStepID; }
 
-    public void setRelatedStep(int relatedStep) { this.relatedStep = relatedStep; }
+    public void setParentStepID(int parentStepID) { this.parentStepID = parentStepID; }
 
     public int getUUID() { return uuid; }
 
@@ -122,26 +114,4 @@ public class Step {
 
     public void setChildSteps(List<Step> childSteps) { this.childSteps = childSteps; }
 
-    /**
-     * Add children steps to parent step
-     * @param child - x number of child steps to add to parent step
-     **/
-    public void addChild(Step... child) {
-        this.childSteps.addAll(0, Arrays.asList(child));
-    }
-
-    public String toJSON(){
-        return "{" +
-                "\"stepID\":" + this.stepID + "," +
-                "\"orderNumber\":\"" + this.orderNumber + "\"," +
-                "\"isHighestLevel\":" + this.isHighestLevel + "," +
-                "\"description\":" + this.description + "," +
-                "\"relatedStep\":" + this.relatedStep + "," +
-                "\"UUID\":" + this.uuid + "," +
-                "\"verbID\":" + this.verbID + "," +
-                "\"fileID\":" + this.fileID + "," +
-                "\"workflowID\":" + this.workflowID + "," +
-                "\"childSteps\":" + this.childSteps + "," +
-                "}";
-    }
 }

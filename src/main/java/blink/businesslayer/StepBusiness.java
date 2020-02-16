@@ -7,7 +7,6 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class StepBusiness {
         try {
             List<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
             for (Step step : steps) {
-                step.setChildSteps((ArrayList<Step>) this.getRelatedSteps(step));
+                step.setChildSteps(this.getRelatedSteps(step));
             }
             return steps;
         } catch(NumberFormatException nfe) {
@@ -54,7 +53,7 @@ public class StepBusiness {
             throw new InternalServerErrorException("Problem returning related steps.");
         }
         if (relatedSteps != null) {
-            step.setChildSteps((ArrayList<Step>) relatedSteps);
+            step.setChildSteps(relatedSteps);
             for(Step relatedStep : step.getChildSteps()){
                 relatedStep.setChildSteps(this.getRelatedSteps(relatedStep));
             }
@@ -63,36 +62,12 @@ public class StepBusiness {
     }
 
     /**
-     * Gets a step from the database by UUID
-     * @param stepID - stepID to search the database for
-     * @return Step object containing data from the database
-     * @throws BadRequestException - UUID was an invalid integer format
-     * @throws NotFoundException - No step with provided UUID was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
-     */
-    public Step getStepByStepID(String stepID) {
-        try {
-            Step step = stepDB.getStepByStepID(Integer.parseInt(stepID));
-
-            if(step == null) {
-                throw new NotFoundException("No step with that stepID exists.");
-            } else {
-                return step;
-            }
-        } catch(NumberFormatException nfe){
-            throw new BadRequestException("stepID must be a valid integer.");
-        } catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
-        }
-    }
-
-    /**
      * Insert a list of ste[s into the database
      * @param steps - list of steps to insert into the database
      * @return Success Message
      */
     public int insertSteps(List<Step> steps) {
-        int numInsertedSteps = 0;
+        int numInsertedSteps;
         try {
             numInsertedSteps = stepDB.insertSteps(steps);
         } catch(SQLException ex) {
@@ -108,7 +83,7 @@ public class StepBusiness {
      * @return Success Message
      */
     public int updateSteps(List<Step> steps, String workflowID) {
-        int numUpdatedSteps = 0;
+        int numUpdatedSteps;
         try {
             numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
 
