@@ -136,11 +136,11 @@ public class MilestoneDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM milestone WHERE companyID = ? AND archived = ?;";
+            String query = "SELECT * FROM milestone WHERE archived = ? AND companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
-                preparedStatement.setBoolean(2, archived);
+                preparedStatement.setBoolean(1, archived);
+                preparedStatement.setArray(2, (java.sql.Array)companyIDList);
 
                 //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
