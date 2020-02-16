@@ -3,15 +3,24 @@ package blink.utility.env.systemproperties;
 import blink.utility.env.EnvKeyValues;
 
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JWTKey implements EnvironmentProperty {
 
     private static final String KEY = EnvKeyValues.JWT_KEY;
     private static final int KEY_LENGTH = 64;
     private String value;
+    private boolean valueFromEnvironment = false;
 
     public JWTKey() {
         this.getValueFromSystem();
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        if (this.valueFromEnvironment) {
+            logger.log(Level.INFO,"JWT_KEY determined to be <REDACTED> from the default configuration.");
+        } else {
+            logger.log(Level.INFO,"JWT_KEY determined to be <REDACTED> from the environment.");
+        }
     }
 
     @Override
@@ -23,6 +32,7 @@ public class JWTKey implements EnvironmentProperty {
     public String getValue() {
         if (this.value == null) {
             this.value = this.createRandomString(KEY_LENGTH);
+            this.valueFromEnvironment = true;
         }
         return this.value;
     }

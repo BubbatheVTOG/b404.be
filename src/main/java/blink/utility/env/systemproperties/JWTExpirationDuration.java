@@ -3,6 +3,8 @@ package blink.utility.env.systemproperties;
 import blink.utility.env.EnvKeyValues;
 
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JWTExpirationDuration implements EnvironmentProperty {
 
@@ -15,6 +17,9 @@ public class JWTExpirationDuration implements EnvironmentProperty {
 
     public JWTExpirationDuration(){
         this.getValueFromSystem();
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        String msg = String.format("JWT_EXPIRE_DURATION determined to be: %s", this.value);
+        logger.info(msg);
     }
 
     @Override

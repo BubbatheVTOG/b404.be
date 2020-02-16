@@ -6,6 +6,7 @@ import blink.utility.env.EnvManager;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.logging.Logger;
 
 /**
  * This is used for determining the initial state of the database and creating the desired state if needed.
@@ -15,6 +16,7 @@ public class DBInit {
     private DBConn dBconn;
     private EnvManager env = new EnvManager();
     public static final int MAX_ATTEMPTS = 100;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     /**
      * Creates a DBInit object.
@@ -32,11 +34,11 @@ public class DBInit {
     public void initializeDB() throws IOException, SQLException {
         try {
             if (!this.tablesExist()) {
-                System.out.println("DB tables did not exist. Making them...");
+                logger.info("DB tables did not exist. Making them...");
                 this.createDB();
-                System.out.println("DB tables created.");
+                logger.info("DB tables created.");
             } else {
-                System.out.println("DB tables already exist.");
+                logger.info("DB tables already exist.");
             }
         } catch (SQLException sqle) {
             throw new SQLException("FATAL - Could not initialize the database!");
