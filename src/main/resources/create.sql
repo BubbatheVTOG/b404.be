@@ -108,7 +108,7 @@ CREATE TABLE `workflow` (
   `deliveryDate` date DEFAULT NULL,
   `completedDate` date DEFAULT NULL,
   `archived` boolean DEFAULT 0,
-  `milestoneID` int(11) NOT NULL,
+  `milestoneID` int(11) DEFAULT NULL,
   PRIMARY KEY (`workflowID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -169,14 +169,15 @@ INSERT INTO DB_DATABASE.milestone (milestoneID, name, description, createdDate, 
   (3, "C2 Milestone", "This is a sample C2 milestone.", "2019-05-01", "2019-10-01", "2019-12-01", "2019-05-01", null, 0, 1);           -- Newly created milestone
 
 INSERT INTO DB_DATABASE.workflow (workflowID, name, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID) VALUES
-  (1, "Milestone 1 Workflow 1", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01", 1, 1), -- Completed workflow to milestone 1
-  (2, "Milestone 1 Workflow 2", "2019-01-01", "2019-04-01", "2019-02-01", "2019-04-01", "2019-04-01", 1, 1), -- Completed workflow to milestone 1
-  (3, "Milestone 1 Workflow 3", "2019-01-01", "2019-06-01", "2019-02-01", "2019-06-01", "2019-06-01", 1, 1), -- Completed workflow to milestone 1
-  (4, "Milestone 2 Workflow 1", "2019-05-01", "2019-10-01", "2019-05-01", "2019-10-01", "2019-10-01", 0, 2), -- Completed workflow to milestone 2
-  (5, "Milestone 2 Workflow 2", "2019-05-01", "2020-02-01", "2020-03-01", "2020-06-01", null, 0, 2),         -- In progress workflow to milestone 2
-  (6, "Milestone 2 Workflow 3", "2020-01-01", "2020-01-01", "2020-06-01", "2020-08-01", null, 0, 2),         -- Not Started workflow to milestone 2
-  (7, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null, 0, 3),         -- Not started workflow to milestone 3
-  (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null, 0, 3),         -- Not started workflow to milestone 3
+  (1, "Template Workflow", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01",      0, null),   -- Template Workflow with steps
+  (2, "Milestone 1 Workflow 1", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01", 1, 1),      -- Completed workflow to milestone 1
+  (3, "Milestone 1 Workflow 2", "2019-01-01", "2019-04-01", "2019-02-01", "2019-04-01", "2019-04-01", 1, 1),      -- Completed workflow to milestone 1
+  (4, "Milestone 1 Workflow 3", "2019-01-01", "2019-06-01", "2019-02-01", "2019-06-01", "2019-06-01", 1, 1),      -- Completed workflow to milestone 1
+  (5, "Milestone 2 Workflow 1", "2019-05-01", "2019-10-01", "2019-05-01", "2019-10-01", "2019-10-01", 0, 2),      -- Completed workflow to milestone 2
+  (6, "Milestone 2 Workflow 2", "2019-05-01", "2020-02-01", "2020-03-01", "2020-06-01", null,         0, 2),      -- In progress workflow to milestone 2
+  (7, "Milestone 2 Workflow 3", "2020-01-01", "2020-01-01", "2020-06-01", "2020-08-01", null,         0, 2),      -- Not Started workflow to milestone 2
+  (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null,         0, 3),      -- Not started workflow to milestone 3
+  (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3),      -- Not started workflow to milestone 3
 
 INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES
   ("c5877b03-ac76-4e71-9a88-1c2d9122d474", "admin", "d0c010cb69151b85bfd3f8b97cd87e336392efdd4b01d3d3c0bdb44e47c02729d51ce46348a98e23364dcf278df7090c35f944e43748f9f2691e252456b69816", "a760a131668ad5883b50e5b78aa53b27", "The", "Admin", "Admin@boss.com", "ADMIN", 1),
@@ -210,12 +211,12 @@ INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (4, "Send", "Fill out");
 
 INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES
-  (1, 1, 1, "This is a higher level step.", null, "164e2c50-c280-459e-800c-7168e75f4fe3", 1, 1, 1),
-  (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 2),
-  (3, 1, 0, "This is a second level step.", 2, null, 2, 2, 2),
-  (4, 1, 0, "This is a third level step.", 3, null, 2, 2, 2),
-  (5, 2, 0, "This is also a third level step.", 3, null, 2, 2, 2),
-  (6, 2, 0, "This is a second level step.", 2, null, 2, 2, 2);
+  (1, 1, 1, "This is a higher level step.", null, null, 1, 1, 1),
+  (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 1),
+  (3, 1, 0, "This is a second level step.", 2,    null, 2, 2, 1),
+  (4, 1, 0, "This is a third level step.",  3,    null, 2, 2, 1),
+  (5, 2, 0, "This is a third level step.",  3,    null, 2, 2, 1),
+  (6, 2, 0, "This is a second level step.", 2,    null, 2, 2, 1);
 
 INSERT INTO DB_DATABASE.userPreferences (UUID, signaturePDF, signatureFont) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", null, "Arial"),
