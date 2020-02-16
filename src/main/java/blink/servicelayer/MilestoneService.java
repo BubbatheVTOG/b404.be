@@ -2,10 +2,7 @@ package blink.servicelayer;
 
 import blink.businesslayer.Authorization;
 import blink.businesslayer.MilestoneBusiness;
-import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Milestone;
-import blink.utility.objects.Person;
-import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -21,7 +18,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- * Service Layer entity responsible for receiving requests having to do with person information
+ * Service Layer entity responsible for receiving requests having to do with milestone information
  */
 @Path("milestone")
 @Api(value = "/milestone")
@@ -132,52 +129,46 @@ public class MilestoneService {
     }
 
     /**
-     * Insert a person into the database
-     * @param username - New person's username
-     * @param password - New person's password
-     * @param fName - New person's first name
-     * @param lName - New person's last name
-     * @param email - New person's email; can be null
-     * @param title - New person's title; can be null
-     * @param accessLevelID - New person's accessLevelID; can be null
+     * Insert a milestone into the database
+     * @param name - New milestone's name
+     * @param description - New milestone's description
+     * @param startDate - New milestone's start date
+     * @param deliveryDate - New milestone's delivery date
+     * @param companyID - Company to assign the milestone to
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for person inserted successfully
+     * @return - HTTP Response: 200 OK for company inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
-     *                          404 NOT FOUND for non-existent accessLevelID
-     *                          409 CONFLICT for username conflict
+     *                          404 NOT FOUND for non-existent companyID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @POST
-    @Operation(summary = "insertPerson", description = "Insert a new person")
+    @Operation(summary = "insertMilestone", description = "Insert a new milestone")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID)"),
+            @ApiResponse(code = 200, message = "Milestone object which each contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
-            @ApiResponse(code = 404, message = "{error: accessLevelID was not found.}"),
-            @ApiResponse(code = 409, message = "{error: A user with that username already exists.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertPerson(@RequestBody(description = "name", required = true)      @FormParam("username") String username,
-                                 @RequestBody(description = "description", required = true)      @FormParam("password") String password,
-                                 @RequestBody(description = "startDate", required = true)         @FormParam("fName") String fName,
-                                 @RequestBody(description = "deliveryDate", required = true)         @FormParam("lName") String lName,
-                                 @RequestBody(description = "companyID")                          @FormParam("email") String email,
-                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response insertMilestone(@RequestBody(description = "name", required = true)             @FormParam("name") String name,
+                                    @RequestBody(description = "description", required = true)      @FormParam("description") String description,
+                                    @RequestBody(description = "startDate", required = true)        @FormParam("startDate") String startDate,
+                                    @RequestBody(description = "deliveryDate", required = true)     @FormParam("deliveryDate") String deliveryDate,
+                                    @RequestBody(description = "companyID")                         @FormParam("companyID") String companyID,
+                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Milestone milestone = milestoneBusiness.insertMilestone();
+            Milestone milestone = milestoneBusiness.insertMilestone(name, description, startDate, deliveryDate, companyID);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(gson.toJson(person))
-                    .header("Authorization", jwtToken)
-                    .build();
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -192,8 +183,66 @@ public class MilestoneService {
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
-        catch(ConflictException ce){
-            return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Update a milestone into the database
+     * @param name - New milestone name
+     * @param description - New milestone description
+     * @param startDate - New milestone start date
+     * @param deliveryDate - New milestone delivery date
+     * @param companyID - Company to assign the milestone to
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for company inserted successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent companyID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @PUT
+    @Operation(summary = "updateMilestone", description = "Update an existing milestone")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Milestone object which each contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No company/milestone with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateMilestone(@RequestBody(description = "id", required = true)  @FormParam("name") String milestoneID,
+                                    @RequestBody(description = "name")                 @FormParam("name") String name,
+                                    @RequestBody(description = "description")          @FormParam("description") String description,
+                                    @RequestBody(description = "startDate")            @FormParam("startDate") String startDate,
+                                    @RequestBody(description = "deliveryDate")         @FormParam("deliveryDate") String deliveryDate,
+                                    @RequestBody(description = "companyID")            @FormParam("companyID") String companyID,
+                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            Milestone milestone = milestoneBusiness.updateMilestone(milestoneID, name, description, startDate, deliveryDate, companyID);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
             return ResponseBuilder.buildInternalServerErrorResponse();
