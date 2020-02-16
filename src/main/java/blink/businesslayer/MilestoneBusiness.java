@@ -2,11 +2,14 @@ package blink.businesslayer;
 
 import blink.datalayer.CompanyDB;
 import blink.datalayer.MilestoneDB;
+import blink.utility.objects.Company;
 import blink.utility.objects.Milestone;
+import blink.utility.objects.Person;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -15,11 +18,13 @@ import java.util.List;
 
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
+    private PersonBusiness personBusiness;
     private CompanyDB companyDB;
     private SimpleDateFormat dateParser;
 
     public MilestoneBusiness(){
         this.milestoneDB = new MilestoneDB();
+        this.personBusiness = new PersonBusiness();
         this.companyDB = new CompanyDB();
         this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
     }
@@ -27,12 +32,25 @@ public class MilestoneBusiness {
 
     /**
      * Get all active milestones
+     * @param uuid - uuid of the requesting user
      * @return List of active milestones
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getAllMilestones() throws InternalServerErrorException {
+    public List<Milestone> getAllMilestones(String uuid) throws InternalServerErrorException {
         try{
-            return milestoneDB.getAllMilestones();
+            Person requester = personBusiness.getPersonByUUID(uuid);
+
+            List<Milestone> milestoneList = new ArrayList<>();
+            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                milestoneList = milestoneDB.getAllMilestones();
+            }
+            else{
+                for(Company currCompany : requester.getCompanies()) {
+                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID()));
+                }
+            }
+
+            return milestoneList;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -42,12 +60,25 @@ public class MilestoneBusiness {
 
     /**
      * Get all active milestones
+     * @param uuid - uuid of the requesting user
      * @return List of active milestones
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getActiveMilestones() throws InternalServerErrorException {
+    public List<Milestone> getActiveMilestones(String uuid) throws InternalServerErrorException {
         try{
-            return milestoneDB.getAllMilestones(0);
+            Person requester = personBusiness.getPersonByUUID(uuid);
+
+            List<Milestone> milestoneList = new ArrayList<>();
+            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                milestoneList = milestoneDB.getAllMilestones(true);
+            }
+            else{
+                for(Company currCompany : requester.getCompanies()) {
+                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID(), false));
+                }
+            }
+
+            return milestoneList;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -60,9 +91,21 @@ public class MilestoneBusiness {
      * @return List of archived milestones
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getArchivedMilestones() throws InternalServerErrorException {
+    public List<Milestone> getArchivedMilestones(String uuid) throws InternalServerErrorException {
         try{
-            return milestoneDB.getAllMilestones(1);
+            Person requester = personBusiness.getPersonByUUID(uuid);
+
+            List<Milestone> milestoneList = new ArrayList<>();
+            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                milestoneList = milestoneDB.getAllMilestones(true);
+            }
+            else{
+                for(Company currCompany : requester.getCompanies()) {
+                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID(), true));
+                }
+            }
+
+            return milestoneList;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

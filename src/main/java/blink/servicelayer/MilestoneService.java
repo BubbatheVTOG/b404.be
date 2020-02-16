@@ -3,6 +3,7 @@ package blink.servicelayer;
 import blink.businesslayer.Authorization;
 import blink.businesslayer.MilestoneBusiness;
 import blink.utility.objects.Milestone;
+import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
@@ -48,7 +49,7 @@ public class MilestoneService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones();
+            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
@@ -82,7 +83,7 @@ public class MilestoneService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getActiveMilestones();
+            List<Milestone> milestoneList = milestoneBusiness.getActiveMilestones(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
@@ -116,7 +117,7 @@ public class MilestoneService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getArchivedMilestones();
+            List<Milestone> milestoneList = milestoneBusiness.getArchivedMilestones(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
