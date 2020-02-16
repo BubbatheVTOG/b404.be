@@ -164,13 +164,8 @@ public class MilestoneBusiness {
      */
     public Milestone updateMilestone(String milestoneID, String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            //Validate milestone ID
-            int milestoneIDInteger;
-            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
-
             //Retrieve existing milestone from database
-            Milestone existingMilestone = this.milestoneDB.getMilestoneByID(milestoneIDInteger);
+            Milestone existingMilestone = this.getMilestoneByID(milestoneID);
 
             if(name == null || name.isEmpty()){ name = existingMilestone.getName(); }
 
@@ -217,10 +212,10 @@ public class MilestoneBusiness {
 
             //Retrieve the person from the database by UUID
             Date today = new Date();
-            milestoneDB.updateMilestone(milestoneIDInteger, name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+            milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(milestoneIDInteger, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+            return new Milestone(existingMilestone.getMileStoneID(), name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -238,17 +233,14 @@ public class MilestoneBusiness {
      */
     public String updateMilestoneArchiveStatus(String milestoneID, boolean status) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            //Validate milestone ID
-            int milestoneIDInteger;
-            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
 
             //Check that milestone exists
-            if(this.milestoneDB.getMilestoneByID(milestoneIDInteger) == null){
+            Milestone milestone = this.getMilestoneByID(milestoneID);
+            if(milestone == null){
                 throw new NotFoundException("No milestone with that ID exists");
             }
 
-            milestoneDB.updateMilestoneArchiveStatus(milestoneIDInteger, status);
+            milestoneDB.updateMilestoneArchiveStatus(milestone.getMileStoneID(), status);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return (status) ? "Successfully archived milestone." : "Successfully unarchived milestone.";

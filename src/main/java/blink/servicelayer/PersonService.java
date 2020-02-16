@@ -261,7 +261,7 @@ public class PersonService {
      * Delete a person from the database
      * @param uuid - UUID of user to delete from the database
      * @param jwt - JSON Web Token for authorizing request
-     * @return - HTTP Response: 200 OK for person inserted successfully
+     * @return - HTTP Response: 200 OK for person deleted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND when no user with provided UUID exists
