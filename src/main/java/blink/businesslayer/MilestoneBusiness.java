@@ -45,9 +45,11 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones();
             }
             else{
+                List<Integer> companyIDList = new ArrayList<>();
                 for(Company currCompany : requester.getCompanies()) {
-                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID()));
+                    companyIDList.add(currCompany.getCompanyID());
                 }
+                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
             }
 
             return milestoneList;
@@ -73,9 +75,11 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones(true);
             }
             else{
+                List<Integer> companyIDList = new ArrayList<>();
                 for(Company currCompany : requester.getCompanies()) {
-                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID(), false));
+                    companyIDList.add(currCompany.getCompanyID());
                 }
+                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, false));
             }
 
             return milestoneList;
@@ -100,9 +104,11 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones(true);
             }
             else{
+                List<Integer> companyIDList = new ArrayList<>();
                 for(Company currCompany : requester.getCompanies()) {
-                    milestoneList.addAll(milestoneDB.getAllMilestones(currCompany.getCompanyID(), true));
+                    companyIDList.add(currCompany.getCompanyID());
                 }
+                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, true));
             }
 
             return milestoneList;

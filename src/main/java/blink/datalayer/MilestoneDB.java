@@ -49,18 +49,18 @@ public class MilestoneDB {
 
     /**
      * Get all milestones by CompanyID
-     * @param companyID - ID of company to retrieve milestones by
+     * @param companyIDList - List of company IDs to retrieve milestones by
      * @return List of milestone objects assigned to company with companyID
      * @throws SQLException - Error connecting to database or executing query
      */
-    public List<Milestone> getAllMilestones(int companyID) throws SQLException {
+    public List<Milestone> getAllMilestones(List<Integer> companyIDList) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM milestone WHERE companyID = ?;";
+            String query = "SELECT * FROM milestone WHERE companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, companyID);
+                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
 
                 //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
@@ -127,19 +127,19 @@ public class MilestoneDB {
 
     /**
      * Get all milestones based on archived or not archived
-     * @param companyID - ID of company to retrieve milestones by
+     * @param companyIDList - List of company IDs to retrieve milestones by
      * @param archived - Search for either archived or unarchived milestones
      * @return List of milestone objects
      * @throws SQLException - Error connecting to database or executing query
      */
-    public List<Milestone> getAllMilestones(int companyID, boolean archived) throws SQLException {
+    public List<Milestone> getAllMilestones(List<Integer> companyIDList, boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
             String query = "SELECT * FROM milestone WHERE companyID = ? AND archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setInt(1, companyID);
+                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
                 preparedStatement.setBoolean(2, archived);
 
                 //Set parameters and execute query
