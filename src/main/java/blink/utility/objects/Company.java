@@ -32,8 +32,4 @@ public class Company {
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
-
-    public String toJSON(){
-        return gson.toJson(this);
-    }
 }

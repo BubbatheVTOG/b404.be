@@ -138,8 +138,4 @@ public class Milestone {
     public void setCompanyID(int companyID) {
         this.companyID = companyID;
     }
-
-    public String toJSON(){
-        return this.gson.toJson(this);
-    }
 }

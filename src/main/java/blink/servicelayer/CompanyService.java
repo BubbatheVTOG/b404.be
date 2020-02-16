@@ -5,6 +5,7 @@ import blink.businesslayer.CompanyBusiness;
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -23,6 +24,7 @@ import java.util.List;
 @Api(value = "/company")
 public class CompanyService {
     private CompanyBusiness companyBusiness = new CompanyBusiness();
+    private Gson gson = new Gson();
 
     /**
      * Get all companies from database
@@ -45,19 +47,8 @@ public class CompanyService {
             //Send parameters to business layer and store response
             List<Company> companyList = companyBusiness.getAllCompanies();
 
-            //Construct response message
-            StringBuilder responseMessage = new StringBuilder();
-            responseMessage.append("[");
-            for(Company company : companyList){
-                responseMessage.append(company.toJSON());
-                responseMessage.append(",");
-            }
-            //remove trailing comma and add closing bracket
-            responseMessage.setLength(responseMessage.length()-1);
-            responseMessage.append("]");
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(companyList));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(NotAuthorizedException nae){
@@ -96,7 +87,7 @@ public class CompanyService {
             Company company = companyBusiness.getCompanyByID(companyID);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(company.toJSON());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(company));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
@@ -141,7 +132,7 @@ public class CompanyService {
             Company company = companyBusiness.getCompanyByName(companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(company.toJSON());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(company));
         }
         catch(BadRequestException bre){
             return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
@@ -181,19 +172,8 @@ public class CompanyService {
             //Send parameters to business layer and store response
             List<Person> personList = companyBusiness.getAllPeopleByCompany(companyID);
 
-            //Construct response message
-            StringBuilder responseMessage = new StringBuilder();
-            responseMessage.append("[");
-            for(Person person : personList){
-                responseMessage.append(person.toJSON());
-                responseMessage.append(",");
-            }
-            //remove trailing comma and add closing bracket
-            responseMessage.setLength(responseMessage.length()-1);
-            responseMessage.append("]");
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(personList));
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
@@ -238,7 +218,7 @@ public class CompanyService {
             Company company = companyBusiness.insertCompany(companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(company.toJSON());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(company));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
@@ -295,7 +275,7 @@ public class CompanyService {
             Company company = companyBusiness.updateCompany(companyID, companyName);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(company.toJSON());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(company));
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){
@@ -388,7 +368,9 @@ public class CompanyService {
             Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(companyBusiness.deleteCompanyByID(companyName));
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", companyBusiness.deleteCompanyByID(companyName));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch all business logic related errors and return relevant response with message from error
         catch(BadRequestException bre){

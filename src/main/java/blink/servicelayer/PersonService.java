@@ -8,6 +8,8 @@ import javax.ws.rs.NotFoundException;
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Person;
 import blink.utility.security.JWTUtility;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -28,17 +30,17 @@ import java.util.List;
 @Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
+    private Gson gson = new Gson();
 
     /**
      * Get all people from database
      * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for person found and returned
+     * @return - HTTP Response: 200 OK for people returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                         404 NOT FOUND when requested user is not found
      *                         500 INTERNAL SERVER ERROR for backend error
      */
     @GET
-    @Operation(summary = "getPerson", description = "Gets a user's information by UUID")
+    @Operation(summary = "getAllPeople", description = "Gets all people")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of Person objects which each contain keys (UUID, name, email, title, companyID, accessLevelID)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
@@ -52,19 +54,8 @@ public class PersonService {
             //Send parameters to business layer and store response
             List<Person> people = personBusiness.getAllPeople();
 
-            //Construct response message
-            StringBuilder responseMessage = new StringBuilder();
-            responseMessage.append("[");
-            for(Person person : people){
-                responseMessage.append(person.toJSON());
-                responseMessage.append(",");
-            }
-            //remove trailing comma and add closing bracket
-            responseMessage.setLength(responseMessage.length()-1);
-            responseMessage.append("]");
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(responseMessage.toString());
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(people));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(NotAuthorizedException nae){
@@ -104,7 +95,7 @@ public class PersonService {
             String newJWT = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(person.toJSON(), newJWT);
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person), newJWT);
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -169,7 +160,7 @@ public class PersonService {
             String jwtToken = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return Response.ok(person.toJSON())
+            return Response.ok(gson.toJson(person))
                     .header("Authorization", jwtToken)
                     .build();
         }
@@ -250,7 +241,7 @@ public class PersonService {
             String newJWT = JWTUtility.generateToken(person.getUUID());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(person.toJSON(), newJWT);
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person), newJWT);
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -300,11 +291,10 @@ public class PersonService {
         try {
             Authorization.isAdmin(jwt);
 
-            //Send parameters to business layer and store response
-            String responseMessage = personBusiness.deletePersonByUUID(uuid);
-
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(responseMessage);
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", personBusiness.deletePersonByUUID(uuid));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){

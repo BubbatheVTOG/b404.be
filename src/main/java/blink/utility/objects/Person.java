@@ -90,12 +90,4 @@ public class Person {
 	public void setCompanies(ArrayList<Company> companies) { this.companies = companies; }
 
 	public void setAccessLevelID(int accessLevelID) { this.accessLevelID = accessLevelID; }
-
-	/**
-	 * Puts the Person object into valid json format and removes passwordHash and salt
-	 * @return JSON format String
-	 */
-	public String toJSON() {
-		return gson.toJson(this);
-	}
 }
