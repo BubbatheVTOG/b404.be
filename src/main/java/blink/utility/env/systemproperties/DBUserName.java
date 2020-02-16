@@ -2,6 +2,8 @@ package blink.utility.env.systemproperties;
 
 import blink.utility.env.EnvKeyValues;
 
+import java.util.logging.Logger;
+
 public class DBUserName implements EnvironmentProperty {
 
     private static final String KEY = EnvKeyValues.DB_USER_NAME;
@@ -9,6 +11,9 @@ public class DBUserName implements EnvironmentProperty {
 
     public DBUserName() {
         this.getValueFromSystem();
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        String msg = String.format("DB_USER_NAME determined to be: %s", this.value);
+        logger.info(msg);
     }
 
     @Override

@@ -17,10 +17,10 @@ class DBConn {
         EnvManager env = new EnvManager();
 
         this.driver = "org.mariadb.jdbc.Driver";
-        this.url = "jdbc:mariadb://" + env.getValue(EnvKeyValues.DB_HOSTNAME)
-                + ":3306/"
-                + env.getValue(EnvKeyValues.DB_DATABASE)
-                + "?allowPublicKeyRetrieval=true";
+        this.url = String.format("jdbc:mariadb://%s:3306/%s?allowPublicKeyRetrieval=true",
+                env.getValue(EnvKeyValues.DB_HOSTNAME),
+                env.getValue(EnvKeyValues.DB_DATABASE)
+        );
         this.user = env.getValue(EnvKeyValues.DB_USER_NAME);
         this.password = env.getValue(EnvKeyValues.DB_USER_PASS);
     }
