@@ -32,12 +32,13 @@ public class MilestoneBusiness {
 
 
     /**
-     * Get all active milestones
+     * Get all milestones
      * @param uuid - uuid of the requesting user
-     * @return List of active milestones
+     * @return List of milestones
+     * @throws NotAuthorizedException - requester uuid was not found in the database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getAllMilestones(String uuid) throws InternalServerErrorException {
+    public List<Milestone> getAllMilestones(String uuid) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
@@ -55,8 +56,8 @@ public class MilestoneBusiness {
 
             return milestoneList;
         }
+        //If requester uuid does not exist then they were deleted and should not have access anymore
         catch(NotFoundException nfe){
-            //If requester uuid does not exist then they were deleted and should not have access anymore
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
@@ -89,6 +90,10 @@ public class MilestoneBusiness {
 
             return milestoneList;
         }
+        //If requester uuid does not exist then they were deleted and should not have access anymore
+        catch(NotFoundException nfe){
+            throw new NotAuthorizedException("Requesting UUID was not found.");
+        }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
@@ -117,6 +122,10 @@ public class MilestoneBusiness {
             }
 
             return milestoneList;
+        }
+        //If requester uuid does not exist then they were deleted and should not have access anymore
+        catch(NotFoundException nfe){
+            throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
