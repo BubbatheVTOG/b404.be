@@ -4,15 +4,15 @@
 
 <web-app>
     <servlet>
-        <display-name>b404.be</display-name>
-        <servlet-name>b404.ApplicationConfig</servlet-name>
+        <display-name>blink.be</display-name>
+        <servlet-name>blink.ApplicationConfig</servlet-name>
         <init-param>
             <param-name>javax.ws.rs.ApplicationConfig</param-name>
-            <param-value>io.swagger.v3.jaxrs2.integration.resources,b404.ApplicationConfig</param-value>
+            <param-value>io.swagger.v3.jaxrs2.integration.resources,blink.ApplicationConfig</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>b404.ApplicationConfig</servlet-name>
+        <servlet-name>blink.ApplicationConfig</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
@@ -35,11 +35,11 @@
 <!-- KNOWN GOOD BACKUP
 <web-app>
   <servlet>
-    <display-name>b404.be</display-name>
-    <servlet-name>b404.ApplicationConfig</servlet-name>
+    <display-name>blink.be</display-name>
+    <servlet-name>blink.ApplicationConfig</servlet-name>
     <init-param>
       <param-name>javax.ws.rs.ApplicationConfig</param-name>
-      <param-value>b404.ApplicationConfig</param-value>
+      <param-value>blink.ApplicationConfig</param-value>
     </init-param>
   </servlet>
 </web-app>

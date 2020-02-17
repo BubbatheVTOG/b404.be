@@ -42,6 +42,25 @@ pipeline {
         }
       }
     }
+
+    stage('Stage 4: SonarQube analysis') {
+      stages {
+        stage ("When on Designated Branch") {
+          when {
+            anyOf {
+              branch 'dev'
+            }
+          }
+          steps {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              withSonarQubeEnv(installationName: 'sonar.b404') {
+                sh 'mvn sonar:sonar'
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   post {
