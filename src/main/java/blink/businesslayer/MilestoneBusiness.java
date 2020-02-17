@@ -8,6 +8,7 @@ import blink.utility.objects.Person;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,9 +40,6 @@ public class MilestoneBusiness {
     public List<Milestone> getAllMilestones(String uuid) throws InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
-            if(requester == null){
-                throw new NotFoundException("Requesting UUID was not found.");
-            }
 
             List<Milestone> milestoneList = new ArrayList<>();
             if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
@@ -58,6 +56,10 @@ public class MilestoneBusiness {
             return milestoneList;
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(NotFoundException nfe){
+            //If requester uuid does not exist then they were deleted and should not have access anymore
+            throw new NotAuthorizedException("Requesting UUID was not found.");
+        }
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
