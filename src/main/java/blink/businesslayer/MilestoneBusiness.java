@@ -39,6 +39,9 @@ public class MilestoneBusiness {
     public List<Milestone> getAllMilestones(String uuid) throws InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
+            if(requester == null){
+                throw new NotFoundException("Requesting UUID was not found.");
+            }
 
             List<Milestone> milestoneList = new ArrayList<>();
             if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
