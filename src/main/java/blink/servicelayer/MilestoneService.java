@@ -35,7 +35,6 @@ public class MilestoneService {
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @Path("/all")
     @GET
     @Operation(summary = "getAllMilestones", description = "Gets all milestones in the system")
     @ApiResponses(value = {
