@@ -55,11 +55,11 @@ public class MilestoneBusiness {
 
             return milestoneList;
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(NotFoundException nfe){
             //If requester uuid does not exist then they were deleted and should not have access anymore
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
