@@ -57,7 +57,7 @@ public class MilestoneService {
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
-            return ResponseBuilder.buildInternalServerErrorResponse(e.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
