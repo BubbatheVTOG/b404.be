@@ -38,87 +38,30 @@ public class MilestoneBusiness {
      * @throws NotAuthorizedException - requester uuid was not found in the database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getAllMilestones(String uuid) throws NotAuthorizedException, InternalServerErrorException {
+    public List<Milestone> getAllMilestones(String uuid, Boolean archived) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Milestone> milestoneList = new ArrayList<>();
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones();
+                if(archived == null) {
+                    milestoneList = milestoneDB.getAllMilestones();
+                }
+                else{
+                    milestoneList = milestoneDB.getAllMilestones(archived);
+                }
             }
             else{
                 List<Integer> companyIDList = new ArrayList<>();
                 for(Company currCompany : requester.getCompanies()) {
                     companyIDList.add(currCompany.getCompanyID());
                 }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
-            }
-
-            return milestoneList;
-        }
-        //If requester uuid does not exist then they were deleted and should not have access anymore
-        catch(NotFoundException nfe){
-            throw new NotAuthorizedException("Requesting UUID was not found.");
-        }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
-        }
-    }
-
-    /**
-     * Get all active milestones
-     * @param uuid - uuid of the requesting user
-     * @return List of active milestones
-     * @throws InternalServerErrorException - Error in data layer
-     */
-    public List<Milestone> getActiveMilestones(String uuid) throws InternalServerErrorException {
-        try{
-            Person requester = personBusiness.getPersonByUUID(uuid);
-
-            List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones(false);
-            }
-            else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
+                if(archived == null) {
+                    milestoneList = milestoneDB.getAllMilestones();
                 }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, false));
-            }
-
-            return milestoneList;
-        }
-        //If requester uuid does not exist then they were deleted and should not have access anymore
-        catch(NotFoundException nfe){
-            throw new NotAuthorizedException("Requesting UUID was not found.");
-        }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
-        }
-    }
-
-    /**
-     * Get all archived milestones
-     * @return List of archived milestones
-     * @throws InternalServerErrorException - Error in data layer
-     */
-    public List<Milestone> getArchivedMilestones(String uuid) throws InternalServerErrorException {
-        try{
-            Person requester = personBusiness.getPersonByUUID(uuid);
-
-            List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones(true);
-            }
-            else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
+                else{
+                    milestoneList = milestoneDB.getAllMilestones(companyIDList, archived);
                 }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, true));
             }
 
             return milestoneList;
