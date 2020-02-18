@@ -20,7 +20,7 @@ public class ApplicationConfig extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        //this.dBCheck();
+        this.dBCheck();
         return this.getRestResourceClasses();
     }
 
