@@ -269,7 +269,6 @@ public class MilestoneBusiness {
                 throw new NotFoundException("No company with that companyID exists.");
             }
 
-            //Retrieve the person from the database by UUID
             Date today = new Date();
             milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
