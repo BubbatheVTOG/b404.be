@@ -78,7 +78,7 @@ public class MilestoneBusiness {
 
             List<Milestone> milestoneList = new ArrayList<>();
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones(true);
+                milestoneList = milestoneDB.getAllMilestones(false);
             }
             else{
                 List<Integer> companyIDList = new ArrayList<>();
