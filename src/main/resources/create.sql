@@ -54,7 +54,7 @@ CREATE TABLE `step` (
   `orderNumber` int(11) NOT NULL,
   `isHighestLevel` boolean NOT NULL,
   `description` varchar(60) DEFAULT NULL,
-  `relatedStep` int(11) DEFAULT NULL,
+  `parentStepID` int(11) DEFAULT NULL,
   `UUID` char(36) DEFAULT NULL,
   `verbID` int(11) NOT NULL,
   `fileID` int(11) NOT NULL,
@@ -102,6 +102,7 @@ DROP TABLE IF EXISTS `workflow`;
 CREATE TABLE `workflow` (
   `workflowID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
+  `description` varchar(60) DEFAULT NULL,
   `createdDate` date NOT NULL,
   `lastUpdatedDate` date NOT NULL,
   `startDate` date DEFAULT NULL,
