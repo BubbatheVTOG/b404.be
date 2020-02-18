@@ -43,7 +43,7 @@ public class MilestoneBusiness {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 milestoneList = milestoneDB.getAllMilestones();
             }
             else{
@@ -77,7 +77,7 @@ public class MilestoneBusiness {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 milestoneList = milestoneDB.getAllMilestones(true);
             }
             else{
@@ -110,7 +110,7 @@ public class MilestoneBusiness {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 milestoneList = milestoneDB.getAllMilestones(true);
             }
             else{

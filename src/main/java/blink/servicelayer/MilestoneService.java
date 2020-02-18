@@ -45,10 +45,10 @@ public class MilestoneService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            //Authorization.isLoggedIn(jwt);
+            Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones("c5877b03-ac76-4e71-9a88-1c2d9122d474");
+            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
