@@ -62,7 +62,7 @@ public class MilestoneBusiness {
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+            throw new InternalServerErrorException("Error in data layer");
         }
     }
 
