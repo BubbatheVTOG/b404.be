@@ -45,6 +45,9 @@ public class MilestoneDB {
                 }
             }
         }
+        catch(NullPointerException npe){
+            throw new SQLException("Null pointer in data layer");
+        }
     }
 
     /**
