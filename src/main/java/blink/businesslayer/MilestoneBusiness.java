@@ -27,7 +27,7 @@ public class MilestoneBusiness {
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyDB = new CompanyDB();
-        this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
+        this.dateParser = new SimpleDateFormat("yyyy-MM-dd");
     }
 
 
@@ -192,8 +192,7 @@ public class MilestoneBusiness {
             if(parsedDeliveryDate == null){throw new BadRequestException("Delivery date is an invalid format.");}
 
             int companyIDInteger;
-            try{companyIDInteger = Integer.parseInt(companyID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Company ID must be a valid integer");}
+            companyIDInteger = Integer.parseInt(companyID);
 
             //Check that company does not already exist in the database
             if(companyDB.getCompanyByID(companyIDInteger) == null){
@@ -208,6 +207,9 @@ public class MilestoneBusiness {
             return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(NumberFormatException nfe) {
+            throw new BadRequestException("Company ID must be a valid integer");
+        }
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -257,11 +259,7 @@ public class MilestoneBusiness {
                 companyIDInteger = existingMilestone.getCompanyID();
             }
             else {
-                try {
-                    companyIDInteger = Integer.parseInt(companyID);
-                } catch (NumberFormatException nfe) {
-                    throw new BadRequestException("Company ID must be a valid integer");
-                }
+                companyIDInteger = Integer.parseInt(companyID);
             }
 
             //Check that company exists in the database
@@ -274,6 +272,9 @@ public class MilestoneBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return new Milestone(existingMilestone.getMileStoneID(), name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+        }
+        catch (NumberFormatException nfe) {
+            throw new BadRequestException("Company ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -320,9 +321,7 @@ public class MilestoneBusiness {
     public String deleteMilestoneByID(String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Validate milestone ID
-            int milestoneIDInteger;
-            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
+            int milestoneIDInteger = Integer.parseInt(milestoneID);
 
             //Retrieve the person from the database by UUID
             int numRowsDeleted = milestoneDB.deleteMilestoneByID(milestoneIDInteger);
@@ -334,6 +333,9 @@ public class MilestoneBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return "Successfully deleted milestone.";
+        }
+        catch(NumberFormatException nfe) {
+            throw new BadRequestException("Milestone ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
