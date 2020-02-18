@@ -10,6 +10,10 @@ import java.util.List;
 public class MilestoneDB {
     private DBConn dbConn;
 
+    public MilestoneDB(){
+        this.dbConn = new DBConn();
+    }
+
     /**
      * Get all milestones
      * @return List of milestone objects

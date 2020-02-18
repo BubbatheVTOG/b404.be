@@ -12,6 +12,10 @@ import java.util.List;
 public class VerbDB {
     private DBConn dbConn;
 
+    public VerbDB(){
+        this.dbConn = new DBConn();
+    }
+
     /**
      * Get all verbs
      * @return list of all verb objects
