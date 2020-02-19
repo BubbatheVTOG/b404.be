@@ -10,12 +10,12 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
@@ -52,14 +52,11 @@ public class MilestoneBusiness {
                 }
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
                 if(archived == null) {
                     milestoneList = milestoneDB.getAllMilestones();
                 }
                 else{
+                    List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                     milestoneList = milestoneDB.getAllMilestones(companyIDList, archived);
                 }
             }
