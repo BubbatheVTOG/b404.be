@@ -10,6 +10,10 @@ import java.util.List;
 public class MilestoneDB {
     private DBConn dbConn;
 
+    public MilestoneDB(){
+        this.dbConn = new DBConn();
+    }
+
     /**
      * Get all milestones
      * @return List of milestone objects
@@ -250,9 +254,9 @@ public class MilestoneDB {
      * @param companyID - Updated company ID of company to assign milestone to
      * @throws SQLException - Error connecting to database or executing statement
      */
-    public void updateMilestone(final int milestoneID, final String name, final String description, final Date createdDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
+    public void updateMilestone(final int milestoneID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final int companyID) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE milestone SET name = ?, description = ?, createdDate = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, companyID = ? WHERE milestoneID = ?;";
+        String query = "UPDATE milestone SET name = ?, description = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, companyID = ? WHERE milestoneID = ?;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -260,12 +264,11 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, (java.sql.Date)createdDate);
-            preparedStatement.setDate(4, (java.sql.Date)createdDate);
-            preparedStatement.setDate(5, (java.sql.Date)startDate);
-            preparedStatement.setDate(6, (java.sql.Date)deliveryDate);
-            preparedStatement.setInt(7, companyID);
-            preparedStatement.setInt(8, milestoneID);
+            preparedStatement.setDate(3, (java.sql.Date)lastUpdatedDate);
+            preparedStatement.setDate(4, (java.sql.Date)startDate);
+            preparedStatement.setDate(5, (java.sql.Date)deliveryDate);
+            preparedStatement.setInt(6, companyID);
+            preparedStatement.setInt(7, milestoneID);
 
             preparedStatement.executeUpdate();
         }

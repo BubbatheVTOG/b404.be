@@ -8,13 +8,14 @@ import blink.utility.objects.Person;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
@@ -26,33 +27,45 @@ public class MilestoneBusiness {
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyDB = new CompanyDB();
-        this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
+        this.dateParser = new SimpleDateFormat("yyyy-MM-dd");
     }
 
 
     /**
-     * Get all active milestones
+     * Get all milestones
      * @param uuid - uuid of the requesting user
-     * @return List of active milestones
+     * @return List of milestones
+     * @throws NotAuthorizedException - requester uuid was not found in the database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getAllMilestones(String uuid) throws InternalServerErrorException {
+    private List<Milestone> getAllMilestones(String uuid, Boolean archived) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
-            List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones();
+            List<Milestone> milestoneList;
+            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                if(archived == null) {
+                    milestoneList = milestoneDB.getAllMilestones();
+                }
+                else{
+                    milestoneList = milestoneDB.getAllMilestones(archived);
+                }
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
+                if(archived == null) {
+                    milestoneList = milestoneDB.getAllMilestones();
                 }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
+                else{
+                    List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                    milestoneList = milestoneDB.getAllMilestones(companyIDList, archived);
+                }
             }
 
             return milestoneList;
+        }
+        //If requester uuid does not exist then they were deleted and should not have access anymore
+        catch(NotFoundException nfe){
+            throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -61,61 +74,57 @@ public class MilestoneBusiness {
     }
 
     /**
-     * Get all active milestones
-     * @param uuid - uuid of the requesting user
-     * @return List of active milestones
-     * @throws InternalServerErrorException - Error in data layer
+     * Wrapper function to get all milestones regardless of archive status
+     * @param uuid - UUID of requester
+     * @return List of all milestones relevant to user
      */
-    public List<Milestone> getActiveMilestones(String uuid) throws InternalServerErrorException {
-        try{
-            Person requester = personBusiness.getPersonByUUID(uuid);
-
-            List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones(true);
-            }
-            else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, false));
-            }
-
-            return milestoneList;
-        }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
-        }
+    public List<Milestone> getAllMilestones(String uuid){
+        return this.getAllMilestones(uuid, null);
     }
 
     /**
-     * Get all archived milestones
-     * @return List of archived milestones
+     * Wrapper function to get active milestones
+     * @param uuid - UUID of requester
+     * @return List of all active milestones relevant to user
+     */
+    public List<Milestone> getActiveMilestones(String uuid){
+        return this.getAllMilestones(uuid, false);
+    }
+
+    /**
+     * Wrapper function to get archived milestones
+     * @param uuid - UUID of requester
+     * @return List of all archived milestones relevant to user
+     */
+    public List<Milestone> getArchivedMilestones(String uuid){
+        return this.getAllMilestones(uuid, true);
+    }
+
+    /**
+     * Get a milestone from the database by milestoneID
+     * Also checks that a user has the credentials for retrieving this milestone
+     * @param uuid - UUID of requester
+     * @param milestoneID - milestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException - MilestoneID does not exist in database
+     * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getArchivedMilestones(String uuid) throws InternalServerErrorException {
-        try{
-            Person requester = personBusiness.getPersonByUUID(uuid);
+    public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        Milestone milestone = this.getMilestoneByID(milestoneID);
 
-            List<Milestone> milestoneList = new ArrayList<>();
-            if(Authorization.EXTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneList = milestoneDB.getAllMilestones(true);
+        Person requester = personBusiness.getPersonByUUID(uuid);
+        if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            return milestone;
+        }
+        else{
+            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompanyID())){
+                return milestone;
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
-                milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, true));
+                throw new NotAuthorizedException("You do not have the authorization to get this milestone");
             }
-
-            return milestoneList;
-        }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
@@ -127,7 +136,7 @@ public class MilestoneBusiness {
      * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    private Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(id == null || id.isEmpty()){ throw new BadRequestException("A milestone ID must be provided"); }
@@ -178,8 +187,7 @@ public class MilestoneBusiness {
             if(parsedDeliveryDate == null){throw new BadRequestException("Delivery date is an invalid format.");}
 
             int companyIDInteger;
-            try{companyIDInteger = Integer.parseInt(companyID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Company ID must be a valid integer");}
+            companyIDInteger = Integer.parseInt(companyID);
 
             //Check that company does not already exist in the database
             if(companyDB.getCompanyByID(companyIDInteger) == null){
@@ -194,6 +202,9 @@ public class MilestoneBusiness {
             return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(NumberFormatException nfe) {
+            throw new BadRequestException("Company ID must be a valid integer");
+        }
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -243,11 +254,7 @@ public class MilestoneBusiness {
                 companyIDInteger = existingMilestone.getCompanyID();
             }
             else {
-                try {
-                    companyIDInteger = Integer.parseInt(companyID);
-                } catch (NumberFormatException nfe) {
-                    throw new BadRequestException("Company ID must be a valid integer");
-                }
+                companyIDInteger = Integer.parseInt(companyID);
             }
 
             //Check that company exists in the database
@@ -255,12 +262,14 @@ public class MilestoneBusiness {
                 throw new NotFoundException("No company with that companyID exists.");
             }
 
-            //Retrieve the person from the database by UUID
             Date today = new Date();
             milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return new Milestone(existingMilestone.getMileStoneID(), name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+        }
+        catch (NumberFormatException nfe) {
+            throw new BadRequestException("Company ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -281,9 +290,6 @@ public class MilestoneBusiness {
 
             //Check that milestone exists
             Milestone milestone = this.getMilestoneByID(milestoneID);
-            if(milestone == null){
-                throw new NotFoundException("No milestone with that ID exists");
-            }
 
             milestoneDB.updateMilestoneArchiveStatus(milestone.getMileStoneID(), status);
 
@@ -307,9 +313,7 @@ public class MilestoneBusiness {
     public String deleteMilestoneByID(String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Validate milestone ID
-            int milestoneIDInteger;
-            try{milestoneIDInteger = Integer.parseInt(milestoneID);}
-            catch(NumberFormatException nfe){throw new BadRequestException("Milestone ID must be a valid integer");}
+            int milestoneIDInteger = Integer.parseInt(milestoneID);
 
             //Retrieve the person from the database by UUID
             int numRowsDeleted = milestoneDB.deleteMilestoneByID(milestoneIDInteger);
@@ -321,6 +325,9 @@ public class MilestoneBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return "Successfully deleted milestone.";
+        }
+        catch(NumberFormatException nfe) {
+            throw new BadRequestException("Milestone ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

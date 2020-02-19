@@ -54,7 +54,7 @@ CREATE TABLE `step` (
   `orderNumber` int(11) NOT NULL,
   `isHighestLevel` boolean NOT NULL,
   `description` varchar(60) DEFAULT NULL,
-  `relatedStep` int(11) DEFAULT NULL,
+  `parentStepID` int(11) DEFAULT NULL,
   `UUID` char(36) DEFAULT NULL,
   `verbID` int(11) NOT NULL,
   `fileID` int(11) NOT NULL,
@@ -102,6 +102,7 @@ DROP TABLE IF EXISTS `workflow`;
 CREATE TABLE `workflow` (
   `workflowID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL,
+  `description` varchar(60) DEFAULT NULL,
   `createdDate` date NOT NULL,
   `lastUpdatedDate` date NOT NULL,
   `startDate` date DEFAULT NULL,
@@ -210,7 +211,7 @@ INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (3, "Send", "Complete"),
   (4, "Send", "Fill out");
 
-INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES
+INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES
   (1, 1, 1, "This is a higher level step.", null, null, 1, 1, 1),
   (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 1),
   (3, 1, 0, "This is a second level step.", 2,    null, 2, 2, 1),
