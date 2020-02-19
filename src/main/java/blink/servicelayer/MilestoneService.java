@@ -30,7 +30,6 @@ public class MilestoneService {
 
     /**
      * Get all milestones
-     * @param archived - optional boolean for retrieving archived or unarchived workflows
      * @param jwt - JSON web token for authorization
      * @return - HTTP Response: 200 OK for milestones returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
@@ -44,13 +43,12 @@ public class MilestoneService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllMilestones(@Parameter(in = ParameterIn.QUERY, name = "archived", required = false)       @QueryParam("archived") Boolean archived,
-                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response getAllMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt), archived);
+            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
@@ -58,6 +56,116 @@ public class MilestoneService {
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get active milestones
+     * @param jwt - JSON web token for authorization
+     * @return - HTTP Response: 200 OK for active milestones returned
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/active")
+    @GET
+    @Operation(summary = "getActiveMilestones", description = "Gets all active milestones")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of active milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getActiveMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<Milestone> milestoneList = milestoneBusiness.getActiveMilestones(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get archived milestones
+     * @param jwt - JSON web token for authorization
+     * @return - HTTP Response: 200 OK for archived milestones returned
+     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/archived")
+    @GET
+    @Operation(summary = "getArchivedMilestones", description = "Gets all archived milestones")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of archived milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getArchivedMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<Milestone> milestoneList = milestoneBusiness.getArchivedMilestones(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get a milestone by milestoneID
+     * @param milestoneID - ID of milestone to retrieve
+     * @param jwt - JSON web token for authorization
+     * @return - HTTP Response: 200 OK for archived milestones returned
+     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/{milestoneID}")
+    @GET
+    @Operation(summary = "getMilestoneByID", description = "Gets a specific milestone by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Milestone object which contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 400, message = "{error: MilestoneID must be a valid integer.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.)"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMilestoneByID(@Parameter(in = ParameterIn.PATH, name = "milestoneID") @PathParam("milestoneID") String milestoneID,
+                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            Milestone milestone = milestoneBusiness.getMilestoneByID(JWTUtility.getUUIDFromToken(jwt), milestoneID);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (BadRequestException bre) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        } catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (NotFoundException nfe) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         } catch (Exception e) {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }

@@ -38,11 +38,11 @@ public class MilestoneBusiness {
      * @throws NotAuthorizedException - requester uuid was not found in the database
      * @throws InternalServerErrorException - Error in data layer
      */
-    public List<Milestone> getAllMilestones(String uuid, Boolean archived) throws NotAuthorizedException, InternalServerErrorException {
+    private List<Milestone> getAllMilestones(String uuid, Boolean archived) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
-            List<Milestone> milestoneList = new ArrayList<>();
+            List<Milestone> milestoneList;
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 if(archived == null) {
                     milestoneList = milestoneDB.getAllMilestones();
@@ -77,6 +77,61 @@ public class MilestoneBusiness {
     }
 
     /**
+     * Wrapper function to get all milestones regardless of archive status
+     * @param uuid - UUID of requester
+     * @return List of all milestones relevant to user
+     */
+    public List<Milestone> getAllMilestones(String uuid){
+        return this.getAllMilestones(uuid, null);
+    }
+
+    /**
+     * Wrapper function to get active milestones
+     * @param uuid - UUID of requester
+     * @return List of all active milestones relevant to user
+     */
+    public List<Milestone> getActiveMilestones(String uuid){
+        return this.getAllMilestones(uuid, false);
+    }
+
+    /**
+     * Wrapper function to get archived milestones
+     * @param uuid - UUID of requester
+     * @return List of all archived milestones relevant to user
+     */
+    public List<Milestone> getArchivedMilestones(String uuid){
+        return this.getAllMilestones(uuid, true);
+    }
+
+    /**
+     * Get a milestone from the database by milestoneID
+     * Also checks that a user has the credentials for retrieving this milestone
+     * @param uuid - UUID of requester
+     * @param milestoneID - milestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException - MilestoneID does not exist in database
+     * @throws BadRequestException - MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        Milestone milestone = this.getMilestoneByID(milestoneID);
+
+        Person requester = personBusiness.getPersonByUUID(uuid);
+        if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            return milestone;
+        }
+        else{
+            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompanyID())){
+                return milestone;
+            }
+            else{
+                throw new NotAuthorizedException("You do not have the authorization to get this milestone");
+            }
+        }
+    }
+
+    /**
      * Get a milestone from the database by milestoneID
      * @param id - milestoneID must be convertible to integer
      * @return Milestone object with matching id
@@ -84,7 +139,7 @@ public class MilestoneBusiness {
      * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    private Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(id == null || id.isEmpty()){ throw new BadRequestException("A milestone ID must be provided"); }
@@ -238,9 +293,6 @@ public class MilestoneBusiness {
 
             //Check that milestone exists
             Milestone milestone = this.getMilestoneByID(milestoneID);
-            if(milestone == null){
-                throw new NotFoundException("No milestone with that ID exists");
-            }
 
             milestoneDB.updateMilestoneArchiveStatus(milestone.getMileStoneID(), status);
 
