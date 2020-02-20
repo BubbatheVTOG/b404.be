@@ -288,9 +288,7 @@ public class MilestoneBusiness {
             }
 
             //Check that company exists in the database
-            if(companyDB.getCompanyByID(companyIDInteger) == null){
-                throw new NotFoundException("No company with that companyID exists.");
-            }
+            companyDB.getCompanyByID(companyIDInteger);
 
             Date today = new Date();
             milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
