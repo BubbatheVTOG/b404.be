@@ -288,8 +288,8 @@ public class MilestoneDB {
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
-            preparedStatement.setInt(1, milestoneID);
-            preparedStatement.setBoolean(2, archiveStatus);
+            preparedStatement.setBoolean(1, archiveStatus);
+            preparedStatement.setInt(2, milestoneID);
 
             preparedStatement.executeUpdate();
         }

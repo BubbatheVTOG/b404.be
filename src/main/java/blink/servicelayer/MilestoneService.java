@@ -330,7 +330,7 @@ public class MilestoneService {
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
-            returnObject.addProperty("success", milestoneBusiness.updateMilestoneArchiveStatus(milestoneID, true));
+            returnObject.addProperty("success", milestoneBusiness.archiveMilestone(milestoneID));
             return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
@@ -381,7 +381,7 @@ public class MilestoneService {
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
-            returnObject.addProperty("success", milestoneBusiness.updateMilestoneArchiveStatus(milestoneID, false));
+            returnObject.addProperty("success", milestoneBusiness.unarchiveMilestone(milestoneID));
             return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
