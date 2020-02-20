@@ -141,7 +141,7 @@ public class MilestoneBusiness {
      * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    public Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    private Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(id == null || id.isEmpty()){ throw new BadRequestException("A milestone ID must be provided"); }
@@ -196,9 +196,7 @@ public class MilestoneBusiness {
 
 
             //Check that company does not already exist in the database
-            if(companyDB.getCompanyByID(companyIDInteger) == null){
-                throw new NotFoundException("No company with that companyID exists.");
-            }
+            companyDB.getCompanyByID(companyIDInteger);
 
             //Retrieve the person from the database by UUID
             Date today = new Date();

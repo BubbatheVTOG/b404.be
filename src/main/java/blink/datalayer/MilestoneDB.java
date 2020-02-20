@@ -229,10 +229,10 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, (java.sql.Date)createdDate);
-            preparedStatement.setDate(4, (java.sql.Date)createdDate);
-            preparedStatement.setDate(5, (java.sql.Date)startDate);
-            preparedStatement.setDate(6, (java.sql.Date)deliveryDate);
+            preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(createdDate.getTime()));
+            preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
+            preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
             preparedStatement.setInt(7, companyID);
 
             preparedStatement.executeUpdate();
@@ -264,9 +264,9 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, (java.sql.Date)lastUpdatedDate);
-            preparedStatement.setDate(4, (java.sql.Date)startDate);
-            preparedStatement.setDate(5, (java.sql.Date)deliveryDate);
+            preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
+            preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
             preparedStatement.setInt(6, companyID);
             preparedStatement.setInt(7, milestoneID);
 
