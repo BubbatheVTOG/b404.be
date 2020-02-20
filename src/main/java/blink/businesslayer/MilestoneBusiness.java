@@ -214,10 +214,8 @@ public class MilestoneBusiness {
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(name == null || name.isEmpty()){ throw new BadRequestException("A company name must be provided"); }
 
-            Date parsedStartDate = this.validateDate(startDate);
-            if(parsedStartDate == null){throw new BadRequestException("Start date is an invalid format.");}
-            Date parsedDeliveryDate = this.validateDate(deliveryDate);
-            if(parsedDeliveryDate == null){throw new BadRequestException("Delivery date is an invalid format.");}
+            Date parsedStartDate = this.parseDate(startDate);
+            Date parsedDeliveryDate = this.parseDate(deliveryDate);
 
             int companyIDInteger;
             companyIDInteger = Integer.parseInt(companyID);
@@ -259,7 +257,9 @@ public class MilestoneBusiness {
             //Retrieve existing milestone from database
             Milestone existingMilestone = this.getMilestoneByID(milestoneID);
 
-            if(name == null || name.isEmpty()){ name = existingMilestone.getName(); }
+            if(name == null || name.isEmpty()){
+                name = existingMilestone.getName();
+            }
 
             //If start date is null, set to existing value; otherwise, validate start date
             Date parsedStartDate;
@@ -267,8 +267,7 @@ public class MilestoneBusiness {
                 parsedStartDate = existingMilestone.getStartDate();
             }
             else {
-                parsedStartDate = this.validateDate(startDate);
-                if (parsedStartDate == null) {throw new BadRequestException("Start date is an invalid format.");}
+                parsedStartDate = this.parseDate(startDate);
             }
 
             //If delivery date is null, set to existing value; otherwise, validate delivery date
@@ -277,8 +276,7 @@ public class MilestoneBusiness {
                 parsedDeliveryDate = existingMilestone.getDeliveryDate();
             }
             else {
-                parsedDeliveryDate = this.validateDate(startDate);
-                if (parsedDeliveryDate == null) {throw new BadRequestException("Delivery date is an invalid format.");}
+                parsedDeliveryDate = this.parseDate(startDate);
             }
 
             int companyIDInteger;
@@ -286,7 +284,7 @@ public class MilestoneBusiness {
                 companyIDInteger = existingMilestone.getCompanyID();
             }
             else {
-                    companyIDInteger = Integer.parseInt(companyID);
+                companyIDInteger = Integer.parseInt(companyID);
             }
 
             //Check that company exists in the database
@@ -322,9 +320,6 @@ public class MilestoneBusiness {
 
             //Check that milestone exists
             Milestone milestone = this.getMilestoneByID(milestoneID);
-            if(milestone == null){
-                throw new NotFoundException("No milestone with that ID exists");
-            }
 
             milestoneDB.updateMilestoneArchiveStatus(milestone.getMileStoneID(), status);
 
@@ -390,12 +385,12 @@ public class MilestoneBusiness {
         }
     }
 
-    private Date validateDate(String dateString){
+    private Date parseDate(String dateString){
         try{
             return dateParser.parse(dateString);
         }
         catch(ParseException pe){
-            return null;
+            throw new BadRequestException("Dates must be formatted as YYYY-MM-DD");
         }
     }
 }
