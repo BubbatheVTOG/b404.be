@@ -211,7 +211,7 @@ INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (3, "Send", "Complete"),
   (4, "Send", "Fill out");
 
-INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, relatedStep, UUID, verbID, fileID, workflowID) VALUES
+INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES
   (1, 1, 1, "This is a higher level step.", null, null, 1, 1, 1),
   (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 1),
   (3, 1, 0, "This is a second level step.", 2,    null, 2, 2, 1),
