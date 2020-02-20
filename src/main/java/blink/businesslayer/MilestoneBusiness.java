@@ -135,6 +135,34 @@ public class MilestoneBusiness {
 
     /**
      * Get a milestone from the database by milestoneID
+     * Also checks that a user has the credentials for retrieving this milestone
+     * @param uuid - UUID of requester
+     * @param milestoneID - milestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException - MilestoneID does not exist in database
+     * @throws BadRequestException - MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        Milestone milestone = this.getMilestoneByID(milestoneID);
+
+        Person requester = personBusiness.getPersonByUUID(uuid);
+        if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            return milestone;
+        }
+        else{
+            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompanyID())){
+                return milestone;
+            }
+            else{
+                throw new NotAuthorizedException("You do not have the authorization to get this milestone");
+            }
+        }
+    }
+
+    /**
+     * Get a milestone from the database by milestoneID
      * @param id - milestoneID must be convertible to integer
      * @return Milestone object with matching id
      * @throws NotFoundException - MilestoneID does not exist in database
