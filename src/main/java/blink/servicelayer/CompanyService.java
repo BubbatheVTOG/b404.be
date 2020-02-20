@@ -6,6 +6,7 @@ import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -24,7 +25,7 @@ import java.util.List;
 @Api(value = "/company")
 public class CompanyService {
     private CompanyBusiness companyBusiness = new CompanyBusiness();
-    private Gson gson = new Gson();
+    private Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Get all companies from database

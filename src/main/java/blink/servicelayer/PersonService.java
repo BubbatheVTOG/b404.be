@@ -9,6 +9,7 @@ import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.Person;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -30,7 +31,7 @@ import java.util.List;
 @Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson = new Gson();
+    private Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Get all people from database

@@ -11,6 +11,7 @@ import javax.ws.rs.NotAuthorizedException;
 import blink.utility.objects.Person;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -24,7 +25,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Api(value = "/login")
 public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson = new Gson();
+    private Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Checks that a persons username and password match values stored in database

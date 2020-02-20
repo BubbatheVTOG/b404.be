@@ -1,7 +1,5 @@
 package blink.utility.objects;
 
-import com.google.gson.Gson;
-
 import java.util.Date;
 
 public class Milestone {
@@ -15,7 +13,6 @@ public class Milestone {
     private Date completedDate;
     private boolean archived;
     private int companyID;
-    private  transient Gson gson;
 
     /**
      * Construct a milestone and provide all information necessary
@@ -40,8 +37,6 @@ public class Milestone {
         this.completedDate = completedDate;
         this.archived = archived;
         this.companyID = companyID;
-
-        this.gson = new Gson();
     }
 
     public Milestone(int mileStoneID, String name, String description, Date startDate, Date deliveryDate, int companyID) {
@@ -51,8 +46,6 @@ public class Milestone {
         this.startDate = startDate;
         this.deliveryDate = deliveryDate;
         this.companyID = companyID;
-
-        this.gson = new Gson();
     }
 
     public int getMileStoneID() {

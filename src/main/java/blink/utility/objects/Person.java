@@ -1,5 +1,4 @@
 package blink.utility.objects;
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +6,6 @@ import java.util.List;
  * Utility class for representing a Person interacting with this system
  */
 public class Person {
-	private transient Gson gson = new Gson();
 
 	private String UUID;
 	private String username;

@@ -1,6 +1,5 @@
 package blink.businesslayer;
 
-import blink.datalayer.CompanyDB;
 import blink.datalayer.MilestoneDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.Milestone;
@@ -20,13 +19,13 @@ import java.util.List;
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
     private PersonBusiness personBusiness;
-    private CompanyDB companyDB;
+    private CompanyBusiness companyBusiness;
     private SimpleDateFormat dateParser;
 
     public MilestoneBusiness(){
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
-        this.companyDB = new CompanyDB();
+        this.companyBusiness = new CompanyBusiness();
         this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
     }
 
@@ -217,19 +216,16 @@ public class MilestoneBusiness {
             Date parsedStartDate = this.parseDate(startDate);
             Date parsedDeliveryDate = this.parseDate(deliveryDate);
 
-            int companyIDInteger;
-            companyIDInteger = Integer.parseInt(companyID);
-
 
             //Check that company does not already exist in the database
-            companyDB.getCompanyByID(companyIDInteger);
+            Company company = companyBusiness.getCompanyByID(companyID);
 
             //Retrieve the person from the database by UUID
             Date today = new Date();
-            int insertedMilestoneID = milestoneDB.insertMilestone(name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+            int insertedMilestoneID = milestoneDB.insertMilestone(name, description, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company.getCompanyID());
         }
         catch(NumberFormatException nfe){
             throw new BadRequestException("Company ID must be a valid integer");
@@ -261,6 +257,10 @@ public class MilestoneBusiness {
                 name = existingMilestone.getName();
             }
 
+            if(description == null || description.isEmpty()){
+                description = existingMilestone.getDescription();
+            }
+
             //If start date is null, set to existing value; otherwise, validate start date
             Date parsedStartDate;
             if(startDate == null || startDate.isEmpty()){
@@ -284,17 +284,14 @@ public class MilestoneBusiness {
                 companyIDInteger = existingMilestone.getCompanyID();
             }
             else {
-                companyIDInteger = Integer.parseInt(companyID);
+                companyIDInteger = companyBusiness.getCompanyByID(companyID).getCompanyID();
             }
-
-            //Check that company exists in the database
-            companyDB.getCompanyByID(companyIDInteger);
 
             Date today = new Date();
             milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(existingMilestone.getMileStoneID(), name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, companyIDInteger);
+            return new Milestone(existingMilestone.getMileStoneID(), name, description, existingMilestone.getCreatedDate(), today, parsedStartDate, parsedDeliveryDate, existingMilestone.getCompletedDate(), existingMilestone.isArchived(), companyIDInteger);
         }
         catch (NumberFormatException nfe) {
             throw new BadRequestException("Company ID must be a valid integer");
@@ -383,6 +380,12 @@ public class MilestoneBusiness {
         }
     }
 
+    /**
+     * Utility for parsing date objects and detecting that format is valid
+     * @param dateString - String of date; must be in format 'YYYY-MM-DD'
+     * @return Date object
+     * @throws BadRequestException if date in invalid format
+     */
     private Date parseDate(String dateString){
         try{
             return dateParser.parse(dateString);

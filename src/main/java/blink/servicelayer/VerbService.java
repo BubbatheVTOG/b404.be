@@ -4,6 +4,7 @@ import blink.businesslayer.Authorization;
 import blink.businesslayer.VerbBusiness;
 import blink.utility.objects.Verb;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -23,7 +24,7 @@ import java.util.List;
 @Api(value = "/verb")
 public class VerbService {
     private VerbBusiness verbBusiness = new VerbBusiness();
-    private Gson gson = new Gson();
+    private Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Get all verbs from database

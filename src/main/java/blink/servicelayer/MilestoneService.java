@@ -5,6 +5,7 @@ import blink.businesslayer.MilestoneBusiness;
 import blink.utility.objects.Milestone;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -26,7 +27,7 @@ import java.util.List;
 @Api(value = "/milestone")
 public class MilestoneService {
     private MilestoneBusiness milestoneBusiness = new MilestoneBusiness();
-    private static Gson gson = new Gson();
+    private static Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Get all milestones
@@ -201,7 +202,7 @@ public class MilestoneService {
                                     @RequestBody(description = "description", required = true)      @FormParam("description") String description,
                                     @RequestBody(description = "startDate", required = true)        @FormParam("startDate") String startDate,
                                     @RequestBody(description = "deliveryDate", required = true)     @FormParam("deliveryDate") String deliveryDate,
-                                    @RequestBody(description = "companyID")                         @FormParam("companyID") String companyID,
+                                    @RequestBody(description = "companyID", required = true)        @FormParam("companyID") String companyID,
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
