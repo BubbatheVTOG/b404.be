@@ -206,11 +206,11 @@ public class CompanyBusiness {
     public String addPersonToCompany(String companyID, String personID) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
         try {
             int companyIDInteger = Integer.parseInt(companyID);
-            personID = personBusiness.getPersonByUUID(personID).getUUID();
+            personID = personBusiness.getPersonByUUID(personID).getUuid();
             if(companyDB.getCompanyByID(companyIDInteger) == null){ throw new NotFoundException("No company with that ID exists. ");}
 
             for(Person person : this.getAllPeopleByCompany(companyID)){
-                if(personID.equals(person.getUUID())) {
+                if(personID.equals(person.getUuid())) {
                     throw new ConflictException("That person is already a part of that company.");
                 }
             }

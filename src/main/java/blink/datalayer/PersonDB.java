@@ -47,7 +47,7 @@ public class PersonDB {
                         result.getInt("accessLevelID"));
 
                 //Get all companies and add them to person companies list
-                getAllCompaniesForPersonStatement.setString(1, person.getUUID());
+                getAllCompaniesForPersonStatement.setString(1, person.getUuid());
 
                 try (ResultSet companiesResult = getAllCompaniesForPersonStatement.executeQuery()) {
                     ArrayList<Company> companies = new ArrayList<>();
@@ -104,7 +104,7 @@ public class PersonDB {
                             result.getInt("accessLevelID"));
 
                     //Get all companies and add them to person companies list
-                    getCompaniesStatement.setString(1, person.getUUID());
+                    getCompaniesStatement.setString(1, person.getUuid());
 
                     try (ResultSet companiesResult = getCompaniesStatement.executeQuery()) {
                         ArrayList<Company> companies = new ArrayList<>();
@@ -160,7 +160,7 @@ public class PersonDB {
                             result.getInt("accessLevelID"));
 
                     //Get all companies and add them to person companies list
-                    getCompaniesStatement.setString(1, person.getUUID());
+                    getCompaniesStatement.setString(1, person.getUuid());
 
                     try (ResultSet companiesResult = getCompaniesStatement.executeQuery()) {
                         ArrayList<Company> companies = new ArrayList<>();

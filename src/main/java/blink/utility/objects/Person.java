@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Person {
 
-	private String UUID;
+	private String uuid;
 	private String username;
 	private transient String passwordHash;
 	private transient String salt;
@@ -19,8 +19,8 @@ public class Person {
 	private int accessLevelID;
 
 	//Fully parameterised constructor
-	public Person(String UUID, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
-		this.UUID = UUID;
+	public Person(String uuid, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
+		this.uuid = uuid;
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
@@ -31,8 +31,8 @@ public class Person {
 		this.accessLevelID = accessLevelID;
 	}
 
-	public String getUUID() {
-		return this.UUID;
+	public String getUuid() {
+		return this.uuid;
 	}
 
 	public String getPasswordHash() {
@@ -61,8 +61,8 @@ public class Person {
 		return this.accessLevelID;
 	}
 
-	public void setUUID(String UUID) {
-		this.UUID = UUID;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public void setPasswordHash(String passwordHash) {

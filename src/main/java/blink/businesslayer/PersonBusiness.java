@@ -191,7 +191,7 @@ public class PersonBusiness {
             else{
                 Person usernameCheck = personDB.getPersonByUsername(username);
                 //If username was found and person is not the same as person to update throw conflict
-                if(usernameCheck != null && !usernameCheck.getUUID().equals(person.getUUID())){
+                if(usernameCheck != null && !usernameCheck.getUuid().equals(person.getUuid())){
                     throw new ConflictException("A user with that username already exists.");
                 }
             }
