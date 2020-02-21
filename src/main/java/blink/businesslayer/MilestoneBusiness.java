@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
@@ -46,10 +47,7 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones();
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
             }
 
@@ -80,10 +78,7 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones(false);
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, false));
             }
 
@@ -113,10 +108,7 @@ public class MilestoneBusiness {
                 milestoneList = milestoneDB.getAllMilestones(true);
             }
             else{
-                List<Integer> companyIDList = new ArrayList<>();
-                for(Company currCompany : requester.getCompanies()) {
-                    companyIDList.add(currCompany.getCompanyID());
-                }
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, true));
             }
 
