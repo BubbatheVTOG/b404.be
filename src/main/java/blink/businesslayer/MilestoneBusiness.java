@@ -27,7 +27,7 @@ public class MilestoneBusiness {
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
-        this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
+        this.dateParser = new SimpleDateFormat("yyyy-MM-dd");
     }
 
 
