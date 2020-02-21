@@ -268,7 +268,7 @@ public class MilestoneBusiness {
                 parsedDeliveryDate = existingMilestone.getDeliveryDate();
             }
             else {
-                parsedDeliveryDate = this.parseDate(startDate);
+                parsedDeliveryDate = this.parseDate(deliveryDate);
             }
 
             int companyIDInteger;
