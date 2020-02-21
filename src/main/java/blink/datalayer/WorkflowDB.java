@@ -38,7 +38,7 @@ public class WorkflowDB {
                         int workflowID = result.getInt("workflowID");
                         List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                         workflowList.add(new Workflow(result.getInt("workflowID"),
-                                result.getString("name"),
+                                result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
                                 result.getDate("workflow.lastUpdatedDate"),
