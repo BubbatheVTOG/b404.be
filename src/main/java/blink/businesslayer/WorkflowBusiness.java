@@ -3,6 +3,10 @@ package blink.businesslayer;
 import blink.datalayer.MilestoneDB;
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import netscape.javascript.JSObject;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -20,7 +24,7 @@ public class WorkflowBusiness {
     private CompanyBusiness companyBusiness;
     private SimpleDateFormat dateParser;
 
-    public WorkflowBusiness(){
+    public WorkflowBusiness() {
         this.workflowDB = new WorkflowDB();
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
@@ -29,20 +33,20 @@ public class WorkflowBusiness {
 
     /**
      * Get all workflows
+     *
      * @param uuid - uuid of the requesting user
      * @return List of workflows
-     * @throws NotAuthorizedException - requester uuid was not found in the database
+     * @throws NotAuthorizedException       - requester uuid was not found in the database
      * @throws InternalServerErrorException - Error in data layer
      */
     public List<Workflow> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
-        try{
+        try {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Workflow> workflowList = new ArrayList<>();
-            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            if (Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
                 workflowList = workflowDB.getAllWorkflows();
-            }
-            else{
+            } else {
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
             }
@@ -50,30 +54,30 @@ public class WorkflowBusiness {
             return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
-        catch(NotFoundException nfe){
+        catch (NotFoundException nfe) {
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
+        catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
     /**
      * Get all workflows by archive status
+     *
      * @param uuid - uuid of the requesting user
      * @return List of active workflows
      * @throws InternalServerErrorException - Error in data layer
      */
     private List<Workflow> getAllWorkflows(String uuid, boolean archived) throws InternalServerErrorException {
-        try{
+        try {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Workflow> workflowList = new ArrayList<>();
-            if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            if (Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
                 workflowList = workflowDB.getAllWorkflows(archived);
-            }
-            else{
+            } else {
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 workflowList.addAll(workflowDB.getAllWorkflows(companyIDList, archived));
             }
@@ -81,56 +85,57 @@ public class WorkflowBusiness {
             return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
-        catch(NotFoundException nfe){
+        catch (NotFoundException nfe) {
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
+        catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
     /**
      * Wrapper function of getAllWorkflows that gets all active workflows
+     *
      * @param uuid - requester's UUID
      * @return List of all workflows relevant to the user
      */
-    public List<Workflow> getActiveWorkflows(String uuid){
+    public List<Workflow> getActiveWorkflows(String uuid) {
         return this.getAllWorkflows(uuid, false);
     }
 
     /**
      * Wrapper function of getAllWorkflows that gets all archived workflows
+     *
      * @param uuid - requester's UUID
      * @return List of all workflows relevant to the user
      */
-    public List<Workflow> getArchivedWorkflows(String uuid){
+    public List<Workflow> getArchivedWorkflows(String uuid) {
         return this.getAllWorkflows(uuid, true);
     }
 
     /**
      * Get a workflow from the database by workflowID
      * Also checks that a user has the credentials for retrieving this workflow
-     * @param uuid - UUID of requester
+     *
+     * @param uuid       - UUID of requester
      * @param workflowID - workflowID must be convertible to integer
      * @return Workflow object with matching id
-     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
+     * @throws NotAuthorizedException       - Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException            - WorkflowID does not exist in database
+     * @throws BadRequestException          - WorkflowID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
     public Workflow getWorkflowByID(String uuid, String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         Workflow workflow = this.getWorkflowByID(workflowID);
 
         Person requester = personBusiness.getPersonByUUID(uuid);
-        if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+        if (Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
             return workflow;
-        }
-        else{
-            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == workflow.getCompanyID())){
+        } else {
+            if (requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == workflow.getCompanyID())) {
                 return workflow;
-            }
-            else{
+            } else {
                 throw new NotAuthorizedException("You do not have the authorization to get this workflow");
             }
         }
@@ -138,16 +143,19 @@ public class WorkflowBusiness {
 
     /**
      * Get a workflow from the database by workflowID
+     *
      * @param workflowID - WorkflowID must be convertible to integer
      * @return Workflow object with matching id
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
+     * @throws NotFoundException            - WorkflowID does not exist in database
+     * @throws BadRequestException          - WorkflowID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
     private Workflow getWorkflowByID(String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
-        try{
+        try {
             //Initial parameter validation; throws BadRequestException if there is an issue
-            if(workflowID == null || workflowID.isEmpty()){ throw new BadRequestException("A workflow ID must be provided"); }
+            if (workflowID == null || workflowID.isEmpty()) {
+                throw new BadRequestException("A workflow ID must be provided");
+            }
 
             Integer idInteger = Integer.parseInt(workflowID);
 
@@ -155,7 +163,7 @@ public class WorkflowBusiness {
             Workflow workflow = workflowDB.getWorkflowByID(idInteger);
 
             //If null is returned, no workflow was found with given id
-            if(workflow == null){
+            if (workflow == null) {
                 throw new NotFoundException("No workflow with that ID exists.");
             }
 
@@ -163,11 +171,11 @@ public class WorkflowBusiness {
             return workflow;
         }
         //Error converting workflow to integer
-        catch(NumberFormatException nfe){
+        catch (NumberFormatException nfe) {
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
+        catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
@@ -176,14 +184,15 @@ public class WorkflowBusiness {
 
     /**
      * Delete a workflow from the database by UUID
+     *
      * @param workflowID - ID of workflow to delete
      * @return Success string
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
+     * @throws NotFoundException            - WorkflowID does not exist in database
+     * @throws BadRequestException          - WorkflowID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
     public String deleteWorkflowByID(String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
-        try{
+        try {
             //Validate workflow ID
             int workflowIDInteger;
             workflowIDInteger = Integer.parseInt(workflowID);
@@ -193,31 +202,31 @@ public class WorkflowBusiness {
             int numRowsDeleted = workflowDB.deleteWorkflowByID(workflowIDInteger);
 
             //If null is returned, no user was found with given UUID
-            if(numRowsDeleted == 0){
+            if (numRowsDeleted == 0) {
                 throw new NotFoundException("No workflow with that id exists.");
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return "Successfully deleted workflow.";
-        }
-        catch(NumberFormatException nfe){
+        } catch (NumberFormatException nfe) {
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
+        catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
     /**
      * Archive or unarchive an existing workflow
+     *
      * @param workflowID - ID of workflow to archive
-     * @throws NotFoundException - WorkflowID does not exist
-     * @throws BadRequestException - WorkflowID is formatted improperly
+     * @throws NotFoundException            - WorkflowID does not exist
+     * @throws BadRequestException          - WorkflowID is formatted improperly
      * @throws InternalServerErrorException - Error in data layer
      */
     private void updateWorkflowArchiveStatus(String workflowID, boolean status) throws NotFoundException, BadRequestException, InternalServerErrorException {
-        try{
+        try {
 
             //Check that workflow exists
             Workflow workflow = this.getWorkflowByID(workflowID);
@@ -225,28 +234,75 @@ public class WorkflowBusiness {
             workflowDB.updateWorkflowArchiveStatus(workflow.getWorkflowID(), status);
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
+        catch (SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
     /**
      * Wrapper function of updateWorkflowArchiveStatus to archive a workflow
+     *
      * @param workflowID - ID of workflow to archive
      * @return Success string
      */
-    public String archiveWorkflow(String workflowID){
+    public String archiveWorkflow(String workflowID) {
         this.updateWorkflowArchiveStatus(workflowID, true);
         return "Successfully archived workflow.";
     }
 
     /**
      * Wrapper function of updateWorkflowArchiveStatus to unarchive a workflow
+     *
      * @param workflowID - ID of workflow to archive
      * @return Success string
      */
-    public String unarchiveWorkflow(String workflowID){
+    public String unarchiveWorkflow(String workflowID) {
         this.updateWorkflowArchiveStatus(workflowID, false);
         return "Successfully unarchived workflow.";
+    }
+
+    /**
+     * Function to convert jsonArray into List<Step>
+     * @param jsonObject is the top level object passed in
+     * @return children which is the list of steps
+     */
+    public List<Step> jsonToStepList(JsonObject jsonObject) {
+        List<Step> children = new ArrayList<>();
+
+        int workflowID = jsonObject.get("workflowID").getAsInt();
+        children = jsonArrayToStepList(jsonObject.get("list").getAsJsonArray(), workflowID);
+
+        return children;
+    }
+
+    public List<Step> jsonArrayToStepList(JsonArray jsArray, int workflowID) {
+        List<Step> children = new ArrayList<>();
+
+        for(JsonElement jsonElement : jsArray) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            Step step;
+            if(jsonObject.get("children").isJsonNull()) {
+                step = new Step.StepBuilder(
+                        jsonObject.get("title").getAsInt(),
+                        jsonObject.get("fileID").getAsInt(),
+                        workflowID,
+                        jsonObject.get("completed").getAsBoolean())
+                        .description(jsonObject.get("subtitle").getAsString())
+                        .uuid(jsonObject.get("uuid").getAsInt())
+                        .build();
+            } else {
+                step = new Step.StepBuilder(
+                        jsonObject.get("title").getAsInt(),
+                        jsonObject.get("fileID").getAsInt(),
+                        workflowID,
+                        jsonObject.get("completed").getAsBoolean())
+                        .description(jsonObject.get("subtitle").getAsString())
+                        .uuid(jsonObject.get("uuid").getAsInt())
+                        .childSteps(jsonArrayToStepList(jsonObject.get("children").getAsJsonArray(), workflowID))
+                        .build();
+            }
+            children.add(step);
+        }
+        return children;
     }
 }

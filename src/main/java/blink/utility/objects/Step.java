@@ -39,14 +39,22 @@ public class Step {
         private boolean completed;
         private List<Step> childSteps;
 
-        public StepBuilder(int stepID, int orderNumber, int verbID, int fileID, int workflowID, boolean completed) {
-            this.stepID = stepID;
-            this.orderNumber = orderNumber;
+        public StepBuilder(int verbID, int fileID, int workflowID, boolean completed) {
             this.parentStepID = 0;
             this.verbID = verbID;
             this.fileID = fileID;
             this.workflowID = workflowID;
             this.completed = completed;
+        }
+
+        public StepBuilder stepID(int stepID) {
+            this.stepID = stepID;
+            return this;
+        }
+
+        public StepBuilder orderNumber(int orderNumber) {
+            this.orderNumber = orderNumber;
+            return this;
         }
 
         public StepBuilder description(String description) {
