@@ -27,7 +27,7 @@ public class MilestoneBusiness {
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
-        this.dateParser = new SimpleDateFormat("YYYY-MM-DD");
+        this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
 
 
@@ -160,7 +160,7 @@ public class MilestoneBusiness {
      * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    private Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(id == null || id.isEmpty()){ throw new BadRequestException("A milestone ID must be provided"); }

@@ -5,6 +5,7 @@ import blink.utility.objects.Workflow;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class WorkflowDB {
@@ -241,31 +242,66 @@ public class WorkflowDB {
     }
 
     /**
-     * Connect to database and add
-     * @param workflowID - workflowID of new workflow to be added
-     * @param name - name of new workflow to be added
-     * @param startDate - startDate of new workflow to be added
-     * @param endDate - endDate of new workflow to be added
-     * @param milestoneID - milestoneID of new workflow to be added
+     * Connect to database and add a template workflow
+     * @param name - name of template workflow to be added
+     * @param description - description of new workflow to be added
      * @throws SQLException - Error connecting to database or executing update
      */
-    public void insertWorkflow(final int workflowID, final String name, final Date startDate, final Date endDate, final int milestoneID) throws SQLException {
+    public int insertWorkflow(final String name, final String description, Date createdDate, Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (workflowID, name, startDate, endDate, milestoneID) VALUES (?, ?, ?, ?, ?);";
+        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate) VALUES (?, ?, ?, ?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
-            preparedStatement.setInt(1, workflowID);
-            preparedStatement.setString(2, name);
-            preparedStatement.setDate(3, startDate);
-            preparedStatement.setDate(4, endDate);
-            preparedStatement.setInt(5, milestoneID);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
 
             preparedStatement.executeUpdate();
+
+            try(ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
+                insertedKeys.next();
+                return insertedKeys.getInt(1);
+            }
         }
     }
+
+    /**
+     * Connect to database and add a concrete workflow
+     * @param name - name of template workflow to be added
+     * @param description - description of new workflow to be added
+     * @throws SQLException - Error connecting to database or executing update
+     */
+    public int insertWorkflow(String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, int companyID, int milestoneID) throws SQLException {
+        //Prepare sql statement
+        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
+            preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
+            preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
+            preparedStatement.setInt(7, companyID);
+            preparedStatement.setInt(8, milestoneID);
+
+            preparedStatement.executeUpdate();
+
+            try(ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
+                insertedKeys.next();
+                return insertedKeys.getInt(1);
+            }
+        }
+    }
+
+
 
     /**
      * Connect to database and delete a workflow by workflowID

@@ -14,9 +14,9 @@ public class Workflow {
     private Date completedDate;
     private boolean archived;
     private int milestoneID;
-    private double percentComplete;
     private int companyID;
     private List<Step> steps;
+    private double percentComplete;
 
     public Workflow(int workflowID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, int companyID, int milestoneID, List<Step> steps) {
         this.workflowID = workflowID;
