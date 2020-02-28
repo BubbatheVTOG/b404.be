@@ -2,9 +2,7 @@ package blink.businesslayer;
 
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -24,6 +22,7 @@ public class WorkflowBusiness {
     private PersonBusiness personBusiness;
     private CompanyBusiness companyBusiness;
     private MilestoneBusiness milestoneBusiness;
+    private Gson gson;
     private SimpleDateFormat dateParser;
 
     public WorkflowBusiness(){
@@ -32,6 +31,7 @@ public class WorkflowBusiness {
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
+        this.gson = new GsonBuilder().serializeNulls().create();
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
 
@@ -135,7 +135,7 @@ public class WorkflowBusiness {
             return workflow;
         }
         else{
-            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == workflow.getCompanyID())){
+            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == workflow.getCompany().getCompanyID())){
                 return workflow;
             }
             else{
@@ -182,29 +182,35 @@ public class WorkflowBusiness {
 
     /**
      * Inserts a template workflow
-     * @param name - name of template
-     * @param description - description of template
-     * @param stepsJson - json string of steps to relate to this template
+     * @param workflowJsonString - String representation of workflow json object
      * @return Inserted workflow
      */
-    public Workflow insertWorkflow(String name, String description, String stepsJson){
+    public Workflow insertTemplateWorkflow(String workflowJsonString){
         try{
+            JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
+
+            String name = workflowJson.get("name").toString();
             if(name == null || name.isEmpty()){
                 throw new BadRequestException("A name must be provided.");
             }
 
-            if(stepsJson == null || stepsJson.isEmpty()){
-                throw new BadRequestException("Steps must be provided.");
-            }
+            String description = workflowJson.get("description").toString();
 
             Date today = new Date();
             int workflowID = this.workflowDB.insertWorkflow(name, description, today, today);
 
-            //TODO: update this line once the step parsing system has been added
-            List<Step> steps = new ArrayList<>(); //this.stepBusiness.parseSteps(stepsJson, workflowID);
+            JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
+            if(stepsJson == null || stepsJson.size() == 0){
+                throw new BadRequestException("Steps must be provided.");
+            }
+
+            List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
-            return new Workflow(workflowID, name, description, null, null, null, null, null, false, 0, 0, steps);
+            return new Workflow(workflowID, name, description, null, null, null, null, null, false, null, 0, steps);
+        }
+        catch(JsonSyntaxException jse){
+            throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException();
@@ -213,42 +219,69 @@ public class WorkflowBusiness {
 
     /**
      * Inserts a concrete workflow
-     * @param name - name of workflow
-     * @param description - description of workflow
-     * @param stepsJson - json string of steps to relate to this workflow
+     * @param workflowJsonString - name of workflow
      * @return Inserted workflow
      */
-    public Workflow insertWorkflow(String name, String description, String startDate, String deliveryDate, String companyID, String milestoneID, String stepsJson){
+    public Workflow insertWorkflow(String workflowJsonString){
         try{
-            if(name == null || name.isEmpty()){
-                throw new BadRequestException("A name must be provided.");
+            JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
+
+            if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
+                throw new BadRequestException("A workflow name is required");
+            }
+            String name = workflowJson.get("name").toString();
+
+            String description = null;
+            if(workflowJson.has("description")){
+                description = workflowJson.get("description").toString();
             }
 
-            Date parsedStartDate = this.parseDate(startDate);
-            Date parsedDeliveryDate = this.parseDate(deliveryDate);
+            if(!workflowJson.has("startDate") || workflowJson.get("startDate").isJsonNull()){
+                throw new BadRequestException("A start date is required");
+            }
+            Date parsedStartDate = this.parseDate(workflowJson.get("startDate").toString());
 
-            int companyIDInteger = this.companyBusiness.getCompanyByID(companyID).getCompanyID();
-            int milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID();
+            if(!workflowJson.has("deliveryDate") || workflowJson.get("deliveryDate").isJsonNull()){
+                throw new BadRequestException("A delivery date is required");
+            }
+            Date parsedDeliveryDate = this.parseDate(workflowJson.get("deliveryDate").toString());
 
-            if(stepsJson == null || stepsJson.isEmpty()){
+            if(!workflowJson.has("companyID") || workflowJson.get("companyID").isJsonNull()){
+                throw new BadRequestException("A workflow must be assigned to a company");
+            }
+            Company company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
+
+            if(!workflowJson.has("milestoneID") || workflowJson.get("milestoneID").isJsonNull()){
+                throw new BadRequestException("A workflow must be assigned to a milestone");
+            }
+            int milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(workflowJson.get("milestoneID").toString()).getMileStoneID();
+
+
+            if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
+                throw new BadRequestException("A workflow must contain steps");
+            }
+            JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
+            if(stepsJson.size() == 0){
                 throw new BadRequestException("Steps must be provided.");
             }
 
             Date today = new Date();
-            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, companyIDInteger, milestoneIDInteger);
+            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger);
 
-            //TODO: update this line once the step parsing system has been added
-            List<Step> steps = new ArrayList<>(); //this.stepBusiness.parseSteps(stepsJson, workflowID);
+            List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
-            return new Workflow(workflowID, name, description, null, null, null, null, null, false, 0, 0, steps);
+            return new Workflow(workflowID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company, milestoneIDInteger, steps);
+        }
+        catch(JsonSyntaxException jse){
+            throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException();
         }
     }
 
-    //TODO: implement insert template, create concrete and update workflow
+    //TODO: implement update workflow
 
     /**
      * Delete a workflow from the database by UUID
@@ -328,18 +361,9 @@ public class WorkflowBusiness {
 
     /**
      * Function to convert jsonArray into List<Step>
-     * @param jsonObject is the top level object passed in
+     * @param jsArray is the top level object passed in
      * @return children which is the list of steps
      */
-    public List<Step> jsonToStepList(JsonObject jsonObject) {
-        List<Step> children = new ArrayList<>();
-
-        int workflowID = jsonObject.get("workflowID").getAsInt();
-        children = jsonArrayToStepList(jsonObject.get("list").getAsJsonArray(), workflowID);
-
-        return children;
-    }
-
     public List<Step> jsonArrayToStepList(JsonArray jsArray, int workflowID) {
         List<Step> children = new ArrayList<>();
 

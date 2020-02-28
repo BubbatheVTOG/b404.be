@@ -1,6 +1,6 @@
 package blink.utility.objects;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 public class Workflow {
@@ -14,11 +14,11 @@ public class Workflow {
     private Date completedDate;
     private boolean archived;
     private int milestoneID;
-    private int companyID;
+    private Company company;
     private List<Step> steps;
     private double percentComplete;
 
-    public Workflow(int workflowID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, int companyID, int milestoneID, List<Step> steps) {
+    public Workflow(int workflowID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, Company company, int milestoneID, List<Step> steps) {
         this.workflowID = workflowID;
         this.description = description;
         this.name = name;
@@ -28,7 +28,7 @@ public class Workflow {
         this.deliveryDate = deliveryDate;
         this.completedDate = completedDate;
         this.archived = archived;
-        this.companyID = companyID;
+        this.company = company;
         this.milestoneID = milestoneID;
         this.steps = steps;
         this.percentComplete = this.calcPercentComplete();
@@ -150,11 +150,11 @@ public class Workflow {
         return new Double[] {totalSteps, completeSteps};
     }
 
-    public int getCompanyID() {
-        return companyID;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setCompanyID(int companyID) {
-        this.companyID = companyID;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

@@ -171,9 +171,7 @@ public class WorkflowService {
 
     /**
      * Insert a template workflow into the database
-     * @param name - New workflow's name
-     * @param description - New workflow's description
-     * @param steps - JSON string of steps to associate with this workflow
+     * @param workflowJson -
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -184,6 +182,7 @@ public class WorkflowService {
      */
     @Path("/template")
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "insertTemplateWorkflow", description = "Insert a new template workflow")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
@@ -194,16 +193,14 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertTemplateWorkflow(@RequestBody(description = "name", required = true)         @FormParam("name") String name,
-                                           @RequestBody(description = "description")                   @FormParam("description") String description,
-                                           @RequestBody(description = "steps", required = true)        @FormParam("steps") String steps,
+    public Response insertTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Workflow workflow = workflowBusiness.insertWorkflow(name, description, steps);
+            Workflow workflow = workflowBusiness.insertTemplateWorkflow(workflowJson);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
@@ -228,9 +225,7 @@ public class WorkflowService {
 
     /**
      * Insert a concrete workflow into the database
-     * @param name - New workflow's name
-     * @param description - New workflow's description
-     * @param steps - JSON string of steps to associate with this workflow
+     * @param workflowJson - String representation of workflow json object
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -251,20 +246,14 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertConcreteWorkflow(@RequestBody(description = "name", required = true)          @FormParam("name") String name,
-                                           @RequestBody(description = "description")                    @FormParam("description") String description,
-                                           @RequestBody(description = "startDate", required = true)     @FormParam("startDate") String startDate,
-                                           @RequestBody(description = "deliveryDate", required = true)  @FormParam("deliveryDate") String deliveryDate,
-                                           @RequestBody(description = "companyID", required = true)     @FormParam("companyID") String companyID,
-                                           @RequestBody(description = "milestoneID", required = true)   @FormParam("milestoneID") String milestoneID,
-                                           @RequestBody(description = "steps", required = true)         @FormParam("steps") String steps,
+    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)          @FormParam("workflow") String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Workflow workflow = workflowBusiness.insertWorkflow(name, description, startDate, deliveryDate, companyID, milestoneID, steps);
+            Workflow workflow = workflowBusiness.insertWorkflow(workflowJson);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
