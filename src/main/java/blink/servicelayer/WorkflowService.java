@@ -36,7 +36,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getAllWorkflows", description = "Gets all workflows in the system")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
@@ -70,7 +70,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getActiveWorkflows", description = "Gets all active workflows")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of active workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "List of active workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
@@ -104,7 +104,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getArchivedWorkflows", description = "Gets all archived workflows")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of archived workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "List of archived workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
@@ -139,7 +139,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getWorkflowByID", description = "Gets a specific workflow by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: WorkflowID must be a valid integer.)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.)"),
@@ -171,7 +171,7 @@ public class WorkflowService {
 
     /**
      * Insert a template workflow into the database
-     * @param workflowJson -
+     * @param workflowJson - String representation of workflow json object
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
      * @return - HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
@@ -185,7 +185,7 @@ public class WorkflowService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "insertTemplateWorkflow", description = "Insert a new template workflow")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
@@ -238,7 +238,7 @@ public class WorkflowService {
     @POST
     @Operation(summary = "insertConcreteWorkflow", description = "Insert a new concrete workflow")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, companyID, percentComplete, steps)"),
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
@@ -254,6 +254,114 @@ public class WorkflowService {
 
             //Send parameters to business layer and store response
             Workflow workflow = workflowBusiness.insertWorkflow(workflowJson);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Update an existing template workflow
+     * @param workflowJson - String representation of workflow json object
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent companyID or workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/template")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "updateTemplateWorkflow", description = "Update an existing template workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No company/workflow with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            Workflow workflow = workflowBusiness.updateTemplateWorkflow(workflowJson);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Update an existing concrete workflow
+     * @param workflowJson - String representation of workflow json object
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent companyID or workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/concrete")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "updateConcreteWorkflow", description = "Update an existing concrete workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No company/workflow with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            Workflow workflow = workflowBusiness.updateConcreteWorkflow(workflowJson);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));

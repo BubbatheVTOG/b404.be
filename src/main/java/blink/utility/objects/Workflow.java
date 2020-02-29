@@ -32,6 +32,11 @@ public class Workflow {
         this.milestoneID = milestoneID;
         this.steps = steps;
         this.percentComplete = this.calcPercentComplete();
+
+        //If completed and not already marked as complete, mark complete
+        if(this.percentComplete == 1 && this.completedDate == null){
+            this.completedDate = new Date();
+        }
     }
 
     public int getWorkflowID() {
@@ -156,5 +161,13 @@ public class Workflow {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public List<Step> getSteps() {
+        return this.steps;
+    }
+
+    public void setCompany(List<Step> steps) {
+        this.steps = steps;
     }
 }

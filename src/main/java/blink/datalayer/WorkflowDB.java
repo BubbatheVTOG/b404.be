@@ -1,5 +1,6 @@
 package blink.datalayer;
 
+import blink.businesslayer.CompanyBusiness;
 import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class WorkflowDB {
     private DBConn dbConn;
     private StepDB stepDB;
+    private CompanyBusiness companyBusiness;
 
     public WorkflowDB(){
         this.dbConn = new DBConn();
@@ -47,7 +49,7 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getInt("companyID"),
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
                                 stepList));
                     }
@@ -92,7 +94,7 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getInt("companyID"),
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
                                 stepList));
                     }
@@ -137,7 +139,7 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getInt("companyID"),
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
                                 stepList));
                     }
@@ -185,7 +187,7 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getInt("companyID"),
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
                                 stepList));
                     }
@@ -230,7 +232,7 @@ public class WorkflowDB {
                             result.getDate("workflow.deliveryDate"),
                             result.getDate("workflow.completedDate"),
                             result.getBoolean("workflow.archived"),
-                            result.getInt("companyID"),
+                            this.companyBusiness.getCompanyByID(result.getString("companyID")),
                             result.getInt("milestoneID"),
                             stepList);
                 }
@@ -252,7 +254,7 @@ public class WorkflowDB {
         String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate) VALUES (?, ?, ?, ?);";
 
         try (Connection conn = this.dbConn.connect();
-             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+             PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             //Set parameters and execute update
             preparedStatement.setString(1, name);
@@ -280,7 +282,7 @@ public class WorkflowDB {
         String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
         try (Connection conn = this.dbConn.connect();
-             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+             PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             //Set parameters and execute update
             preparedStatement.setString(1, name);
@@ -301,7 +303,63 @@ public class WorkflowDB {
         }
     }
 
+    /**
+     * Connect to database and update a template workflow
+     * @param workflowID - ID of workflow to update
+     * @param name - name of template workflow to be added
+     * @param description - description of new workflow to be added
+     * @param lastUpdatedDate - The date to set the lastUpdatedDate to
+     * @throws SQLException - Error connecting to database or executing update
+     */
+    public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate) throws SQLException {
+        //Prepare sql statement
+        String query = "INSERT INTO workflow (name, description, lastUpdatedDate) VALUES (?, ?, ?) WHERE workflowID = ?;";
 
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
+            preparedStatement.setInt(4, workflowID);
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    /**
+     * Connect to database and update a concrete workflow
+     * @param workflowID - ID of workflow to update
+     * @param name - name of template workflow to be added
+     * @param description - description of new workflow to be added
+     * @param lastUpdatedDate - The date to set the lastUpdatedDate to
+     * @param startDate - The updated start date
+     * @param deliveryDate - The updated delivery date
+     * @param completedDate - The updated completed date
+     * @param companyID - The new companyID
+     * @throws SQLException - Error connecting to database or executing update
+     */
+    public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, int companyID) throws SQLException {
+        //Prepare sql statement
+        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate, companyID) VALUES (?, ?, ?, ?, ?, ?, ?) WHERE workflowID = ?;";
+
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, description);
+            preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
+            preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
+            preparedStatement.setDate(6, new java.sql.Date(completedDate.getTime()));
+            preparedStatement.setInt(7, companyID);
+            preparedStatement.setInt(8, workflowID);
+
+            preparedStatement.executeUpdate();
+        }
+    }
 
     /**
      * Connect to database and delete a workflow by workflowID

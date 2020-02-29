@@ -1,5 +1,7 @@
 package blink.datalayer;
 
+import blink.businesslayer.CompanyBusiness;
+import blink.businesslayer.WorkflowBusiness;
 import blink.utility.objects.Milestone;
 
 import java.sql.*;
@@ -9,6 +11,7 @@ import java.util.List;
 
 public class MilestoneDB {
     private DBConn dbConn;
+    private CompanyBusiness companyBusiness;
 
     public MilestoneDB(){
         this.dbConn = new DBConn();
@@ -41,7 +44,8 @@ public class MilestoneDB {
                                                         result.getDate("deliveryDate"),
                                                         result.getDate("completedDate"),
                                                         result.getBoolean("archived"),
-                                                        result.getInt("companyID")));
+                                                        this.companyBusiness.getCompanyByID(result.getString("companyID")))
+                        );
                     }
 
                     //Return milestone
@@ -80,7 +84,8 @@ public class MilestoneDB {
                                 result.getDate("deliveryDate"),
                                 result.getDate("completedDate"),
                                 result.getBoolean("archived"),
-                                result.getInt("companyID")));
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")))
+                        );
                     }
 
                     //Return milestone
@@ -119,7 +124,8 @@ public class MilestoneDB {
                                 result.getDate("deliveryDate"),
                                 result.getDate("completedDate"),
                                 result.getBoolean("archived"),
-                                result.getInt("companyID")));
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")))
+                        );
                     }
 
                     //Return milestone
@@ -160,7 +166,8 @@ public class MilestoneDB {
                                 result.getDate("deliveryDate"),
                                 result.getDate("completedDate"),
                                 result.getBoolean("archived"),
-                                result.getInt("companyID")));
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")))
+                        );
                     }
 
                     //Return milestone
@@ -200,7 +207,8 @@ public class MilestoneDB {
                                 result.getDate("deliveryDate"),
                                 result.getDate("completedDate"),
                                 result.getBoolean("archived"),
-                                result.getInt("companyID"));
+                                this.companyBusiness.getCompanyByID(result.getString("companyID"))
+                        );
                     }
 
                     //Return milestone

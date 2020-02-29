@@ -189,25 +189,38 @@ public class WorkflowBusiness {
         try{
             JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
 
+            //Ensure name is present and retrieve it
+            if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
+                throw new BadRequestException("A workflow name is required");
+            }
             String name = workflowJson.get("name").toString();
-            if(name == null || name.isEmpty()){
-                throw new BadRequestException("A name must be provided.");
+
+            //Get description if present, otherwise null
+            String description = null;
+            if(workflowJson.has("description")) {
+                description = workflowJson.get("description").toString();
             }
 
-            String description = workflowJson.get("description").toString();
-
+            //Get current date for created and lastUpdated
             Date today = new Date();
-            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today);
 
+            //Ensure steps are present and not empty
+            if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
+                throw new BadRequestException("A workflow must contain steps");
+            }
             JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
-            if(stepsJson == null || stepsJson.size() == 0){
+            if(stepsJson.size() == 0){
                 throw new BadRequestException("Steps must be provided.");
             }
 
+            //Insert workflow template
+            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today);
+
+            //Convert step json to jsonArray using new workflowID
             List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
-            return new Workflow(workflowID, name, description, null, null, null, null, null, false, null, 0, steps);
+            return new Workflow(workflowID, name, description, today, today, null, null, null, false, null, 0, steps);
         }
         catch(JsonSyntaxException jse){
             throw new BadRequestException("Json String invalid format.");
@@ -226,37 +239,41 @@ public class WorkflowBusiness {
         try{
             JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
 
+            //Ensure name is present and retrieve it
             if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
                 throw new BadRequestException("A workflow name is required");
             }
             String name = workflowJson.get("name").toString();
 
+            //Get description if present, otherwise null
             String description = null;
             if(workflowJson.has("description")){
                 description = workflowJson.get("description").toString();
             }
 
+            //Ensure start date and delivery date are present and retrieve them
             if(!workflowJson.has("startDate") || workflowJson.get("startDate").isJsonNull()){
                 throw new BadRequestException("A start date is required");
             }
             Date parsedStartDate = this.parseDate(workflowJson.get("startDate").toString());
-
             if(!workflowJson.has("deliveryDate") || workflowJson.get("deliveryDate").isJsonNull()){
                 throw new BadRequestException("A delivery date is required");
             }
             Date parsedDeliveryDate = this.parseDate(workflowJson.get("deliveryDate").toString());
 
+            //Ensure companyID is provided and retrieve company object
             if(!workflowJson.has("companyID") || workflowJson.get("companyID").isJsonNull()){
                 throw new BadRequestException("A workflow must be assigned to a company");
             }
             Company company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
 
+            //Ensure milestoneID is provided and ensure that milestone exists
             if(!workflowJson.has("milestoneID") || workflowJson.get("milestoneID").isJsonNull()){
                 throw new BadRequestException("A workflow must be assigned to a milestone");
             }
             int milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(workflowJson.get("milestoneID").toString()).getMileStoneID();
 
-
+            //Ensure steps are provided and not empty
             if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
                 throw new BadRequestException("A workflow must contain steps");
             }
@@ -265,9 +282,13 @@ public class WorkflowBusiness {
                 throw new BadRequestException("Steps must be provided.");
             }
 
+            //Get current date for created and lastUpdated
             Date today = new Date();
+
+            //Insert workflow
             int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger);
 
+            //Convert stepJson to jsonArray and insert
             List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
@@ -281,7 +302,159 @@ public class WorkflowBusiness {
         }
     }
 
-    //TODO: implement update workflow
+    /**
+     * Update a template workflow
+     * @param workflowJsonString - String representation of workflow json object
+     * @return Inserted workflow
+     */
+    public Workflow updateTemplateWorkflow(String workflowJsonString){
+        try{
+            JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
+
+            //Ensure workflowID is provided and retrieve existing workflow
+            if(!workflowJson.has("workflowID") || workflowJson.get("workflowID").isJsonNull()){
+                throw new BadRequestException("A workflowID must be provided");
+            }
+            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").toString());
+            int workflowID = existingWorkflow.getWorkflowID();
+
+            //If name present, retrieve it
+            String name = existingWorkflow.getName();
+            if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
+                name = workflowJson.get("name").toString();
+            }
+
+            //Get description if present, otherwise null
+            String description = existingWorkflow.getDescription();
+            if(workflowJson.has("description")) {
+                description = workflowJson.get("description").toString();
+            }
+
+            //Get current date for created and lastUpdated
+            Date today = new Date();
+
+            //Ensure steps are present and not empty
+            List<Step> steps = existingWorkflow.getSteps();
+            if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
+                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
+                if(stepsJson.size() != 0){
+                    steps = this.jsonArrayToStepList(stepsJson, workflowID);
+                }
+            }
+
+            Workflow updatedWorkflow = new Workflow(workflowID,
+                                                    name,
+                                                    description,
+                                                    existingWorkflow.getCreatedDate(),
+                                                    today,
+                                                    null,
+                                                    null,
+                                                    existingWorkflow.getCompletedDate(),
+                                                    existingWorkflow.isArchived(),
+                                                    null,
+                                                    0,
+                                                    steps);
+
+            //Insert workflow template
+            this.workflowDB.updateWorkflow(workflowID, name, description, today);
+
+            //Inserted updated workflow steps
+            this.stepBusiness.insertSteps(steps);
+
+            return updatedWorkflow;
+        }
+        catch(JsonSyntaxException jse){
+            throw new BadRequestException("Json String invalid format.");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException();
+        }
+    }
+
+    /**
+     * Update a template workflow
+     * @param workflowJsonString - String representation of workflow json object
+     * @return Inserted workflow
+     */
+    public Workflow updateConcreteWorkflow(String workflowJsonString){
+        try{
+            JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
+
+            //Ensure workflowID is provided and retrieve existing workflow
+            if(!workflowJson.has("workflowID") || workflowJson.get("workflowID").isJsonNull()){
+                throw new BadRequestException("A workflowID must be provided");
+            }
+            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").toString());
+            int workflowID = existingWorkflow.getWorkflowID();
+
+            //If name present, retrieve it
+            String name = existingWorkflow.getName();
+            if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
+                name = workflowJson.get("name").toString();
+            }
+
+            //Get description if present, otherwise use existing value
+            String description = existingWorkflow.getDescription();
+            if(workflowJson.has("description")) {
+                description = workflowJson.get("description").toString();
+            }
+
+            //Get current date for created and lastUpdated
+            Date today = new Date();
+
+            //Get start date if present, otherwise use existing values
+            Date startDate = existingWorkflow.getStartDate();
+            if(workflowJson.has("startDate")) {
+                startDate = this.parseDate(workflowJson.get("startDate").toString());
+            }
+            Date deliveryDate = existingWorkflow.getDeliveryDate();
+            if(workflowJson.has("deliveryDate")) {
+                deliveryDate = this.parseDate(workflowJson.get("deliveryDate").toString());
+            }
+
+            //Get company by companyID if present, otherwise use existing value
+            Company company = existingWorkflow.getCompany();
+            if(workflowJson.has("companyID")) {
+                company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
+            }
+
+            //Ensure steps are present and not empty
+            List<Step> steps = existingWorkflow.getSteps();
+            if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
+                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
+                if(stepsJson.size() != 0){
+                    steps = this.jsonArrayToStepList(stepsJson, workflowID);
+                }
+            }
+
+            Workflow updatedWorkflow = new Workflow(workflowID,
+                    name,
+                    description,
+                    existingWorkflow.getCreatedDate(),
+                    today,
+                    startDate,
+                    deliveryDate,
+                    existingWorkflow.getCompletedDate(),
+                    existingWorkflow.isArchived(),
+                    company,
+                    existingWorkflow.getMilestoneID(),
+                    steps);
+
+            //Insert workflow template
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, updatedWorkflow.getCompletedDate(), company.getCompanyID());
+
+            //Inserted updated workflow steps
+            this.stepBusiness.insertSteps(steps);
+
+            return updatedWorkflow;
+        }
+        catch(JsonSyntaxException jse){
+            throw new BadRequestException("Json String invalid format.");
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException();
+        }
+    }
 
     /**
      * Delete a workflow from the database by UUID
