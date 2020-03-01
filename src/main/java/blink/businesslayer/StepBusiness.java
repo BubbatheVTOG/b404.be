@@ -140,15 +140,15 @@ public class StepBusiness {
                         jsonArrayObject.get("completed").getAsBoolean(),
                         jsonArrayObject.get("asynchronous").getAsBoolean())
                         .description(jsonArrayObject.get("subtitle").getAsString())
+                        .uuid(jsonArrayObject.get("uuid").getAsInt())
+                        .verbID(jsonArrayObject.get("title").getAsInt())
+                        .fileID(jsonArrayObject.get("fileID").getAsInt())
                         .build();
             } else {
                 step = new Step.StepBuilder(
                         workflowID,
                         jsonArrayObject.get("completed").getAsBoolean(),
                         jsonArrayObject.get("asynchronous").getAsBoolean())
-                        .uuid(jsonArrayObject.get("uuid").getAsInt())
-                        .verbID(jsonArrayObject.get("title").getAsInt())
-                        .fileID(jsonArrayObject.get("fileID").getAsInt())
                         .build();
             }
             children.add(step);
