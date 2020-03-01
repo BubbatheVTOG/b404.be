@@ -217,7 +217,7 @@ public class WorkflowBusiness {
             int workflowID = this.workflowDB.insertWorkflow(name, description, today, today);
 
             //Convert step json to jsonArray using new workflowID
-            List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
+            List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
             return new Workflow(workflowID, name, description, today, today, null, null, null, false, null, 0, steps);
@@ -289,7 +289,7 @@ public class WorkflowBusiness {
             int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger);
 
             //Convert stepJson to jsonArray and insert
-            List<Step> steps = this.jsonArrayToStepList(stepsJson, workflowID);
+            List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
             return new Workflow(workflowID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company, milestoneIDInteger, steps);
@@ -338,7 +338,7 @@ public class WorkflowBusiness {
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
                 JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
                 if(stepsJson.size() != 0){
-                    steps = this.jsonArrayToStepList(stepsJson, workflowID);
+                    steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
                 }
             }
 
@@ -423,7 +423,7 @@ public class WorkflowBusiness {
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
                 JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
                 if(stepsJson.size() != 0){
-                    steps = this.jsonArrayToStepList(stepsJson, workflowID);
+                    steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
                 }
             }
 
@@ -530,42 +530,6 @@ public class WorkflowBusiness {
     public String unarchiveWorkflow(String workflowID){
         this.updateWorkflowArchiveStatus(workflowID, false);
         return "Successfully unarchived workflow.";
-    }
-
-    /**
-     * Function to convert jsonArray into List<Step>
-     * @param jsArray is the top level object passed in
-     * @return children which is the list of steps
-     */
-    public List<Step> jsonArrayToStepList(JsonArray jsArray, int workflowID) {
-        List<Step> children = new ArrayList<>();
-
-        for(JsonElement jsonElement : jsArray) {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            Step step;
-            if(jsonObject.get("children").isJsonNull()) {
-                step = new Step.StepBuilder(
-                        jsonObject.get("title").getAsInt(),
-                        jsonObject.get("fileID").getAsInt(),
-                        workflowID,
-                        jsonObject.get("completed").getAsBoolean())
-                        .description(jsonObject.get("subtitle").getAsString())
-                        .uuid(jsonObject.get("uuid").getAsInt())
-                        .build();
-            } else {
-                step = new Step.StepBuilder(
-                        jsonObject.get("title").getAsInt(),
-                        jsonObject.get("fileID").getAsInt(),
-                        workflowID,
-                        jsonObject.get("completed").getAsBoolean())
-                        .description(jsonObject.get("subtitle").getAsString())
-                        .uuid(jsonObject.get("uuid").getAsInt())
-                        .childSteps(jsonArrayToStepList(jsonObject.get("children").getAsJsonArray(), workflowID))
-                        .build();
-            }
-            children.add(step);
-        }
-        return children;
     }
 
     /**
