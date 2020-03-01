@@ -1,8 +1,8 @@
 package blink.servicelayer;
 
 import blink.businesslayer.Authorization;
-import blink.businesslayer.MilestoneBusiness;
-import blink.utility.objects.Milestone;
+import blink.businesslayer.WorkflowBusiness;
+import blink.utility.objects.Workflow;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,39 +20,36 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-/**
- * Service Layer entity responsible for receiving requests having to do with milestone information
- */
-@Path("milestone")
-@Api(value = "/milestone")
-public class MilestoneService {
-    private MilestoneBusiness milestoneBusiness = new MilestoneBusiness();
+@Path("workflow")
+@Api(value = "/workflow")
+public class WorkflowService {
+    private WorkflowBusiness workflowBusiness = new WorkflowBusiness();
     private static Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
-     * Get all milestones
+     * Get all workflows
      * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for milestones returned
+     * @return - HTTP Response: 200 OK for workflows returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @GET
-    @Operation(summary = "getAllMilestones", description = "Gets all milestones in the system")
+    @Operation(summary = "getAllWorkflows", description = "Gets all workflows in the system")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response getAllWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
+            List<Workflow> workflowList = workflowBusiness.getAllWorkflows(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (NotAuthorizedException nae) {
@@ -63,30 +60,30 @@ public class MilestoneService {
     }
 
     /**
-     * Get active milestones
+     * Get active workflows
      * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for active milestones returned
+     * @return - HTTP Response: 200 OK for active workflows returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/active")
     @GET
-    @Operation(summary = "getActiveMilestones", description = "Gets all active milestones")
+    @Operation(summary = "getActiveWorkflows", description = "Gets all active workflows")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of active milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 200, message = "List of active workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getActiveMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response getActiveWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getActiveMilestones(JWTUtility.getUUIDFromToken(jwt));
+            List<Workflow> workflowList = workflowBusiness.getActiveWorkflows(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (NotAuthorizedException nae) {
@@ -97,30 +94,30 @@ public class MilestoneService {
     }
 
     /**
-     * Get archived milestones
+     * Get archived workflows
      * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived milestones returned
-    *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     * @return - HTTP Response: 200 OK for archived workflows returned
+     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/archived")
     @GET
-    @Operation(summary = "getArchivedMilestones", description = "Gets all archived milestones")
+    @Operation(summary = "getArchivedWorkflows", description = "Gets all archived workflows")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of archived milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 200, message = "List of archived workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getArchivedMilestones(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response getArchivedWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getArchivedMilestones(JWTUtility.getUUIDFromToken(jwt));
+            List<Workflow> workflowList = workflowBusiness.getArchivedWorkflows(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (NotAuthorizedException nae) {
@@ -131,34 +128,34 @@ public class MilestoneService {
     }
 
     /**
-     * Get a milestone by milestoneID
-     * @param milestoneID - ID of milestone to retrieve
+     * Get a workflow by workflowID
+     * @param workflowID - ID of workflow to retrieve
      * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived milestones returned
+     * @return - HTTP Response: 200 OK for archived workflows returned
      *                           401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/{id}")
     @GET
-    @Operation(summary = "getMilestoneByID", description = "Gets a specific milestone by ID")
+    @Operation(summary = "getWorkflowByID", description = "Gets a specific workflow by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Milestone object which contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
-            @ApiResponse(code = 400, message = "{error: MilestoneID must be a valid integer.)"),
+            @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: WorkflowID must be a valid integer.)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.)"),
+            @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.)"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMilestoneByID(@Parameter(in = ParameterIn.PATH, name = "id") @PathParam("id") String milestoneID,
+    public Response getWorkflowByID(@Parameter(in = ParameterIn.PATH, name = "id") @PathParam("id") String workflowID,
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            Milestone milestone = milestoneBusiness.getMilestoneByID(JWTUtility.getUUIDFromToken(jwt), milestoneID);
+            Workflow workflow = workflowBusiness.getWorkflowByID(JWTUtility.getUUIDFromToken(jwt), workflowID);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (BadRequestException bre) {
@@ -173,24 +170,22 @@ public class MilestoneService {
     }
 
     /**
-     * Insert a milestone into the database
-     * @param name - New milestone's name
-     * @param description - New milestone's description
-     * @param startDate - New milestone's start date
-     * @param deliveryDate - New milestone's delivery date
-     * @param companyID - Company to assign the milestone to
+     * Insert a template workflow into the database
+     * @param workflowJson - String representation of workflow json object
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for milestone inserted successfully
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND for non-existent companyID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
+    @Path("/template")
     @POST
-    @Operation(summary = "insertMilestone", description = "Insert a new milestone")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "insertTemplateWorkflow", description = "Insert a new template workflow")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Milestone object which each contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
@@ -198,21 +193,17 @@ public class MilestoneService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertMilestone(@RequestBody(description = "name", required = true)             @FormParam("name") String name,
-                                    @RequestBody(description = "description", required = true)      @FormParam("description") String description,
-                                    @RequestBody(description = "startDate", required = true)        @FormParam("startDate") String startDate,
-                                    @RequestBody(description = "deliveryDate", required = true)     @FormParam("deliveryDate") String deliveryDate,
-                                    @RequestBody(description = "companyID", required = true)        @FormParam("companyID") String companyID,
-                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response insertTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Milestone milestone = milestoneBusiness.insertMilestone(name, description, startDate, deliveryDate, companyID);
+            Workflow workflow = workflowBusiness.insertTemplateWorkflow(workflowJson);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -233,24 +224,21 @@ public class MilestoneService {
     }
 
     /**
-     * Update a milestone into the database
-     * @param name - New milestone name
-     * @param description - New milestone description
-     * @param startDate - New milestone start date
-     * @param deliveryDate - New milestone delivery date
-     * @param companyID - Company to assign the milestone to
+     * Insert a concrete workflow into the database
+     * @param workflowJson - String representation of workflow json object
      * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for milestone updated successfully
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND for non-existent companyID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
-    @PUT
-    @Operation(summary = "updateMilestone", description = "Update an existing milestone")
+    @Path("/concrete")
+    @POST
+    @Operation(summary = "insertConcreteWorkflow", description = "Insert a new concrete workflow")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Milestone object which each contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
@@ -258,22 +246,125 @@ public class MilestoneService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateMilestone(@RequestBody(description = "id", required = true)  @FormParam("id") String milestoneID,
-                                    @RequestBody(description = "name")                 @FormParam("name") String name,
-                                    @RequestBody(description = "description")          @FormParam("description") String description,
-                                    @RequestBody(description = "startDate")            @FormParam("startDate") String startDate,
-                                    @RequestBody(description = "deliveryDate")         @FormParam("deliveryDate") String deliveryDate,
-                                    @RequestBody(description = "companyID")            @FormParam("companyID") String companyID,
-                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)          @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Milestone milestone = milestoneBusiness.updateMilestone(milestoneID, name, description, startDate, deliveryDate, companyID);
+            Workflow workflow = workflowBusiness.insertWorkflow(workflowJson);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(milestone));
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Update an existing template workflow
+     * @param workflowJson - String representation of workflow json object
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent companyID or workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/template")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "updateTemplateWorkflow", description = "Update an existing template workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No company/workflow with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            Workflow workflow = workflowBusiness.updateTemplateWorkflow(workflowJson);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Update an existing concrete workflow
+     * @param workflowJson - String representation of workflow json object
+     * @param jwt - JSON Web Token for authorization; must be valid and not expired
+     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent companyID or workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/concrete")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "updateConcreteWorkflow", description = "Update an existing concrete workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No company/workflow with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            Workflow workflow = workflowBusiness.updateConcreteWorkflow(workflowJson);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -296,9 +387,9 @@ public class MilestoneService {
     /**
      *
      * Delete a person from the database
-     * @param id - ID of milestone to delete
+     * @param id - ID of workflow to delete
      * @param jwt - JSON Web Token for authorizing request
-     * @return - HTTP Response: 200 OK for milestone deleted successfully
+     * @return - HTTP Response: 200 OK for workflow deleted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND when no user with provided UUID exists
@@ -306,23 +397,23 @@ public class MilestoneService {
      */
     @Path("/{id}")
     @DELETE
-    @Operation(summary = "deleteMilestone", description = "delete a milestone from the database by ID")
+    @Operation(summary = "deleteWorkflow", description = "delete a workflow from the database by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{success: Successfully deleted milestone."),
+            @ApiResponse(code = 200, message = "{success: Successfully deleted workflow."),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
-            @ApiResponse(code = 404, message = "{error: No milestone with that id exists.}"),
+            @ApiResponse(code = 404, message = "{error: No workflow with that id exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteMilestoneByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
-                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+    public Response deleteWorkflowByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
+                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isAdmin(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
-            returnObject.addProperty("success", milestoneBusiness.deleteMilestoneByID(id));
+            returnObject.addProperty("success", workflowBusiness.deleteWorkflowByID(id));
             return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
@@ -344,79 +435,28 @@ public class MilestoneService {
     }
 
     /**
-     * Archive a milestone
-     * @param milestoneID - ID of milestone to archive
-     * @return - HTTP Response: 200 OK for milestone archived successfully
+     * Archive a workflow
+     * @param workflowID - ID of workflow to archive
+     * @return - HTTP Response: 200 OK for workflow archived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
-     *                          404 NOT FOUND for non-existent milestoneID
+     *                          404 NOT FOUND for non-existent workflowID
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/archive")
     @PUT
-    @Operation(summary = "archiveMilestone", description = "Archive an existing milestone")
+    @Operation(summary = "archiveWorkflow", description = "Archive an existing workflow")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{success: successfully archived milestone}"),
-            @ApiResponse(code = 400, message = "{error: Milestone ID must be a valid integer.}"),
+            @ApiResponse(code = 200, message = "{success: successfully archived workflow}"),
+            @ApiResponse(code = 400, message = "{error: Workflow ID must be a valid integer.}"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
-            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
+            @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response archiveMilestone(@RequestBody(description = "id", required = true) @FormParam("id") String milestoneID,
-                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
-
-        try {
-            Authorization.isAdmin(jwt);
-
-            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            JsonObject returnObject = new JsonObject();
-            returnObject.addProperty("success", milestoneBusiness.archiveMilestone(milestoneID));
-            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
-        }
-        //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
-        catch(ForbiddenException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
-        }
-        catch(NotFoundException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
-        }
-        catch(NotAuthorizedException nae){
-            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
-        }
-        catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
-    /**
-     * Unarchive a milestone
-     * @param milestoneID - ID of milestone to unarchive
-     * @return - HTTP Response: 200 OK for milestone unarchived successfully
-     *                          400 BAD REQUEST for invalid parameters
-     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                          403 FORBIDDEN if requester does not have access to the endpoint
-     *                          404 NOT FOUND for non-existent milestoneID
-     *                          500 INTERNAL SERVER ERROR for backend error
-     */
-    @Path("/unarchive")
-    @PUT
-    @Operation(summary = "unarchiveMilestone", description = "Unarchive an existing milestone")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "{success: successfully unarchived milestone}"),
-            @ApiResponse(code = 400, message = "{error: Milestone ID must be a valid integer.}"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
-            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
-            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
-    })
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response unarchiveMilestone(@RequestBody(description = "id", required = true) @FormParam("id") String milestoneID,
+    public Response archiveWorkflow(@RequestBody(description = "id", required = true) @FormParam("id") String workflowID,
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -424,7 +464,58 @@ public class MilestoneService {
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
-            returnObject.addProperty("success", milestoneBusiness.unarchiveMilestone(milestoneID));
+            returnObject.addProperty("success", workflowBusiness.archiveWorkflow(workflowID));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Unarchive a workflow
+     * @param workflowID - ID of workflow to unarchive
+     * @return - HTTP Response: 200 OK for workflow unarchived successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/unarchive")
+    @PUT
+    @Operation(summary = "unarchiveWorkflow", description = "Unarchive an existing workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "{success: successfully unarchived workflow}"),
+            @ApiResponse(code = 400, message = "{error: Workflow ID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: You do not have access to that request.}"),
+            @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response unarchiveWorkflow(@RequestBody(description = "id", required = true) @FormParam("id") String workflowID,
+                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isAdmin(jwt);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", workflowBusiness.unarchiveWorkflow(workflowID));
             return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder

@@ -27,7 +27,7 @@ public class MilestoneBusiness {
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
-        this.dateParser = new SimpleDateFormat("yyyy-MM-dd");
+        this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
 
 
@@ -143,7 +143,7 @@ public class MilestoneBusiness {
             return milestone;
         }
         else{
-            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompanyID())){
+            if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompany().getCompanyID())){
                 return milestone;
             }
             else{
@@ -160,7 +160,7 @@ public class MilestoneBusiness {
      * @throws BadRequestException - MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException - Error in data layer
      */
-    private Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(id == null || id.isEmpty()){ throw new BadRequestException("A milestone ID must be provided"); }
@@ -217,7 +217,7 @@ public class MilestoneBusiness {
             int insertedMilestoneID = milestoneDB.insertMilestone(name, description, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company.getCompanyID());
+            return new Milestone(insertedMilestoneID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company);
         }
         catch(NumberFormatException nfe){
             throw new BadRequestException("Company ID must be a valid integer");
@@ -271,19 +271,19 @@ public class MilestoneBusiness {
                 parsedDeliveryDate = this.parseDate(deliveryDate);
             }
 
-            int companyIDInteger;
+            Company company;
             if(companyID == null || companyID.isEmpty()){
-                companyIDInteger = existingMilestone.getCompanyID();
+                company = existingMilestone.getCompany();
             }
             else {
-                companyIDInteger = companyBusiness.getCompanyByID(companyID).getCompanyID();
+                company = companyBusiness.getCompanyByID(companyID);
             }
 
             Date today = new Date();
-            milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, companyIDInteger);
+            milestoneDB.updateMilestone(existingMilestone.getMileStoneID(), name, description, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID());
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Milestone(existingMilestone.getMileStoneID(), name, description, existingMilestone.getCreatedDate(), today, parsedStartDate, parsedDeliveryDate, existingMilestone.getCompletedDate(), existingMilestone.isArchived(), companyIDInteger);
+            return new Milestone(existingMilestone.getMileStoneID(), name, description, existingMilestone.getCreatedDate(), today, parsedStartDate, parsedDeliveryDate, existingMilestone.getCompletedDate(), existingMilestone.isArchived(), company);
         }
         catch (NumberFormatException nfe) {
             throw new BadRequestException("Company ID must be a valid integer");
