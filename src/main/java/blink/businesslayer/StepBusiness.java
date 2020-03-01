@@ -2,10 +2,7 @@ package blink.businesslayer;
 
 import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.swagger.util.Json;
 
@@ -127,11 +124,24 @@ public class StepBusiness {
         return numDeletedSteps;
     }
 
+    /**
+     * Convert jsonToStepList so backend can use it
+     * @param jsonObject which is the top level object containing workflowID and children[]
+     * @return ArrayList<Step>
+     */
     public List<Step> jsonToStepList(JsonObject jsonObject) {
-        List<Step> children = new ArrayList<>();
-        int workflowID = jsonObject.get("workflowID").getAsInt();
+        Collection<Step> steps = null;
 
-        for(JsonElement jsonElement : jsonObject.get("children").getAsJsonArray()) {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        steps = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
+
+        return new ArrayList<>(steps);
+    }
+
+    /*public List<Step> jsonToStepList(JsonArray children, int workflowID) {
+        List<Step> steps = new ArrayList<>();
+
+        for(JsonElement jsonElement : children) {
             JsonObject jsonArrayObject = jsonElement.getAsJsonObject();
             Step step;
             if(jsonArrayObject.get("children").isJsonNull()) {
@@ -149,23 +159,15 @@ public class StepBusiness {
                         workflowID,
                         jsonArrayObject.get("completed").getAsBoolean(),
                         jsonArrayObject.get("asynchronous").getAsBoolean())
+                        .childSteps(jsonToStepList(jsonArrayObject.get("children").getAsJsonArray(), workflowID))
                         .build();
             }
-            children.add(step);
+            steps.add(step);
         }
-        return children;
-    }
-
-    /*public List<Step> jsonToStepList(JsonObject jsonObject) {
-        Collection<Step> steps = null;
-
-        Gson gson = new Gson();
-        steps = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
-
-        return new ArrayList<>(steps);
+        return steps;
     }*/
 
-    public JsonObject stepListToJson(List<Step> steps, int workflowID) {
+    /*public JsonObject stepListToJson(List<Step> steps, int workflowID) {
         JsonObject topLevelObject = new JsonObject();
         topLevelObject.addProperty("workflowID", workflowID);
 
@@ -181,7 +183,7 @@ public class StepBusiness {
                 childObject.addProperty("asynchronous", step.getAsynchronous());
                 childObject.addProperty("completed", step.getCompleted());
                 childObject.addProperty("children", children);
-                childObject.addProperty("expanded", true);
+                childObject.addProperty("expanded", step.getExpanded());
             } else {
                 JsonObject childObject = new JsonObject();
                 childObject.addProperty("title", step.getVerbID());
@@ -190,9 +192,9 @@ public class StepBusiness {
                 childObject.addProperty("fileID", step.getFileID());
                 childObject.addProperty("asynchronous", step.getAsynchronous());
                 childObject.addProperty("completed", step.getCompleted());
-                childObject.addProperty("expanded", false);
+                childObject.addProperty("expanded",  step.getExpanded());
             }
         }
         return topLevelObject;
-    }
+    }*/
 }

@@ -1,18 +1,23 @@
 package blink.utility.objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Step {
     private int stepID;
     private int orderNumber;
+    @SerializedName("subtitle")
     private String description;
     private int parentStepID;
     private int uuid;
+    @SerializedName("title")
     private int verbID;
     private int fileID;
     private int workflowID;
     private boolean asynchronous;
     private boolean completed;
+    private boolean expanded;
     private List<Step> childSteps;
 
     private Step(StepBuilder stepBuilder) {
@@ -26,6 +31,7 @@ public class Step {
         this.workflowID = stepBuilder.workflowID;
         this.asynchronous = stepBuilder.asynchronous;
         this.completed = stepBuilder.completed;
+        this.expanded = stepBuilder.expanded;
         this.childSteps = stepBuilder.childSteps;
     }
 
@@ -40,6 +46,7 @@ public class Step {
         private int workflowID;
         private boolean asynchronous;
         private boolean completed;
+        private boolean expanded;
         private List<Step> childSteps;
 
         public StepBuilder(int workflowID, boolean asynchronous, boolean completed) {
@@ -83,8 +90,14 @@ public class Step {
             return this;
         }
 
+        public StepBuilder expanded(boolean expanded) {
+            this.expanded = expanded;
+            return this;
+        }
+
         public StepBuilder childSteps(List<Step> childSteps) {
             this.childSteps = childSteps;
+            this.expanded = !(this.childSteps == null || this.childSteps.isEmpty());
             return this;
         }
 
@@ -128,6 +141,8 @@ public class Step {
     public boolean getCompleted() { return completed; }
 
     public void setCompleted(boolean completed) { this.completed = completed; }
+
+    public boolean getExpanded() { return expanded; }
 
     public boolean getAsynchronous() { return asynchronous; }
 
