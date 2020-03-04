@@ -37,7 +37,7 @@ public class VerbService {
     @Operation(summary = "getAllVerbs", description = "Gets all verbs")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of verb objects which each contain keys (verbID, name, description)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)

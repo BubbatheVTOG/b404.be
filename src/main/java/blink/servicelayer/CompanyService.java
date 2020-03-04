@@ -37,7 +37,7 @@ public class CompanyService {
     @Operation(summary = "getAllCompanies", description = "Gets all companies from the database")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of Company objects which each contain keys (companyID, name)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,9 +73,9 @@ public class CompanyService {
     @Operation(summary = "getCompanyByID", description = "Gets a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The requested company object which each contain keys (companyID, name)"),
-            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -118,9 +118,9 @@ public class CompanyService {
     @Operation(summary = "getCompanyByName", description = "Gets a company from the database by companyName")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The requested company object which each contain keys (companyID, name)"),
-            @ApiResponse(code = 400, message = "{error: Invalid company name provided.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that name exists.)"),
+            @ApiResponse(code = 400, message = "{error: Invalid company name provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that name exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -160,8 +160,8 @@ public class CompanyService {
     @Operation(summary = "getAllPeopleByCompany", description = "Gets all people who are a part of a company")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of Person objects which each contain keys (UUID, name, email, title, companyID, accessLevelID)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -311,9 +311,9 @@ public class CompanyService {
     @Operation(summary = "deleteCompanyByID", description = "Delete a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
-            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -357,9 +357,9 @@ public class CompanyService {
     @Operation(summary = "deleteCompanyByName", description = "Delete a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
-            @ApiResponse(code = 400, message = "{error: A company name must be provided.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: A company name must be provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
