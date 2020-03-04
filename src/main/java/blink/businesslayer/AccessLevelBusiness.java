@@ -20,11 +20,11 @@ class AccessLevelBusiness {
 
     /**
      * Retrieves access level information from the database
-     * @param accessLevelID - ID to search database for
-     * @return - AccessLevel object containing information from the database
-     * @throws NotFoundException - Access Level ID does not exist in the database
-     * @throws BadRequestException - Access Level ID is not a valid integer format
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @param accessLevelID ID to search database for
+     * @return AccessLevel object containing information from the database
+     * @throws NotFoundException Access Level ID does not exist in the database
+     * @throws BadRequestException Access Level ID is not a valid integer format
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     AccessLevel getAccessLevelByID(String accessLevelID){
         try{

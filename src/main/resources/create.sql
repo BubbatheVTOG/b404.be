@@ -52,13 +52,13 @@ DROP TABLE IF EXISTS `step`;
 CREATE TABLE `step` (
   `stepID` int(11) NOT NULL AUTO_INCREMENT,
   `orderNumber` int(11) NOT NULL,
-  `isHighestLevel` boolean NOT NULL,
   `description` varchar(60) DEFAULT NULL,
   `parentStepID` int(11) DEFAULT NULL,
   `UUID` char(36) DEFAULT NULL,
-  `verbID` int(11) NOT NULL,
-  `fileID` int(11) NOT NULL,
+  `verbID` int(11) DEFAULT NULL,
+  `fileID` int(11) DEFAULT NULL,
   `workflowID` int(11) NOT NULL,
+  `asynchronous` boolean NOT NULL DEFAULT 0,
   `completed` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`stepID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -211,13 +211,13 @@ INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (3, "Send", "Complete"),
   (4, "Send", "Fill out");
 
-INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES
-  (1, 1, 1, "This is a higher level step.", null, null, 1, 1, 1),
-  (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 1),
-  (3, 1, 0, "This is a second level step.", 2,    null, 2, 2, 1),
-  (4, 1, 0, "This is a third level step.",  3,    null, 2, 2, 1),
-  (5, 2, 0, "This is a third level step.",  3,    null, 2, 2, 1),
-  (6, 2, 0, "This is a second level step.", 2,    null, 2, 2, 1);
+INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, asynchronous, completed) VALUES
+  (1, 1, "This is a higher level step.", null, null, 1, 1, 1, 0, 0),
+  (2, 2, "This is a higher level step.", null, null, 3, 2, 1, 0, 0),
+  (3, 1, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0),
+  (4, 1, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
+  (5, 2, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
+  (6, 2, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0);
 
 INSERT INTO DB_DATABASE.userPreferences (UUID, signaturePDF, signatureFont) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", null, "Arial"),

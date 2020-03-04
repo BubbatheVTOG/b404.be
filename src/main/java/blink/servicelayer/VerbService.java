@@ -28,8 +28,8 @@ public class VerbService {
 
     /**
      * Get all verbs from database
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for verbs returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for verbs returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         500 INTERNAL SERVER ERROR for backend error
      */
@@ -37,7 +37,7 @@ public class VerbService {
     @Operation(summary = "getAllVerbs", description = "Gets all verbs")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of verb objects which each contain keys (verbID, name, description)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)

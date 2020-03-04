@@ -29,7 +29,7 @@ public class CompanyService {
 
     /**
      * Get all companies from database
-     * @return - HTTP Response: 200 OK for company found and returned
+     * @return HTTP Response: 200 OK for company found and returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -37,7 +37,7 @@ public class CompanyService {
     @Operation(summary = "getAllCompanies", description = "Gets all companies from the database")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of Company objects which each contain keys (companyID, name)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -62,7 +62,7 @@ public class CompanyService {
 
     /**
      * Get a company from the database by companyID
-     * @return - HTTP Response: 200 OK for company found and returned
+     * @return HTTP Response: 200 OK for company found and returned
      *                          400 BAD REQUEST if companyID is not a valid integer
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND if company id does not exist
@@ -73,9 +73,9 @@ public class CompanyService {
     @Operation(summary = "getCompanyByID", description = "Gets a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The requested company object which each contain keys (companyID, name)"),
-            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -107,7 +107,7 @@ public class CompanyService {
 
     /**
      * Get a company from the database by companyName
-     * @return - HTTP Response: 200 OK for company found and returned
+     * @return HTTP Response: 200 OK for company found and returned
      *                          400 BAD REQUEST if company name was not provided
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND if company name does not exist
@@ -118,9 +118,9 @@ public class CompanyService {
     @Operation(summary = "getCompanyByName", description = "Gets a company from the database by companyName")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The requested company object which each contain keys (companyID, name)"),
-            @ApiResponse(code = 400, message = "{error: Invalid company name provided.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that name exists.)"),
+            @ApiResponse(code = 400, message = "{error: Invalid company name provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that name exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -151,7 +151,7 @@ public class CompanyService {
 
     /**
      * Get all companies from database
-     * @return - HTTP Response: 200 OK for company found and returned
+     * @return HTTP Response: 200 OK for company found and returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -160,8 +160,8 @@ public class CompanyService {
     @Operation(summary = "getAllPeopleByCompany", description = "Gets all people who are a part of a company")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of Person objects which each contain keys (UUID, name, email, title, companyID, accessLevelID)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -190,9 +190,9 @@ public class CompanyService {
 
     /**
      * Insert a new company into the database
-     * @param companyName - New company's name
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for company inserted successfully
+     * @param companyName New company's name
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for company inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 CONFLICT for username conflict
@@ -244,10 +244,10 @@ public class CompanyService {
 
     /**
      * Update an existing company in the database
-     * @param companyID -  Existing company's UUID
-     * @param companyName - company's new name; can be null
-     * @param jwt - JWT for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for company updated successfully
+     * @param companyID Existing company's UUID
+     * @param companyName company's new name; can be null
+     * @param jwt JWT for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for company updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND for non-existent companyID
@@ -301,7 +301,7 @@ public class CompanyService {
 
     /**
      * Delete a company from the database by companyID
-     * @return - HTTP Response: 200 OK for company found and deleted
+     * @return HTTP Response: 200 OK for company found and deleted
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND if company id does not exist
      *                          500 INTERNAL SERVER ERROR for backend error
@@ -311,9 +311,9 @@ public class CompanyService {
     @Operation(summary = "deleteCompanyByID", description = "Delete a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
-            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: CompanyID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -347,7 +347,7 @@ public class CompanyService {
 
     /**
      * Delete a company from the database by companyName
-     * @return - HTTP Response: 200 OK for company found and deleted
+     * @return HTTP Response: 200 OK for company found and deleted
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND if company id does not exist
      *                          500 INTERNAL SERVER ERROR for backend error
@@ -357,9 +357,9 @@ public class CompanyService {
     @Operation(summary = "deleteCompanyByName", description = "Delete a company from the database by companyID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: Company successfully deleted."),
-            @ApiResponse(code = 400, message = "{error: A company name must be provided.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No company with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: A company name must be provided.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No company with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -393,10 +393,10 @@ public class CompanyService {
 
     /**
      * Add a person to an existing company in the database
-     * @param companyID -  Company ID to add person to
-     * @param personID - Person's UUID
-     * @param jwt - JWT for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for person added to company successfully
+     * @param companyID Company ID to add person to
+     * @param personID Person's UUID
+     * @param jwt JWT for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for person added to company successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND for non-existent companyId or personID
@@ -450,10 +450,10 @@ public class CompanyService {
 
     /**
      * Delete a person from a company
-     * @param companyID -  Company ID to add person to
-     * @param personID - Person's UUID
-     * @param jwt - JWT for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for person updated successfully
+     * @param companyID Company ID to add person to
+     * @param personID Person's UUID
+     * @param jwt JWT for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for person updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          404 NOT FOUND for non-existent companyName or accessLevelID
