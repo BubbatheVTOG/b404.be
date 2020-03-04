@@ -142,6 +142,8 @@ public class Step {
 
     public void setCompleted(boolean completed) { this.completed = completed; }
 
+    public boolean isCompleted() { return completed; }
+
     public boolean getExpanded() { return expanded; }
 
     public boolean getAsynchronous() { return asynchronous; }

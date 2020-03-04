@@ -138,63 +138,21 @@ public class StepBusiness {
         return new ArrayList<>(steps);
     }
 
-    /*public List<Step> jsonToStepList(JsonArray children, int workflowID) {
-        List<Step> steps = new ArrayList<>();
+    /**
+     * Check for step completion
+     * @param steps is a list of all steps
+     * @return boolean flag
+     */
+    public boolean checkCompletion(List<Step> steps) {
+        boolean flag = true;
 
-        for(JsonElement jsonElement : children) {
-            JsonObject jsonArrayObject = jsonElement.getAsJsonObject();
-            Step step;
-            if(jsonArrayObject.get("children").isJsonNull()) {
-                step = new Step.StepBuilder(
-                        workflowID,
-                        jsonArrayObject.get("completed").getAsBoolean(),
-                        jsonArrayObject.get("asynchronous").getAsBoolean())
-                        .description(jsonArrayObject.get("subtitle").getAsString())
-                        .uuid(jsonArrayObject.get("uuid").getAsInt())
-                        .verbID(jsonArrayObject.get("title").getAsInt())
-                        .fileID(jsonArrayObject.get("fileID").getAsInt())
-                        .build();
-            } else {
-                step = new Step.StepBuilder(
-                        workflowID,
-                        jsonArrayObject.get("completed").getAsBoolean(),
-                        jsonArrayObject.get("asynchronous").getAsBoolean())
-                        .childSteps(jsonToStepList(jsonArrayObject.get("children").getAsJsonArray(), workflowID))
-                        .build();
+        for(Step step: steps) {
+            if (step.hasChildren()) {
+                flag = checkCompletion(step.getChildSteps());
+                step.setCompleted(flag);
             }
-            steps.add(step);
+            flag = flag && step.isCompleted();
         }
-        return steps;
-    }*/
-
-    /*public JsonObject stepListToJson(List<Step> steps, int workflowID) {
-        JsonObject topLevelObject = new JsonObject();
-        topLevelObject.addProperty("workflowID", workflowID);
-
-        for(Step step : steps) {
-            if(step.hasChildren()) {
-                String children;
-                children = new Gson().toJson(step.getChildSteps());
-                JsonObject childObject = new JsonObject();
-                childObject.addProperty("title", step.getVerbID());
-                childObject.addProperty("subtitle", step.getDescription());
-                childObject.addProperty("uuid", step.getUUID());
-                childObject.addProperty("fileID", step.getFileID());
-                childObject.addProperty("asynchronous", step.getAsynchronous());
-                childObject.addProperty("completed", step.getCompleted());
-                childObject.addProperty("children", children);
-                childObject.addProperty("expanded", step.getExpanded());
-            } else {
-                JsonObject childObject = new JsonObject();
-                childObject.addProperty("title", step.getVerbID());
-                childObject.addProperty("subtitle", step.getDescription());
-                childObject.addProperty("uuid", step.getUUID());
-                childObject.addProperty("fileID", step.getFileID());
-                childObject.addProperty("asynchronous", step.getAsynchronous());
-                childObject.addProperty("completed", step.getCompleted());
-                childObject.addProperty("expanded",  step.getExpanded());
-            }
-        }
-        return topLevelObject;
-    }*/
+        return flag;
+    }
 }
