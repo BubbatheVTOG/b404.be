@@ -359,7 +359,7 @@ public class WorkflowBusiness {
             this.workflowDB.updateWorkflow(workflowID, name, description, today);
 
             //Inserted updated workflow steps
-            this.stepBusiness.insertSteps(steps);
+            this.stepBusiness.updateSteps(steps, workflowID);
 
             return updatedWorkflow;
         }
@@ -444,7 +444,7 @@ public class WorkflowBusiness {
             this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, updatedWorkflow.getCompletedDate(), company.getCompanyID());
 
             //Inserted updated workflow steps
-            this.stepBusiness.insertSteps(steps);
+            this.stepBusiness.updateSteps(steps, workflowID);
 
             return updatedWorkflow;
         }
@@ -473,6 +473,8 @@ public class WorkflowBusiness {
 
             //Retrieve the person from the database by UUID
             int numRowsDeleted = workflowDB.deleteWorkflowByID(workflowIDInteger);
+
+            this.stepBusiness.deleteStepsByWorkflowID(workflowID);
 
             //If null is returned, no user was found with given UUID
             if(numRowsDeleted == 0){

@@ -188,7 +188,7 @@ public class StepDB {
      * @param workflowID workflowID to delete steps by before inserting updated list
      * @throws SQLException Error connecting to the database or executing update
      */
-    public int updateSteps(List<Step> steps, String workflowID) throws SQLException {
+    public int updateSteps(List<Step> steps, int workflowID) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
             conn.setAutoCommit(false);
 
@@ -198,7 +198,7 @@ public class StepDB {
             String query = "DELETE FROM step WHERE step.workflowID = ?;";
 
             try (PreparedStatement deleteStatement = conn.prepareStatement(query)) {
-                deleteStatement.setInt(1, Integer.parseInt(workflowID));
+                deleteStatement.setInt(1, workflowID);
                 deleteStatement.executeUpdate();
 
                 query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";

@@ -84,7 +84,7 @@ public class StepBusiness {
      * @param workflowID WorkflowID to delete existing steps by
      * @return Success Message
      */
-    public int updateSteps(List<Step> steps, String workflowID) {
+    public int updateSteps(List<Step> steps, int workflowID) {
         int numUpdatedSteps;
         try {
             numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
