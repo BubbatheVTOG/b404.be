@@ -22,7 +22,7 @@ public class WorkflowDB {
     /**
      * Get all workflows
      * @return List of workflow objects
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows() throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -63,9 +63,9 @@ public class WorkflowDB {
 
     /**
      * Get all workflows by CompanyID
-     * @param companyIDList - List of company IDs to retrieve workflows by
+     * @param companyIDList List of company IDs to retrieve workflows by
      * @return List of workflow objects assigned to company with companyID
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows(List<Integer> companyIDList) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -108,9 +108,9 @@ public class WorkflowDB {
 
     /**
      * Get all workflows based on archived or not archived
-     * @param archived - Search for either archived or unarchived workflows
+     * @param archived Search for either archived or unarchived workflows
      * @return List of workflow objects
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows(boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -153,10 +153,10 @@ public class WorkflowDB {
 
     /**
      * Get all workflows based on archived or not archived
-     * @param companyIDList - List of company IDs to retrieve workflows by
-     * @param archived - Search for either archived or unarchived workflows
+     * @param companyIDList List of company IDs to retrieve workflows by
+     * @param archived Search for either archived or unarchived workflows
      * @return List of workflow objects
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows(List<Integer> companyIDList, boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -201,9 +201,9 @@ public class WorkflowDB {
 
     /**
      * Get workflow information based on the workflowID
-     * @param workflowID - workflowID to retrieve workflow from
+     * @param workflowID workflowID to retrieve workflow from
      * return workflow object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
@@ -245,9 +245,9 @@ public class WorkflowDB {
 
     /**
      * Connect to database and add a template workflow
-     * @param name - name of template workflow to be added
-     * @param description - description of new workflow to be added
-     * @throws SQLException - Error connecting to database or executing update
+     * @param name name of template workflow to be added
+     * @param description description of new workflow to be added
+     * @throws SQLException Error connecting to database or executing update
      */
     public int insertWorkflow(final String name, final String description, Date createdDate, Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
@@ -273,9 +273,9 @@ public class WorkflowDB {
 
     /**
      * Connect to database and add a concrete workflow
-     * @param name - name of template workflow to be added
-     * @param description - description of new workflow to be added
-     * @throws SQLException - Error connecting to database or executing update
+     * @param name name of template workflow to be added
+     * @param description description of new workflow to be added
+     * @throws SQLException Error connecting to database or executing update
      */
     public int insertWorkflow(String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, int companyID, int milestoneID) throws SQLException {
         //Prepare sql statement
@@ -305,11 +305,11 @@ public class WorkflowDB {
 
     /**
      * Connect to database and update a template workflow
-     * @param workflowID - ID of workflow to update
-     * @param name - name of template workflow to be added
-     * @param description - description of new workflow to be added
-     * @param lastUpdatedDate - The date to set the lastUpdatedDate to
-     * @throws SQLException - Error connecting to database or executing update
+     * @param workflowID ID of workflow to update
+     * @param name name of template workflow to be added
+     * @param description description of new workflow to be added
+     * @param lastUpdatedDate The date to set the lastUpdatedDate to
+     * @throws SQLException Error connecting to database or executing update
      */
     public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
@@ -330,15 +330,15 @@ public class WorkflowDB {
 
     /**
      * Connect to database and update a concrete workflow
-     * @param workflowID - ID of workflow to update
-     * @param name - name of template workflow to be added
-     * @param description - description of new workflow to be added
-     * @param lastUpdatedDate - The date to set the lastUpdatedDate to
-     * @param startDate - The updated start date
-     * @param deliveryDate - The updated delivery date
-     * @param completedDate - The updated completed date
-     * @param companyID - The new companyID
-     * @throws SQLException - Error connecting to database or executing update
+     * @param workflowID ID of workflow to update
+     * @param name name of template workflow to be added
+     * @param description description of new workflow to be added
+     * @param lastUpdatedDate The date to set the lastUpdatedDate to
+     * @param startDate The updated start date
+     * @param deliveryDate The updated delivery date
+     * @param completedDate The updated completed date
+     * @param companyID The new companyID
+     * @throws SQLException Error connecting to database or executing update
      */
     public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, int companyID) throws SQLException {
         //Prepare sql statement
@@ -363,9 +363,9 @@ public class WorkflowDB {
 
     /**
      * Connect to database and delete a workflow by workflowID
-     * @param workflowID - workflowID to delete from database
+     * @param workflowID workflowID to delete from database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing update
+     * @throws SQLException Error connecting to database or executing update
      */
     public int deleteWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
@@ -382,9 +382,9 @@ public class WorkflowDB {
 
     /**
      * Update archive status of an existing workflow
-     * @param workflowID - ID of workflow to update
-     * @param archiveStatus - boolean to set archive status to
-     * @throws SQLException - Error connecting to database or executing statement
+     * @param workflowID ID of workflow to update
+     * @param archiveStatus boolean to set archive status to
+     * @throws SQLException Error connecting to database or executing statement
      */
     public void updateWorkflowArchiveStatus(final int workflowID, boolean archiveStatus) throws SQLException {
         //Prepare sql statement

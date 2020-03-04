@@ -27,7 +27,7 @@ public class CompanyBusiness {
     /**
      * Gets all companies from the database
      * @return Company object containing data from the database\
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public List<Company> getAllCompanies() throws InternalServerErrorException{
         try {
@@ -40,11 +40,11 @@ public class CompanyBusiness {
 
     /**
      * Gets a company from the database by companyID
-     * @param companyID - companyId to search the database for
+     * @param companyID CompanyId to search the database for
      * @return Company object containing data from the database
-     * @throws BadRequestException - CompanyID was an invalid integer format
-     * @throws NotFoundException - No company with provided CompanyId was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyID was an invalid integer format
+     * @throws NotFoundException No company with provided CompanyId was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public Company getCompanyByID(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
@@ -66,11 +66,11 @@ public class CompanyBusiness {
 
     /**
      * Gets a company from the database by company name
-     * @param companyName - Company name to search the database for
+     * @param companyName Company name to search the database for
      * @return Company object containing company information found in database
-     * @throws BadRequestException - Invalid format for company name; null or empty
-     * @throws NotFoundException - No company with provided company name exists
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException Invalid format for company name; null or empty
+     * @throws NotFoundException No company with provided company name exists
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public Company getCompanyByName(String companyName) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
@@ -94,9 +94,9 @@ public class CompanyBusiness {
     /**
      * Gets all people for a given company from the database
      * @return List of Person objects
-     * @throws BadRequestException - CompanyID is not a valid integer
-     * @throws NotFoundException - Company does not exist in the database
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyID is not a valid integer
+     * @throws NotFoundException Company does not exist in the database
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public List<Person> getAllPeopleByCompany(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
@@ -111,11 +111,11 @@ public class CompanyBusiness {
 
     /**
      * Inserts a new company into the database
-     * @param companyName - New company's name
+     * @param companyName New company's name
      * @return Success string
-     * @throws BadRequestException - CompanyID was an invalid integer format
-     * @throws NotFoundException - No company with provided CompanyId was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyID was an invalid integer format
+     * @throws NotFoundException No company with provided CompanyId was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public Company insertCompany(String companyName) throws BadRequestException, ConflictException, NotFoundException, InternalServerErrorException{
         try {
@@ -136,11 +136,11 @@ public class CompanyBusiness {
 
     /**
      * Updates an existing company in the database
-     * @param companyName - Company's updated name
+     * @param companyName Company's updated name
      * @return Success string
-     * @throws BadRequestException - CompanyID was an invalid integer format
-     * @throws NotFoundException - No company with provided CompanyId was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyID was an invalid integer format
+     * @throws NotFoundException No company with provided CompanyId was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public Company updateCompany(String companyID, String companyName) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
         try {
@@ -170,11 +170,11 @@ public class CompanyBusiness {
 
     /**
      * Deletes a company from the database by companyID
-     * @param companyID - companyId to delete from the database
+     * @param companyID CompanyId to delete from the database
      * @return Success string
-     * @throws BadRequestException - CompanyID was an invalid integer format
-     * @throws NotFoundException - No company with provided CompanyId was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyID was an invalid integer format
+     * @throws NotFoundException No company with provided CompanyId was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public String deleteCompanyByID(String companyID) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {
@@ -196,12 +196,12 @@ public class CompanyBusiness {
 
     /**
      * Adds a person to a company
-     * @param companyID - ID of company to add person to
-     * @param personID - ID of person to add to company
+     * @param companyID ID of company to add person to
+     * @param personID ID of person to add to company
      * @return Success string
-     * @throws BadRequestException - CompanyName was a null or empty
-     * @throws NotFoundException - No company with provided Company name was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyName was a null or empty
+     * @throws NotFoundException No company with provided Company name was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public String addPersonToCompany(String companyID, String personID) throws BadRequestException, NotFoundException, ConflictException, InternalServerErrorException{
         try {
@@ -229,12 +229,12 @@ public class CompanyBusiness {
 
     /**
      * Removes a person from a company
-     * @param companyID - ID of company to remove person from
-     * @param personID - ID of person to remove from company
+     * @param companyID ID of company to remove person from
+     * @param personID ID of person to remove from company
      * @return Success string
-     * @throws BadRequestException - CompanyName was a null or empty
-     * @throws NotFoundException - No company with provided Company name was found
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws BadRequestException CompanyName was a null or empty
+     * @throws NotFoundException No company with provided Company name was found
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public String removePersonFromCompany(String companyID, String personID) throws BadRequestException, NotFoundException, InternalServerErrorException{
         try {

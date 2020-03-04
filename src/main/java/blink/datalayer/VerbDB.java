@@ -19,7 +19,7 @@ public class VerbDB {
     /**
      * Get all verbs
      * @return list of all verb objects
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Verb> getAllVerbs() throws SQLException {
         //Prepare sql statement

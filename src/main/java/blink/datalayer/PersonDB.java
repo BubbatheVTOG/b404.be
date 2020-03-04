@@ -17,7 +17,7 @@ public class PersonDB {
     /**
      * Connect to database and retrieve all content of person table
      * @return ArrayList of all Person objects
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Person> getAllPeople() throws SQLException {
         String getAllPeopleQuery = "SELECT * FROM person;";
@@ -67,9 +67,9 @@ public class PersonDB {
 
     /**
      * Connect to database and retrieve entry by username
-     * @param username - Username to search database for
+     * @param username Username to search database for
      * @return Person object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public Person getPersonByUsername(final String username) throws SQLException {
 
@@ -124,9 +124,9 @@ public class PersonDB {
 
     /**
      * Connect to database and retrieve entry by UUID
-     * @param UUID - UUID to search database for
+     * @param UUID UUID to search database for
      * @return Person object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public Person getPersonByUUID(final String UUID) throws SQLException {
         //Prepare sql statement
@@ -180,14 +180,14 @@ public class PersonDB {
 
     /**
      * Connect to database and add a new person
-     * @param UUID - new Person UUID
-     * @param username - new person username
-     * @param password - new person password
-     * @param salt - new person salt
-     * @param email - new person email
-     * @param title - new person title
-     * @param accessLevelID - new person accessLevelID
-     * @throws SQLException - error connecting to database or executing query
+     * @param UUID new Person UUID
+     * @param username new person username
+     * @param password new person password
+     * @param salt new person salt
+     * @param email new person email
+     * @param title new person title
+     * @param accessLevelID new person accessLevelID
+     * @throws SQLException error connecting to database or executing query
      */
     public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
         //Prepare sql statement
@@ -213,13 +213,13 @@ public class PersonDB {
 
     /**
      * Connect to database and update person using UUID
-     * @param UUID - UUID of person to update
-     * @param username - new person username
-     * @param password - new person password
-     * @param email - new person email
-     * @param title - new person title
-     * @param accessLevelID - new person accessLevelID
-     * @throws SQLException - error connecting to database or executing query
+     * @param UUID UUID of person to update
+     * @param username new person username
+     * @param password new person password
+     * @param email new person email
+     * @param title new person title
+     * @param accessLevelID new person accessLevelID
+     * @throws SQLException error connecting to database or executing query
      */
     public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
         //Prepare sql statement
@@ -244,9 +244,9 @@ public class PersonDB {
 
     /**
      * Connect to database and delete a person by UUID
-     * @param UUID - UUID to delete from database
+     * @param UUID UUID to delete from database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public int deletePersonByUUID(final String UUID) throws SQLException {
         //Prepare sql statement

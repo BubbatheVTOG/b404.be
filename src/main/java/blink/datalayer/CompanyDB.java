@@ -22,7 +22,7 @@ public class CompanyDB {
     /**
      * Connect to database and retrieve all content of person table
      * @return ArrayList of all Company objects in database
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Company> getAllCompanies() throws SQLException {
         //Prepare sql statement
@@ -49,7 +49,7 @@ public class CompanyDB {
     /**
      * Connect to database and retrieve all people associated with a specific company
      * @return ArrayList of all Company objects in database
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Person> getAllPeopleByCompany(final int companyID) throws SQLException {
         //Prepare sql statement
@@ -75,9 +75,9 @@ public class CompanyDB {
 
     /**
      * Get a companies information by companyID
-     * @param companyID - companyID to search database for
+     * @param companyID companyID to search database for
      * @return company object or null if not found
-     * @throws SQLException - error connecting to database or executing query
+     * @throws SQLException error connecting to database or executing query
      */
     public Company getCompanyByID(final int companyID) throws SQLException {
         //Prepare sql statement
@@ -107,9 +107,9 @@ public class CompanyDB {
 
     /**
      * Gets a company from the database by company name
-     * @param companyName - name to search database for
-     * @return - Company with matching Company Name
-     * @throws SQLException - Error connecting to database or executing query
+     * @param companyName name to search database for
+     * @return Company with matching Company Name
+     * @throws SQLException Error connecting to database or executing query
      */
     public Company getCompanyByName(final String companyName) throws SQLException {
         //Prepare sql statement
@@ -139,8 +139,8 @@ public class CompanyDB {
 
     /**
      * Connect to database and add
-     * @param name - name of new company to be added
-     * @throws SQLException - error connecting to database or executing
+     * @param name name of new company to be added
+     * @throws SQLException error connecting to database or executing
      */
     public void insertCompany(final String name) throws SQLException {
         //Prepare sql statement
@@ -158,8 +158,8 @@ public class CompanyDB {
 
     /**
      * Connect to database and add
-     * @param name - name of new company to be added
-     * @throws SQLException - error connecting to database or executing
+     * @param name name of new company to be added
+     * @throws SQLException error connecting to database or executing
      */
     public void updateCompany(final int companyID, final String name) throws SQLException {
         //Prepare sql statement
@@ -178,9 +178,9 @@ public class CompanyDB {
 
     /**
      * Connect to database and delete a company by companyID
-     * @param companyID - comapanyID of company to delete from the database
+     * @param companyID comapanyID of company to delete from the database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public int deleteCompany(final int companyID) throws SQLException {
         //Prepare sql statement
@@ -197,9 +197,9 @@ public class CompanyDB {
 
     /**
      * Connect to database and delete a company by company name
-     * @param companyName - company name of company to delete from the database
+     * @param companyName company name of company to delete from the database
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public int deleteCompany(final String companyName) throws SQLException {
         //Prepare sql statement
@@ -216,9 +216,9 @@ public class CompanyDB {
 
     /**
      * Add a person to a company by adding a row into personCompany
-     * @param companyID - companyID of company to add person to
-     * @param UUID - UUID of person to add to company
-     * @throws SQLException - Error connecting to database or executing query
+     * @param companyID companyID of company to add person to
+     * @param UUID UUID of person to add to company
+     * @throws SQLException Error connecting to database or executing query
      */
     public void addPersonToCompany(final int companyID, final String UUID) throws SQLException {
         //Prepare sql statement
@@ -237,10 +237,10 @@ public class CompanyDB {
 
     /**
      * Delete a person from a company by removing a row in personCompany
-     * @param companyID - companyID of company to add person to
-     * @param UUID - UUID of person to add to company
+     * @param companyID companyID of company to add person to
+     * @param UUID UUID of person to add to company
      * @return number of rows deleted
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public int removePersonFromCompany(final int companyID, final String UUID) throws SQLException {
         //Prepare sql statement

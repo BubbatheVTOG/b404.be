@@ -1,13 +1,17 @@
 package blink.utility.objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Step {
     private int stepID;
     private int orderNumber;
+    @SerializedName("subtitle")
     private String description;
     private int parentStepID;
     private int uuid;
+    @SerializedName("title")
     private int verbID;
     private int fileID;
     private int workflowID;

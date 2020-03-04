@@ -16,15 +16,15 @@ public class Milestone {
 
     /**
      * Construct a milestone and provide all information necessary
-     * @param mileStoneID - ID for the milestone
-     * @param name - name for the workflow
-     * @param description - general description for the workflow
-     * @param createdDate - date workflow was created
-     * @param lastUpdatedDate - date workflow was updated last
-     * @param deliveryDate - date workflow is scheduled for delivery
-     * @param completedDate - date workflow was completed
-     * @param archived - whether the workflow is archived or not
-     * @param company - company that the workflow is assigned to
+     * @param mileStoneID ID for the milestone
+     * @param name name for the workflow
+     * @param description general description for the workflow
+     * @param createdDate date workflow was created
+     * @param lastUpdatedDate date workflow was updated last
+     * @param deliveryDate date workflow is scheduled for delivery
+     * @param completedDate date workflow was completed
+     * @param archived whether the workflow is archived or not
+     * @param company company that the workflow is assigned to
      */
     public Milestone(int mileStoneID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, Company company) {
         this.mileStoneID = mileStoneID;

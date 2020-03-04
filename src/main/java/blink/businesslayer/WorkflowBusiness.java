@@ -37,10 +37,10 @@ public class WorkflowBusiness {
 
     /**
      * Get all workflows
-     * @param uuid - uuid of the requesting user
+     * @param uuid Uuid of the requesting user
      * @return List of workflows
-     * @throws NotAuthorizedException - requester uuid was not found in the database
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotAuthorizedException Requester uuid was not found in the database
+     * @throws InternalServerErrorException Error in data layer
      */
     public List<Workflow> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
         try{
@@ -61,7 +61,7 @@ public class WorkflowBusiness {
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -69,9 +69,9 @@ public class WorkflowBusiness {
 
     /**
      * Get all workflows by archive status
-     * @param uuid - uuid of the requesting user
+     * @param uuid Uuid of the requesting user
      * @return List of active workflows
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws InternalServerErrorException Error in data layer
      */
     private List<Workflow> getAllWorkflows(String uuid, boolean archived) throws InternalServerErrorException {
         try{
@@ -92,7 +92,7 @@ public class WorkflowBusiness {
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -100,7 +100,7 @@ public class WorkflowBusiness {
 
     /**
      * Wrapper function of getAllWorkflows that gets all active workflows
-     * @param uuid - requester's UUID
+     * @param uuid Requester's UUID
      * @return List of all workflows relevant to the user
      */
     public List<Workflow> getActiveWorkflows(String uuid){
@@ -109,7 +109,7 @@ public class WorkflowBusiness {
 
     /**
      * Wrapper function of getAllWorkflows that gets all archived workflows
-     * @param uuid - requester's UUID
+     * @param uuid Requester's UUID
      * @return List of all workflows relevant to the user
      */
     public List<Workflow> getArchivedWorkflows(String uuid){
@@ -119,13 +119,13 @@ public class WorkflowBusiness {
     /**
      * Get a workflow from the database by workflowID
      * Also checks that a user has the credentials for retrieving this workflow
-     * @param uuid - UUID of requester
-     * @param workflowID - workflowID must be convertible to integer
+     * @param uuid UUID of requester
+     * @param workflowID WorkflowID must be convertible to integer
      * @return Workflow object with matching id
-     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotAuthorizedException Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException WorkflowID does not exist in database
+     * @throws BadRequestException WorkflowID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     public Workflow getWorkflowByID(String uuid, String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         Workflow workflow = this.getWorkflowByID(workflowID);
@@ -146,11 +146,11 @@ public class WorkflowBusiness {
 
     /**
      * Get a workflow from the database by workflowID
-     * @param workflowID - WorkflowID must be convertible to integer
+     * @param workflowID WorkflowID must be convertible to integer
      * @return Workflow object with matching id
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotFoundException WorkflowID does not exist in database
+     * @throws BadRequestException WorkflowID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     private Workflow getWorkflowByID(String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -174,7 +174,7 @@ public class WorkflowBusiness {
         catch(NumberFormatException nfe){
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -182,7 +182,7 @@ public class WorkflowBusiness {
 
     /**
      * Inserts a template workflow
-     * @param workflowJsonString - String representation of workflow json object
+     * @param workflowJsonString String representation of workflow json object
      * @return Inserted workflow
      */
     public Workflow insertTemplateWorkflow(String workflowJsonString){
@@ -232,7 +232,7 @@ public class WorkflowBusiness {
 
     /**
      * Inserts a concrete workflow
-     * @param workflowJsonString - name of workflow
+     * @param workflowJsonString Name of workflow
      * @return Inserted workflow
      */
     public Workflow insertWorkflow(String workflowJsonString){
@@ -304,7 +304,7 @@ public class WorkflowBusiness {
 
     /**
      * Update a template workflow
-     * @param workflowJsonString - String representation of workflow json object
+     * @param workflowJsonString String representation of workflow json object
      * @return Inserted workflow
      */
     public Workflow updateTemplateWorkflow(String workflowJsonString){
@@ -373,7 +373,7 @@ public class WorkflowBusiness {
 
     /**
      * Update a template workflow
-     * @param workflowJsonString - String representation of workflow json object
+     * @param workflowJsonString String representation of workflow json object
      * @return Inserted workflow
      */
     public Workflow updateConcreteWorkflow(String workflowJsonString){
@@ -458,11 +458,11 @@ public class WorkflowBusiness {
 
     /**
      * Delete a workflow from the database by UUID
-     * @param workflowID - ID of workflow to delete
+     * @param workflowID ID of workflow to delete
      * @return Success string
-     * @throws NotFoundException - WorkflowID does not exist in database
-     * @throws BadRequestException - WorkflowID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotFoundException WorkflowID does not exist in database
+     * @throws BadRequestException WorkflowID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     public String deleteWorkflowByID(String workflowID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -485,7 +485,7 @@ public class WorkflowBusiness {
         catch(NumberFormatException nfe){
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -493,10 +493,10 @@ public class WorkflowBusiness {
 
     /**
      * Archive or unarchive an existing workflow
-     * @param workflowID - ID of workflow to archive
-     * @throws NotFoundException - WorkflowID does not exist
-     * @throws BadRequestException - WorkflowID is formatted improperly
-     * @throws InternalServerErrorException - Error in data layer
+     * @param workflowID ID of workflow to archive
+     * @throws NotFoundException WorkflowID does not exist
+     * @throws BadRequestException WorkflowID is formatted improperly
+     * @throws InternalServerErrorException Error in data layer
      */
     private void updateWorkflowArchiveStatus(String workflowID, boolean status) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -506,7 +506,7 @@ public class WorkflowBusiness {
 
             workflowDB.updateWorkflowArchiveStatus(workflow.getWorkflowID(), status);
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -514,7 +514,7 @@ public class WorkflowBusiness {
 
     /**
      * Wrapper function of updateWorkflowArchiveStatus to archive a workflow
-     * @param workflowID - ID of workflow to archive
+     * @param workflowID ID of workflow to archive
      * @return Success string
      */
     public String archiveWorkflow(String workflowID){
@@ -524,7 +524,7 @@ public class WorkflowBusiness {
 
     /**
      * Wrapper function of updateWorkflowArchiveStatus to unarchive a workflow
-     * @param workflowID - ID of workflow to archive
+     * @param workflowID ID of workflow to archive
      * @return Success string
      */
     public String unarchiveWorkflow(String workflowID){
@@ -534,7 +534,7 @@ public class WorkflowBusiness {
 
     /**
      * Utility for parsing date objects and detecting that format is valid
-     * @param dateString - String of date; must be in format 'YYYY-MM-DD'
+     * @param dateString String of date; must be in format 'YYYY-MM-DD'
      * @return Date object
      * @throws BadRequestException if date in invalid format
      */

@@ -23,9 +23,9 @@ public class StepDB {
 
     /**
      * Retrieves all higher level steps from the database
-     * @param workflowID - workflowID of higher level steps to retrieve
-     * @return - list of higher level steps containing lists of lower level steps
-     * @throws SQLException - Error connecting to the database or executing query
+     * @param workflowID workflowID of higher level steps to retrieve
+     * @return list of higher level steps containing lists of lower level steps
+     * @throws SQLException Error connecting to the database or executing query
      */
     public List<Step> getHigherLevelSteps(int workflowID) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -66,9 +66,9 @@ public class StepDB {
 
     /**
      * Recursive function to getRelatedSteps to the stepID provided
-     * @param stepID - stepID to check against relatedStep
+     * @param stepID stepID to check against relatedStep
      * @return Return a list of steps
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public List<Step> getRelatedSteps(int stepID) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -109,8 +109,8 @@ public class StepDB {
 
     /**
      * Connect to database and add steps
-     * @param steps - list of steps to insert into the database
-     * @throws SQLException - Error connecting to database or executing update
+     * @param steps list of steps to insert into the database
+     * @throws SQLException Error connecting to database or executing update
      */
     public int insertSteps(List<Step> steps) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -152,11 +152,11 @@ public class StepDB {
 
     /**
      * Recursive method to add child steps into the database
-     * @param steps - steps to add to the database
-     * @param preparedStatement - preparedStatement created in insertSteps
-     * @throws SQLException - Error connecting to the database or executing update
+     * @param steps steps to add to the database
+     * @param preparedStatement preparedStatement created in insertSteps
+     * @throws SQLException Error connecting to the database or executing update
      */
-    public int insertChildSteps(List<Step> steps, PreparedStatement preparedStatement, int parentStepID, int numInsertedSteps) throws SQLException {
+    private int insertChildSteps(List<Step> steps, PreparedStatement preparedStatement, int parentStepID, int numInsertedSteps) throws SQLException {
 
         int counter = 1;
         for (Step step : steps) {
@@ -184,9 +184,9 @@ public class StepDB {
 
     /**
      * Connect to the database and updateSteps
-     * @param steps - list of steps to insert into database
-     * @param workflowID - workflowID to delete steps by before inserting updated list
-     * @throws SQLException - Error connecting to the database or executing update
+     * @param steps list of steps to insert into database
+     * @param workflowID workflowID to delete steps by before inserting updated list
+     * @throws SQLException Error connecting to the database or executing update
      */
     public int updateSteps(List<Step> steps, String workflowID) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
@@ -238,9 +238,9 @@ public class StepDB {
 
     /**
      * Conncect to database and delete step by UUID
-     * @param workflowID - workflowID to delete from database
+     * @param workflowID workflowID to delete from database
      * @return number of deleted steps
-     * @throws SQLException - Error connecting to database or executing update
+     * @throws SQLException Error connecting to database or executing update
      */
     public int deleteStepsByWorkflowID(int workflowID) throws SQLException {
         try (Connection conn = this.dbConn.connect()) {
