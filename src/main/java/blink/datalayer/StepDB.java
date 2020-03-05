@@ -22,6 +22,10 @@ public class StepDB {
 
     private DBConn dbConn;
 
+    public StepDB(){
+        this.dbConn = new DBConn();
+    }
+
     /**
      * Retrieves all higher level steps from the database
      * @param workflowID workflowID of higher level steps to retrieve
