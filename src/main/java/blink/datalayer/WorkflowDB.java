@@ -1,6 +1,7 @@
 package blink.datalayer;
 
 import blink.businesslayer.CompanyBusiness;
+import blink.businesslayer.StepBusiness;
 import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 
@@ -12,12 +13,12 @@ import java.util.List;
 
 public class WorkflowDB {
     private DBConn dbConn;
-    private StepDB stepDB;
+    private StepBusiness stepBusiness;
     private CompanyBusiness companyBusiness;
 
     public WorkflowDB(){
         this.dbConn = new DBConn();
-        this.stepDB = new StepDB();
+        this.stepBusiness = new StepBusiness();
         this.companyBusiness = new CompanyBusiness();
     }
 
@@ -41,7 +42,6 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         int workflowID = result.getInt("workflowID");
-                        List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                         workflowList.add(new Workflow(result.getInt("workflowID"),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
@@ -53,13 +53,17 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
-                                stepList));
+                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                        );
                     }
 
                     //Return milestone
                     return workflowList;
                 }
             }
+        }
+        catch(BadRequestException bre){
+            throw new BadRequestException(bre.getMessage());
         }
         catch(Exception npe){
             throw new BadRequestException("Exception in workflow data layer.");
@@ -89,7 +93,6 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         int workflowID = result.getInt("workflowID");
-                        List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                         workflowList.add(new Workflow(workflowID,
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
@@ -101,7 +104,8 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
-                                stepList));
+                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                        );
                     }
 
                     //Return workflow
@@ -134,7 +138,6 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         int workflowID = result.getInt("workflowID");
-                        List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                         workflowList.add(new Workflow(result.getInt("workflowID"),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
@@ -146,7 +149,8 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
-                                stepList));
+                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                        );
                     }
 
                     //Return workflow
@@ -182,7 +186,6 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         int workflowID = result.getInt("workflowID");
-                        List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                         workflowList.add(new Workflow(workflowID,
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
@@ -194,7 +197,8 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 this.companyBusiness.getCompanyByID(result.getString("companyID")),
                                 result.getInt("milestoneID"),
-                                stepList));
+                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                        );
                     }
 
                     //Return workflow
@@ -227,7 +231,6 @@ public class WorkflowDB {
                 Workflow workflow = null;
 
                 while (result.next()) {
-                    List<Step> stepList = this.stepDB.getHigherLevelSteps(workflowID);
                     workflow = new Workflow(result.getInt("workflowID"),
                             result.getString("workflow.name"),
                             result.getString("workflow.description"),
@@ -239,7 +242,8 @@ public class WorkflowDB {
                             result.getBoolean("workflow.archived"),
                             this.companyBusiness.getCompanyByID(result.getString("companyID")),
                             result.getInt("milestoneID"),
-                            stepList);
+                            this.stepBusiness.getSteps(Integer.toString(workflowID))
+                    );
                 }
 
                 //Return workflow
