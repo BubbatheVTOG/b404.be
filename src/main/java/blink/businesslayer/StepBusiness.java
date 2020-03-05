@@ -41,6 +41,9 @@ public class StepBusiness {
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
+        catch(BadRequestException bre){
+            throw new BadRequestException(bre.getMessage());
+        }
         catch(Exception npe){
             throw new BadRequestException("Exception in step business layer.");
         }
