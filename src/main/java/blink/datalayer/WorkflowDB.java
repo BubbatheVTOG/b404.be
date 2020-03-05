@@ -62,6 +62,9 @@ public class WorkflowDB {
                 }
             }
         }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Error with workflow data layer null checking");
+        }
     }
 
     /**
