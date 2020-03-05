@@ -16,6 +16,7 @@ public class MilestoneDB {
 
     public MilestoneDB(){
         this.dbConn = new DBConn();
+        this.companyBusiness = new CompanyBusiness();
     }
 
     /**
