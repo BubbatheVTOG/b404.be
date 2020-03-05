@@ -4,13 +4,10 @@ import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import io.swagger.util.Json;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import java.io.BufferedReader;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,10 +70,10 @@ public class StepBusiness {
      * @param steps - list of steps to insert into the database
      * @return Success Message
      */
-    public int insertSteps(List<Step> steps, Connection conn) {
+    public int insertSteps(List<Step> steps) {
         int numInsertedSteps;
         try {
-            numInsertedSteps = stepDB.insertSteps(steps, conn);
+            numInsertedSteps = stepDB.insertSteps(steps);
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -129,30 +126,30 @@ public class StepBusiness {
      * @param jsonObject which is the top level object containing workflowID and children[]
      * @return ArrayList<Step>
      */
-    public List<Step> jsonToStepList(JsonObject jsonObject) {
-        Collection<Step> steps = null;
+    public List<Step> jsonToStepList(JsonObject jsonObject, int workflowID) {
+        Collection<Step> stepCollection = null;
 
         Gson gson = new GsonBuilder().serializeNulls().create();
-        steps = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
+        stepCollection = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
 
-        return new ArrayList<>(steps);
+        List<Step> steps = insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
+
+        return steps;
     }
 
     /**
-     * Check for step completion
-     * @param steps is a list of all steps
-     * @return boolean flag
+     * Add workflowID into StepList generated from json the front end sends to the backend
+     * @param steps stepList retrieved from the conversion
+     * @param workflowID to insert into the steps
+     * @return list of steps
      */
-    public boolean checkCompletion(List<Step> steps) {
-        boolean flag = true;
-
+    public List<Step> insertWorkflowID(List<Step> steps, int workflowID) {
         for(Step step: steps) {
-            if (step.hasChildren()) {
-                flag = checkCompletion(step.getChildSteps());
-                step.setCompleted(flag);
+            step.setWorkflowID(workflowID);
+            if(step.hasChildren()) {
+                insertWorkflowID(step.getChildSteps(), workflowID);
             }
-            flag = flag && step.isCompleted();
         }
-        return flag;
+        return steps;
     }
 }
