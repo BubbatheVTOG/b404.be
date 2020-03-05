@@ -65,12 +65,6 @@ public class WorkflowBusiness {
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
-        catch(BadRequestException bre){
-            throw new BadRequestException(bre.getMessage());
-        }
-        catch(Exception npe){
-            throw new BadRequestException("Exception in workflow business layer.");
-        }
     }
 
     /**

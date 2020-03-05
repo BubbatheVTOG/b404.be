@@ -69,9 +69,6 @@ public class StepDB {
                 }
             }
         }
-        catch(Exception e){
-            throw new BadRequestException(e.getMessage());
-        }
     }
 
     /**

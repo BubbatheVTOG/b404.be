@@ -32,7 +32,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -61,12 +61,6 @@ public class WorkflowDB {
                     return workflowList;
                 }
             }
-        }
-        catch(BadRequestException bre){
-            throw new BadRequestException(bre.getMessage());
-        }
-        catch(Exception e){
-            throw new BadRequestException("Exception in workflow data layer.");
         }
     }
 

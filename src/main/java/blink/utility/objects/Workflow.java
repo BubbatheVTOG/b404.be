@@ -20,28 +20,23 @@ public class Workflow {
     private double percentComplete;
 
     public Workflow(int workflowID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, Company company, int milestoneID, List<Step> steps) {
-        try{
-            this.workflowID = workflowID;
-            this.description = description;
-            this.name = name;
-            this.createdDate = createdDate;
-            this.lastUpdatedDate = lastUpdatedDate;
-            this.startDate = startDate;
-            this.deliveryDate = deliveryDate;
-            this.completedDate = completedDate;
-            this.archived = archived;
-            this.company = company;
-            this.milestoneID = milestoneID;
-            this.steps = steps;
-            this.percentComplete = this.calcPercentComplete();
+        this.workflowID = workflowID;
+        this.description = description;
+        this.name = name;
+        this.createdDate = createdDate;
+        this.lastUpdatedDate = lastUpdatedDate;
+        this.startDate = startDate;
+        this.deliveryDate = deliveryDate;
+        this.completedDate = completedDate;
+        this.archived = archived;
+        this.company = company;
+        this.milestoneID = milestoneID;
+        this.steps = steps;
+        this.percentComplete = this.calcPercentComplete();
 
-            //If completed and not already marked as complete, mark complete
-            if(this.percentComplete == 1 && this.completedDate == null){
-                this.completedDate = new Date();
-            }
-        }
-        catch(Exception e){
-            throw new BadRequestException("Error in Workflow construction");
+        //If completed and not already marked as complete, mark complete
+        if(this.percentComplete == 1 && this.completedDate == null){
+            this.completedDate = new Date();
         }
     }
 
