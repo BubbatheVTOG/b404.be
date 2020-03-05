@@ -2,6 +2,7 @@ package blink.datalayer;
 
 import blink.utility.objects.Step;
 
+import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,9 @@ public class StepDB {
                     return steps;
                 }
             }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Null Pointer in step data layer.");
         }
     }
 

@@ -4,6 +4,7 @@ import blink.businesslayer.CompanyBusiness;
 import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 
+import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,9 @@ public class WorkflowDB {
                     return workflowList;
                 }
             }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Null Pointer in workflow data layer.");
         }
     }
 

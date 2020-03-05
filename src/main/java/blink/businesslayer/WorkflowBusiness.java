@@ -58,6 +58,9 @@ public class WorkflowBusiness {
             return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
+        catch(NullPointerException npe){
+            throw new BadRequestException("Null Pointer in workflow business layer.");
+        }
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
