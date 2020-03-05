@@ -52,7 +52,7 @@ public class WorkflowDB {
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
                                 result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getInt("workflow.milestoneID"),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
                                 workflowID == null ? null : this.stepBusiness.getSteps(workflowID))
                         );
                     }
