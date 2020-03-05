@@ -66,7 +66,7 @@ public class StepDB {
             }
         }
         catch(Exception e){
-            throw new BadRequestException("Exception in step data layer.");
+            throw new BadRequestException(e.getMessage());
         }
     }
 
