@@ -65,6 +65,9 @@ public class WorkflowDB {
         catch(NullPointerException npe){
             throw new BadRequestException("Error with workflow data layer null checking");
         }
+        catch(Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     /**
