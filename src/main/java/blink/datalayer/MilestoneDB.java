@@ -55,7 +55,7 @@ public class MilestoneDB {
             }
         }
         catch(NullPointerException npe){
-            throw new BadRequestException("Null Pointer in data layer");
+            throw new BadRequestException("Null pointer in data layer");
         }
     }
 
