@@ -41,8 +41,8 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        int workflowID = result.getInt("workflowID");
-                        workflowList.add(new Workflow(workflowID,
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -51,9 +51,9 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
                                 result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                                workflowID == null ? null : this.stepBusiness.getSteps(workflowID))
                         );
                     }
 
