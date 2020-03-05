@@ -42,7 +42,7 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         String workflowID = result.getString("workflowID");
-                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
+                        workflowList.add(new Workflow(workflowID == null ? 0 : Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
