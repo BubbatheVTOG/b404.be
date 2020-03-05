@@ -42,7 +42,7 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         int workflowID = result.getInt("workflowID");
-                        workflowList.add(new Workflow(result.getInt("workflowID"),
+                        workflowList.add(new Workflow(workflowID,
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -51,8 +51,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
-                                result.getInt("milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(Integer.toString(workflowID)))
                         );
                     }
@@ -102,8 +102,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
-                                result.getInt("milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(Integer.toString(workflowID)))
                         );
                     }
@@ -147,8 +147,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
-                                result.getInt("milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(Integer.toString(workflowID)))
                         );
                     }
@@ -195,8 +195,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
-                                result.getInt("milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(Integer.toString(workflowID)))
                         );
                     }
@@ -240,8 +240,8 @@ public class WorkflowDB {
                             result.getDate("workflow.deliveryDate"),
                             result.getDate("workflow.completedDate"),
                             result.getBoolean("workflow.archived"),
-                            this.companyBusiness.getCompanyByID(result.getString("companyID")),
-                            result.getInt("milestoneID"),
+                            this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                            result.getInt("workflow.milestoneID"),
                             this.stepBusiness.getSteps(Integer.toString(workflowID))
                     );
                 }
