@@ -17,6 +17,7 @@ public class WorkflowDB {
     public WorkflowDB(){
         this.dbConn = new DBConn();
         this.stepDB = new StepDB();
+        this.companyBusiness = new CompanyBusiness();
     }
 
     /**
