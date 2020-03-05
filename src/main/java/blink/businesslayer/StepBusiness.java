@@ -3,12 +3,14 @@ package blink.businesslayer;
 import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -119,31 +121,32 @@ public class StepBusiness {
         return numDeletedSteps;
     }
 
-    public List<Step> jsonToStepList(JsonArray children, int workflowID) {
-        List<Step> steps = new ArrayList<>();
+    /**
+     * Convert jsonToStepList so backend can use it
+     * @param jsonObject which is the top level object containing workflowID and children
+     * @return ArrayList<Step>
+     */
+    public List<Step> jsonToStepList(JsonObject jsonObject, int workflowID) {
+        Collection<Step> stepCollection;
 
-        for(JsonElement jsonElement : children) {
-            JsonObject jsonArrayObject = jsonElement.getAsJsonObject();
-            Step step;
-            if(jsonArrayObject.get("children").isJsonNull()) {
-                step = new Step.StepBuilder(
-                        workflowID,
-                        jsonArrayObject.get("completed").getAsBoolean(),
-                        jsonArrayObject.get("asynchronous").getAsBoolean())
-                        .description(jsonArrayObject.get("subtitle").getAsString())
-                        .uuid(jsonArrayObject.get("uuid").getAsInt())
-                        .verbID(jsonArrayObject.get("title").getAsInt())
-                        .fileID(jsonArrayObject.get("fileID").getAsInt())
-                        .build();
-            } else {
-                step = new Step.StepBuilder(
-                        workflowID,
-                        jsonArrayObject.get("completed").getAsBoolean(),
-                        jsonArrayObject.get("asynchronous").getAsBoolean())
-                        .childSteps(jsonToStepList(jsonArrayObject.get("children").getAsJsonArray(), workflowID))
-                        .build();
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        stepCollection = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
+
+        return insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
+    }
+
+    /**
+     * Add workflowID into StepList generated from json the front end sends to the backend
+     * @param steps stepList retrieved from the conversion
+     * @param workflowID to insert into the steps
+     * @return list of steps
+     */
+    public List<Step> insertWorkflowID(List<Step> steps, int workflowID) {
+        for(Step step: steps) {
+            step.setWorkflowID(workflowID);
+            if(step.hasChildren()) {
+                insertWorkflowID(step.getChildSteps(), workflowID);
             }
-            steps.add(step);
         }
         return steps;
     }
