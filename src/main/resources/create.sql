@@ -215,8 +215,8 @@ INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UU
   (1, 1, "This is a higher level step.", null, null, 1, 1, 1, 0, 0),
   (2, 2, "This is a higher level step.", null, null, 3, 2, 1, 0, 0),
   (3, 1, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0),
-  (4, 1, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
-  (5, 2, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
+  (4, 1, "This is a third level step.",  3,    null, 2, 2, 1, 1, 0),
+  (5, 2, "This is a third level step.",  3,    null, 2, 2, 1, 1, 0),
   (6, 2, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0);
 
 INSERT INTO DB_DATABASE.userPreferences (UUID, signaturePDF, signatureFont) VALUES
