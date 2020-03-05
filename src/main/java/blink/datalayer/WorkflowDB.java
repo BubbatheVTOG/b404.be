@@ -31,7 +31,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow" +
+            String query = "SELECT * FROM workflow " +
                                 "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -66,7 +66,7 @@ public class WorkflowDB {
             throw new BadRequestException(bre.getMessage());
         }
         catch(Exception e){
-            throw new BadRequestException(e.getMessage());
+            throw new BadRequestException("Exception in workflow data layer.");
         }
     }
 
