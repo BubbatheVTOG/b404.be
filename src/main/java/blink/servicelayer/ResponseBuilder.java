@@ -29,8 +29,8 @@ class ResponseBuilder {
 
     /**
      * Build an error response with a custom status and message
-     * @param status - HTTP status from JAX-RS Response
-     * @param message - message to append to HTTP response
+     * @param status HTTP status from JAX-RS Response
+     * @param message Message to append to HTTP response
      * @return Response object containing custom status and message
      */
     static Response buildErrorResponse(Response.Status status, String message){

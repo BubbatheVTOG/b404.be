@@ -28,8 +28,8 @@ public class WorkflowService {
 
     /**
      * Get all workflows
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for workflows returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for workflows returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -37,7 +37,7 @@ public class WorkflowService {
     @Operation(summary = "getAllWorkflows", description = "Gets all workflows in the system")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,8 +61,8 @@ public class WorkflowService {
 
     /**
      * Get active workflows
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for active workflows returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for active workflows returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -71,7 +71,7 @@ public class WorkflowService {
     @Operation(summary = "getActiveWorkflows", description = "Gets all active workflows")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of active workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -95,8 +95,8 @@ public class WorkflowService {
 
     /**
      * Get archived workflows
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived workflows returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for archived workflows returned
      *                           401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -105,7 +105,7 @@ public class WorkflowService {
     @Operation(summary = "getArchivedWorkflows", description = "Gets all archived workflows")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of archived workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -129,9 +129,9 @@ public class WorkflowService {
 
     /**
      * Get a workflow by workflowID
-     * @param workflowID - ID of workflow to retrieve
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived workflows returned
+     * @param workflowID ID of workflow to retrieve
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for archived workflows returned
      *                           401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -140,9 +140,9 @@ public class WorkflowService {
     @Operation(summary = "getWorkflowByID", description = "Gets a specific workflow by ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
-            @ApiResponse(code = 400, message = "{error: WorkflowID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: WorkflowID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No workflow with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -171,9 +171,9 @@ public class WorkflowService {
 
     /**
      * Insert a template workflow into the database
-     * @param workflowJson - String representation of workflow json object
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     * @param workflowJson String representation of workflow json object
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -225,9 +225,9 @@ public class WorkflowService {
 
     /**
      * Insert a concrete workflow into the database
-     * @param workflowJson - String representation of workflow json object
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     * @param workflowJson String representation of workflow json object
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -278,9 +278,9 @@ public class WorkflowService {
 
     /**
      * Update an existing template workflow
-     * @param workflowJson - String representation of workflow json object
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     * @param workflowJson String representation of workflow json object
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -332,9 +332,9 @@ public class WorkflowService {
 
     /**
      * Update an existing concrete workflow
-     * @param workflowJson - String representation of workflow json object
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for workflow inserted successfully
+     * @param workflowJson String representation of workflow json object
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for workflow inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -387,9 +387,9 @@ public class WorkflowService {
     /**
      *
      * Delete a person from the database
-     * @param id - ID of workflow to delete
-     * @param jwt - JSON Web Token for authorizing request
-     * @return - HTTP Response: 200 OK for workflow deleted successfully
+     * @param id ID of workflow to delete
+     * @param jwt JSON Web Token for authorizing request
+     * @return HTTP Response: 200 OK for workflow deleted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND when no user with provided UUID exists
@@ -436,8 +436,8 @@ public class WorkflowService {
 
     /**
      * Archive a workflow
-     * @param workflowID - ID of workflow to archive
-     * @return - HTTP Response: 200 OK for workflow archived successfully
+     * @param workflowID ID of workflow to archive
+     * @return HTTP Response: 200 OK for workflow archived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -487,8 +487,8 @@ public class WorkflowService {
 
     /**
      * Unarchive a workflow
-     * @param workflowID - ID of workflow to unarchive
-     * @return - HTTP Response: 200 OK for workflow unarchived successfully
+     * @param workflowID ID of workflow to unarchive
+     * @return HTTP Response: 200 OK for workflow unarchived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint

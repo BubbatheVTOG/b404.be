@@ -33,10 +33,10 @@ public class MilestoneBusiness {
 
     /**
      * Get all milestones
-     * @param uuid - uuid of the requesting user
+     * @param uuid uuid of the requesting user
      * @return List of milestones
-     * @throws NotAuthorizedException - requester uuid was not found in the database
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotAuthorizedException requester uuid was not found in the database
+     * @throws InternalServerErrorException Error in data layer
      */
     public List<Milestone> getAllMilestones(String uuid) throws NotAuthorizedException, InternalServerErrorException {
         try{
@@ -57,7 +57,7 @@ public class MilestoneBusiness {
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -65,9 +65,9 @@ public class MilestoneBusiness {
 
     /**
      * Get all active milestones
-     * @param uuid - uuid of the requesting user
+     * @param uuid uuid of the requesting user
      * @return List of active milestones
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws InternalServerErrorException Error in data layer
      */
     public List<Milestone> getActiveMilestones(String uuid) throws InternalServerErrorException {
         try{
@@ -88,7 +88,7 @@ public class MilestoneBusiness {
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -97,7 +97,7 @@ public class MilestoneBusiness {
     /**
      * Get all archived milestones
      * @return List of archived milestones
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws InternalServerErrorException Error in data layer
      */
     public List<Milestone> getArchivedMilestones(String uuid) throws InternalServerErrorException {
         try{
@@ -118,7 +118,7 @@ public class MilestoneBusiness {
         catch(NotFoundException nfe){
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -127,13 +127,13 @@ public class MilestoneBusiness {
     /**
      * Get a milestone from the database by milestoneID
      * Also checks that a user has the credentials for retrieving this milestone
-     * @param uuid - UUID of requester
-     * @param milestoneID - milestoneID must be convertible to integer
+     * @param uuid UUID of requester
+     * @param milestoneID milestoneID must be convertible to integer
      * @return Milestone object with matching id
-     * @throws NotAuthorizedException - Requester is either not internal or not part of the relevant company
-     * @throws NotFoundException - MilestoneID does not exist in database
-     * @throws BadRequestException - MilestoneID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotAuthorizedException Requester is either not internal or not part of the relevant company
+     * @throws NotFoundException MilestoneID does not exist in database
+     * @throws BadRequestException MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         Milestone milestone = this.getMilestoneByID(milestoneID);
@@ -154,11 +154,11 @@ public class MilestoneBusiness {
 
     /**
      * Get a milestone from the database by milestoneID
-     * @param id - milestoneID must be convertible to integer
+     * @param id MilestoneID must be convertible to integer
      * @return Milestone object with matching id
-     * @throws NotFoundException - MilestoneID does not exist in database
-     * @throws BadRequestException - MilestoneID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotFoundException MilestoneID does not exist in database
+     * @throws BadRequestException MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     Milestone getMilestoneByID(String id) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -182,7 +182,7 @@ public class MilestoneBusiness {
         catch(NumberFormatException nfe){
             throw new BadRequestException("Milestone ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -190,15 +190,15 @@ public class MilestoneBusiness {
 
     /**
      * Insert a new milestone
-     * @param name - Name for the new milestone
-     * @param description - Description for the new milestone
-     * @param startDate - Start date for the new milestone
-     * @param deliveryDate - Delivery date for the new milestone
-     * @param companyID - Company ID of company to assign milestone to
+     * @param name Name for the new milestone
+     * @param description Description for the new milestone
+     * @param startDate Start date for the new milestone
+     * @param deliveryDate Delivery date for the new milestone
+     * @param companyID Company ID of company to assign milestone to
      * @return Inserted Milestone object
-     * @throws NotFoundException - companyID does not exist in the database
-     * @throws BadRequestException - One of the parameters was not in the expected format
-     * @throws InternalServerErrorException - Error in the data layer
+     * @throws NotFoundException companyID does not exist in the database
+     * @throws BadRequestException One of the parameters was not in the expected format
+     * @throws InternalServerErrorException Error in the data layer
      */
     public Milestone insertMilestone(String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -222,7 +222,7 @@ public class MilestoneBusiness {
         catch(NumberFormatException nfe){
             throw new BadRequestException("Company ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -230,15 +230,15 @@ public class MilestoneBusiness {
 
     /**
      * Update an existing milestone
-     * @param name - Updated name for the milestone; cannot be null
-     * @param description - Updated description for the new milestone; can be null
-     * @param startDate - Updated start date for the new milestone; can be null
-     * @param deliveryDate - Updated delivery date for the new milestone; can be null
-     * @param companyID - Updated company ID of company to assign milestone to; can be null
+     * @param name Updated name for the milestone; cannot be null
+     * @param description Updated description for the new milestone; can be null
+     * @param startDate Updated start date for the new milestone; can be null
+     * @param deliveryDate Updated delivery date for the new milestone; can be null
+     * @param companyID Updated company ID of company to assign milestone to; can be null
      * @return Updated Milestone object
-     * @throws NotFoundException - companyID does not exist in the database
-     * @throws BadRequestException - One of the parameters was not in the expected format
-     * @throws InternalServerErrorException - Error in the data layer
+     * @throws NotFoundException companyID does not exist in the database
+     * @throws BadRequestException One of the parameters was not in the expected format
+     * @throws InternalServerErrorException Error in the data layer
      */
     public Milestone updateMilestone(String milestoneID, String name, String description, String startDate, String deliveryDate, String companyID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -288,7 +288,7 @@ public class MilestoneBusiness {
         catch (NumberFormatException nfe) {
             throw new BadRequestException("Company ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -296,11 +296,11 @@ public class MilestoneBusiness {
 
     /**
      * Archive or unarchive an existing milestone
-     * @param milestoneID - ID of milestone to archive
+     * @param milestoneID ID of milestone to archive
      * @return Success string
-     * @throws NotFoundException - Milestone ID does not exist
-     * @throws BadRequestException - MilestoneID is formatted improperly
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotFoundException Milestone ID does not exist
+     * @throws BadRequestException MilestoneID is formatted improperly
+     * @throws InternalServerErrorException Error in data layer
      */
     private String updateMilestoneArchiveStatus(String milestoneID, boolean status) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -313,7 +313,7 @@ public class MilestoneBusiness {
             //Reaching this indicates no issues have been met and a success message can be returned
             return (status) ? "Successfully archived milestone." : "Successfully unarchived milestone.";
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -321,7 +321,7 @@ public class MilestoneBusiness {
 
     /**
      * Wrapper function of updateMilestoneArchiveStatus to archive a milestone
-     * @param milestoneID - ID of milestone to archive
+     * @param milestoneID ID of milestone to archive
      * @return Success string
      */
     public String archiveMilestone(String milestoneID){
@@ -330,7 +330,7 @@ public class MilestoneBusiness {
 
     /**
      * Wrapper function of updateMilestoneArchiveStatus to unarchive a milestone
-     * @param milestoneID - ID of milestone to archive
+     * @param milestoneID ID of milestone to archive
      * @return Success string
      */
     public String unarchiveMilestone(String milestoneID){
@@ -339,11 +339,11 @@ public class MilestoneBusiness {
 
     /**
      * Delete a person from the database by UUID
-     * @param milestoneID - ID of milestone to delete
+     * @param milestoneID ID of milestone to delete
      * @return Success string
-     * @throws NotFoundException - UUID does not exist in database
-     * @throws BadRequestException - UUID was either null or invalid integer
-     * @throws InternalServerErrorException - Error in data layer
+     * @throws NotFoundException UUID does not exist in database
+     * @throws BadRequestException UUID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
      */
     public String deleteMilestoneByID(String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
@@ -366,7 +366,7 @@ public class MilestoneBusiness {
         catch(NumberFormatException nfe){
             throw new BadRequestException("Milestone ID must be a valid integer");
         }
-        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -374,7 +374,7 @@ public class MilestoneBusiness {
 
     /**
      * Utility for parsing date objects and detecting that format is valid
-     * @param dateString - String of date; must be in format 'YYYY-MM-DD'
+     * @param dateString String of date; must be in format 'YYYY-MM-DD'
      * @return Date object
      * @throws BadRequestException if date in invalid format
      */

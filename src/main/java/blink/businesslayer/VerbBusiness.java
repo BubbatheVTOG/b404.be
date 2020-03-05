@@ -16,7 +16,7 @@ public class VerbBusiness {
 
     /**
      * Uses data layer to get all verbs from the database
-     * @throws InternalServerErrorException - error in the data layer
+     * @throws InternalServerErrorException Error in the data layer
      * @return Generic list of verbs
      */
     public List<Verb> getAllVerbs(){
