@@ -123,18 +123,16 @@ public class StepBusiness {
 
     /**
      * Convert jsonToStepList so backend can use it
-     * @param jsonObject which is the top level object containing workflowID and children[]
+     * @param jsonObject which is the top level object containing workflowID and children
      * @return ArrayList<Step>
      */
     public List<Step> jsonToStepList(JsonObject jsonObject, int workflowID) {
-        Collection<Step> stepCollection = null;
+        Collection<Step> stepCollection;
 
         Gson gson = new GsonBuilder().serializeNulls().create();
         stepCollection = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
 
-        List<Step> steps = insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
-
-        return steps;
+        return insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
     }
 
     /**
