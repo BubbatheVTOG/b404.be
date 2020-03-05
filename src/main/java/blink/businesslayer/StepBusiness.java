@@ -41,8 +41,8 @@ public class StepBusiness {
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Null Pointer in step business layer.");
+        catch(Exception npe){
+            throw new BadRequestException("Exception in step business layer.");
         }
     }
 

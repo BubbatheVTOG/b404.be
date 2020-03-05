@@ -61,8 +61,8 @@ public class WorkflowDB {
                 }
             }
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Null Pointer in workflow data layer.");
+        catch(Exception npe){
+            throw new BadRequestException("Exception in workflow data layer.");
         }
     }
 

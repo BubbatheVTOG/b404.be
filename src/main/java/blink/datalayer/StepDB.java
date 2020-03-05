@@ -63,8 +63,8 @@ public class StepDB {
                 }
             }
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Null Pointer in step data layer.");
+        catch(Exception npe){
+            throw new BadRequestException("Exception in step data layer.");
         }
     }
 
