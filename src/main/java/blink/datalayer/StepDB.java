@@ -32,7 +32,9 @@ public class StepDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM step WHERE parentStepID = 0 AND workflowID = ? ORDER BY step.orderNumber;";
+            String query = "SELECT * FROM step " +
+                                "WHERE parentStepID IS NULL " +
+                                "AND workflowID = ? ORDER BY step.orderNumber;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 //Execute query
@@ -78,7 +80,9 @@ public class StepDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM step WHERE relatedStep = ? ORDER BY step.orderNumber;";
+            String query = "SELECT * FROM step " +
+                                "WHERE relatedStep = ? " +
+                                "ORDER BY step.orderNumber;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 //Set parameters and execute query
@@ -122,7 +126,8 @@ public class StepDB {
 
             int numInsertedSteps = 0;
 
-            String query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed, asynchronous) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            String query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed, asynchronous) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 int counter = 1;
@@ -199,13 +204,15 @@ public class StepDB {
             int numUpdatedSteps = 0;
 
             //Prepare sql statement
-            String query = "DELETE FROM step WHERE step.workflowID = ?;";
+            String query = "DELETE FROM step " +
+                                "WHERE step.workflowID = ?;";
 
             try (PreparedStatement deleteStatement = conn.prepareStatement(query)) {
                 deleteStatement.setInt(1, workflowID);
                 deleteStatement.executeUpdate();
 
-                query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+                query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
                 try (PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                     int counter = 1;
@@ -250,7 +257,8 @@ public class StepDB {
         try (Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "DELETE FROM step WHERE step.workflowID = ?;";
+            String query = "DELETE FROM step " +
+                                "WHERE step.workflowID = ?;";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setInt(1, workflowID);
                 return preparedStatement.executeUpdate();

@@ -126,7 +126,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID)" +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -171,9 +171,9 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow" +
+            String query = "SELECT * FROM workflow " +
                                 "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                                "WHERE workflow.archived = ?" +
+                                "WHERE workflow.archived = ? " +
                                 "AND companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -260,7 +260,8 @@ public class WorkflowDB {
      */
     public int insertWorkflow(final String name, final String description, Date createdDate, Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate) " +
+                            "VALUES (?, ?, ?, ?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -288,7 +289,8 @@ public class WorkflowDB {
      */
     public int insertWorkflow(String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, int companyID, int milestoneID) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -322,7 +324,9 @@ public class WorkflowDB {
      */
     public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, lastUpdatedDate) VALUES (?, ?, ?) WHERE workflowID = ?;";
+        String query = "INSERT INTO workflow (name, description, lastUpdatedDate) " +
+                            "VALUES (?, ?, ?) " +
+                            "WHERE workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -351,7 +355,9 @@ public class WorkflowDB {
      */
     public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, int companyID) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate, companyID) VALUES (?, ?, ?, ?, ?, ?, ?) WHERE workflowID = ?;";
+        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate, companyID) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+                            "WHERE workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -378,7 +384,8 @@ public class WorkflowDB {
      */
     public int deleteWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
-        String query = "DELETE FROM workflow WHERE workflow.workflowID = ?;";
+        String query = "DELETE FROM workflow " +
+                            "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -397,7 +404,8 @@ public class WorkflowDB {
      */
     public void updateWorkflowArchiveStatus(final int workflowID, boolean archiveStatus) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE workflow SET archived = ? WHERE workflowID = ?;";
+        String query = "UPDATE workflow SET archived = ? " +
+                            "WHERE workflowID = ?;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
