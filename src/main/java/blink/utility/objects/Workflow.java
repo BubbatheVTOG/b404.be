@@ -1,5 +1,6 @@
 package blink.utility.objects;
 
+import javax.ws.rs.BadRequestException;
 import java.util.Date;
 import java.util.List;
 
@@ -124,20 +125,25 @@ public class Workflow {
     }
 
     private double calcPercentComplete() {
-        double totalSteps = 0;
-        double completeSteps = 0;
-        for(Step step : this.steps){
-            if(!step.getChildSteps().isEmpty()){
-                Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
-                totalSteps = updatedCounts[0];
-                completeSteps = updatedCounts[1];
+        try {
+            double totalSteps = 0;
+            double completeSteps = 0;
+            for (Step step : this.steps) {
+                if (!step.getChildSteps().isEmpty()) {
+                    Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
+                    totalSteps = updatedCounts[0];
+                    completeSteps = updatedCounts[1];
+                }
+                if (step.getCompleted()) {
+                    completeSteps++;
+                }
+                totalSteps++;
             }
-            if(step.getCompleted()){
-                completeSteps++;
-            }
-            totalSteps++;
+            return (totalSteps == 0) ? 1 : (completeSteps / totalSteps);
         }
-        return (totalSteps == 0) ? 1 : (completeSteps / totalSteps);
+        catch(Exception e){
+            throw new BadRequestException("Error in percent complete calculation");
+        }
     }
 
     private Double[] calcPercentComplete(List<Step> steps, Double totalSteps, Double completeSteps) {
