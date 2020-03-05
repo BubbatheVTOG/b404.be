@@ -11,6 +11,7 @@ import javax.ws.rs.NotAuthorizedException;
 import blink.utility.objects.Person;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -24,13 +25,13 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Api(value = "/login")
 public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson = new Gson();
+    private Gson gson =  new GsonBuilder().serializeNulls().create();
 
     /**
      * Checks that a persons username and password match values stored in database
-     * @param username - username from POST request body
-     * @param password - password from POST request body
-     * @return - HTTP Response: 200 OK for accepted login
+     * @param username Username from POST request body
+     * @param password Password from POST request body
+     * @return HTTP Response: 200 OK for accepted login
      *                         400 BAD REQUEST for invalid username or password syntax
      *                         401 UNAUTHORIZED for non-existent username or incorrect password for user
      *                         500 INTERNAL SERVER ERROR for backend error
@@ -51,7 +52,7 @@ public class LoginService {
             //Send parameters to business layer and store response
             Person person = personBusiness.login(username, password);
 
-            String jwt = JWTUtility.generateToken(person.getUUID());
+            String jwt = JWTUtility.generateToken(person.getUuid());
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person), jwt);

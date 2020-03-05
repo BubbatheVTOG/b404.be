@@ -52,13 +52,13 @@ DROP TABLE IF EXISTS `step`;
 CREATE TABLE `step` (
   `stepID` int(11) NOT NULL AUTO_INCREMENT,
   `orderNumber` int(11) NOT NULL,
-  `isHighestLevel` boolean NOT NULL,
   `description` varchar(60) DEFAULT NULL,
   `parentStepID` int(11) DEFAULT NULL,
   `UUID` char(36) DEFAULT NULL,
-  `verbID` int(11) NOT NULL,
-  `fileID` int(11) NOT NULL,
+  `verbID` int(11) DEFAULT NULL,
+  `fileID` int(11) DEFAULT NULL,
   `workflowID` int(11) NOT NULL,
+  `asynchronous` boolean NOT NULL DEFAULT 0,
   `completed` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`stepID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -165,20 +165,20 @@ INSERT INTO DB_DATABASE.company (companyID, name) VALUES
   (4, "Sample Company 2");
 
 INSERT INTO DB_DATABASE.milestone (milestoneID, name, description, createdDate, startDate, deliveryDate, lastUpdatedDate, completedDate, archived, companyID) VALUES
-  (1, "C6 Milestone", "This is a sample C6 milestone.", "2019-01-01", "2019-01-01", "2019-06-01", "2019-06-01", "2019-06-01", 1, 2),   -- Completed milestone
-  (2, "C1 Milestone", "This is a sample C1 milestone.", "2019-05-01", "2019-05-01", "2019-10-01", "2019-09-01", null, 0, 1),           -- In progress milestone
-  (3, "C2 Milestone", "This is a sample C2 milestone.", "2019-05-01", "2019-10-01", "2019-12-01", "2019-05-01", null, 0, 1);           -- Newly created milestone
+  (1, "C6 Milestone", "This is a sample C6 milestone.", "2019-01-01", "2019-01-01", "2019-06-01", "2019-06-01", "2019-06-01", 1, 2),   /* Completed milestone */
+  (2, "C1 Milestone", "This is a sample C1 milestone.", "2019-05-01", "2019-05-01", "2019-10-01", "2019-09-01", null, 0, 1),           /* In progress milestone */
+  (3, "C2 Milestone", "This is a sample C2 milestone.", "2019-05-01", "2019-10-01", "2019-12-01", "2019-05-01", null, 0, 1);           /* Newly created milestone */
 
 INSERT INTO DB_DATABASE.workflow (workflowID, name, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID) VALUES
-  (1, "Template Workflow", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01",      0, null),   -- Template Workflow with steps
-  (2, "Milestone 1 Workflow 1", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01", 1, 1),      -- Completed workflow to milestone 1
-  (3, "Milestone 1 Workflow 2", "2019-01-01", "2019-04-01", "2019-02-01", "2019-04-01", "2019-04-01", 1, 1),      -- Completed workflow to milestone 1
-  (4, "Milestone 1 Workflow 3", "2019-01-01", "2019-06-01", "2019-02-01", "2019-06-01", "2019-06-01", 1, 1),      -- Completed workflow to milestone 1
-  (5, "Milestone 2 Workflow 1", "2019-05-01", "2019-10-01", "2019-05-01", "2019-10-01", "2019-10-01", 0, 2),      -- Completed workflow to milestone 2
-  (6, "Milestone 2 Workflow 2", "2019-05-01", "2020-02-01", "2020-03-01", "2020-06-01", null,         0, 2),      -- In progress workflow to milestone 2
-  (7, "Milestone 2 Workflow 3", "2020-01-01", "2020-01-01", "2020-06-01", "2020-08-01", null,         0, 2),      -- Not Started workflow to milestone 2
-  (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null,         0, 3),      -- Not started workflow to milestone 3
-  (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3);      -- Not started workflow to milestone 3
+  (1, "Template Workflow", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01",      0, null),   /* Template Workflow with steps */
+  (2, "Milestone 1 Workflow 1", "2019-01-01", "2019-02-01", "2019-01-01", "2019-02-01", "2019-02-01", 1, 1),      /* Completed workflow to milestone 1 */
+  (3, "Milestone 1 Workflow 2", "2019-01-01", "2019-04-01", "2019-02-01", "2019-04-01", "2019-04-01", 1, 1),      /* Completed workflow to milestone 1 */
+  (4, "Milestone 1 Workflow 3", "2019-01-01", "2019-06-01", "2019-02-01", "2019-06-01", "2019-06-01", 1, 1),      /* Completed workflow to milestone 1 */
+  (5, "Milestone 2 Workflow 1", "2019-05-01", "2019-10-01", "2019-05-01", "2019-10-01", "2019-10-01", 0, 2),      /* Completed workflow to milestone 2 */
+  (6, "Milestone 2 Workflow 2", "2019-05-01", "2020-02-01", "2020-03-01", "2020-06-01", null,         0, 2),      /* In progress workflow to milestone 2 */
+  (7, "Milestone 2 Workflow 3", "2020-01-01", "2020-01-01", "2020-06-01", "2020-08-01", null,         0, 2),      /* Not Started workflow to milestone 2 */
+  (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null,         0, 3),      /* Not started workflow to milestone 3 */
+  (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3);      /* Not started workflow to milestone 3 */
 
 INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES
   ("c5877b03-ac76-4e71-9a88-1c2d9122d474", "admin", "d0c010cb69151b85bfd3f8b97cd87e336392efdd4b01d3d3c0bdb44e47c02729d51ce46348a98e23364dcf278df7090c35f944e43748f9f2691e252456b69816", "a760a131668ad5883b50e5b78aa53b27", "The", "Admin", "Admin@boss.com", "ADMIN", 1),
@@ -190,15 +190,15 @@ INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName
   ("26c3edd3-f653-4843-b491-18e0e0a937c1", "provider", "7dc1789ae1653cc5f3fc6b0e46d541c9fedc453fedd60bcd7abeb429c064de310f7ff91a2f2b8232422b97907e8d7dfe0758e60bfd4b3586fbd3b646cb63ab2a", "3f61b476bae6b35f9031e03f3279d4da", "Random", "Provider", "Provider@rit.edu", "Third-Party Provider", 5);
 
 INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
-  ("164e2c50-c280-459e-800c-7168e75f4fe3", 1), -- Director to all companies
+  ("164e2c50-c280-459e-800c-7168e75f4fe3", 1), /* Director to all companies */
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 2),
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 3),
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 4),
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 1), -- Coach to venture_creations and RIT
+  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 1), /* Coach to venture_creations and RIT */
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 2),
-  ("20809d5b-7989-4e48-bdde-74033e2f2672", 3), -- Customer1 to Sample Company1
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), -- Customer2 to Sample Company1
-  ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); -- Customer3 to Sample Company2
+  ("20809d5b-7989-4e48-bdde-74033e2f2672", 3), /* Customer1 to Sample Company1 */
+  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), /* Customer2 to Sample Company1 */
+  ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
 INSERT INTO DB_DATABASE.file (fileID, name, file, stepID) VALUES
   (1, "Document.docx", null, null),
@@ -211,13 +211,13 @@ INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (3, "Send", "Complete"),
   (4, "Send", "Fill out");
 
-INSERT INTO DB_DATABASE.step (stepID, orderNumber, isHighestLevel, description, parentStepID, UUID, verbID, fileID, workflowID) VALUES
-  (1, 1, 1, "This is a higher level step.", null, null, 1, 1, 1),
-  (2, 2, 1, "This is a higher level step.", null, null, 3, 2, 1),
-  (3, 1, 0, "This is a second level step.", 2,    null, 2, 2, 1),
-  (4, 1, 0, "This is a third level step.",  3,    null, 2, 2, 1),
-  (5, 2, 0, "This is a third level step.",  3,    null, 2, 2, 1),
-  (6, 2, 0, "This is a second level step.", 2,    null, 2, 2, 1);
+INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, asynchronous, completed) VALUES
+  (1, 1, "This is a higher level step.", null, null, 1, 1, 1, 0, 0),
+  (2, 2, "This is a higher level step.", null, null, 3, 2, 1, 0, 0),
+  (3, 1, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0),
+  (4, 1, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
+  (5, 2, "This is a third level step.",  3,    null, 2, 2, 1, 0, 0),
+  (6, 2, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0);
 
 INSERT INTO DB_DATABASE.userPreferences (UUID, signaturePDF, signatureFont) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", null, "Arial"),

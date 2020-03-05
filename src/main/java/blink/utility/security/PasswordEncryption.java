@@ -21,10 +21,10 @@ public class PasswordEncryption {
 
     /**
      * Hashes a password given a plain text password and salt
-     * @param password - password to hash
-     * @param salt - salt to increase hashing algorithm complexity
+     * @param password password to hash
+     * @param salt salt to increase hashing algorithm complexity
      * @return Hexidecimal string of hashed password
-     * @throws ArithmeticException - General exception for handling errors with retrieving hash algorithm or key spec errors
+     * @throws ArithmeticException General exception for handling errors with retrieving hash algorithm or key spec errors
      */
     public static String hash(String password, String salt) throws ArithmeticException {
         try {
@@ -44,7 +44,7 @@ public class PasswordEncryption {
     /**
      * Responsible for generating a continuously unique salt for password hashing
      * @return Hexidecimal string of the salt
-     * @throws ArithmeticException - algorithm for randomizing salt was not found
+     * @throws ArithmeticException algorithm for randomizing salt was not found
      */
     public static String getSalt() throws ArithmeticException {
         try {

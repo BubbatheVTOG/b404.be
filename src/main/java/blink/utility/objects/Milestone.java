@@ -1,7 +1,5 @@
 package blink.utility.objects;
 
-import com.google.gson.Gson;
-
 import java.util.Date;
 
 public class Milestone {
@@ -14,22 +12,21 @@ public class Milestone {
     private Date deliveryDate;
     private Date completedDate;
     private boolean archived;
-    private int companyID;
-    private  transient Gson gson;
+    private Company company;
 
     /**
      * Construct a milestone and provide all information necessary
-     * @param mileStoneID - ID for the milestone
-     * @param name - name for the workflow
-     * @param description - general description for the workflow
-     * @param createdDate - date workflow was created
-     * @param lastUpdatedDate - date workflow was updated last
-     * @param deliveryDate - date workflow is scheduled for delivery
-     * @param completedDate - date workflow was completed
-     * @param archived - whether the workflow is archived or not
-     * @param companyID - company that the workflow is assigned to
+     * @param mileStoneID ID for the milestone
+     * @param name name for the workflow
+     * @param description general description for the workflow
+     * @param createdDate date workflow was created
+     * @param lastUpdatedDate date workflow was updated last
+     * @param deliveryDate date workflow is scheduled for delivery
+     * @param completedDate date workflow was completed
+     * @param archived whether the workflow is archived or not
+     * @param company company that the workflow is assigned to
      */
-    public Milestone(int mileStoneID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, int companyID) {
+    public Milestone(int mileStoneID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, Company company) {
         this.mileStoneID = mileStoneID;
         this.name = name;
         this.description = description;
@@ -39,20 +36,16 @@ public class Milestone {
         this.deliveryDate = deliveryDate;
         this.completedDate = completedDate;
         this.archived = archived;
-        this.companyID = companyID;
-
-        this.gson = new Gson();
+        this.company = company;
     }
 
-    public Milestone(int mileStoneID, String name, String description, Date startDate, Date deliveryDate, int companyID) {
+    public Milestone(int mileStoneID, String name, String description, Date startDate, Date deliveryDate, Company company) {
         this.mileStoneID = mileStoneID;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.deliveryDate = deliveryDate;
-        this.companyID = companyID;
-
-        this.gson = new Gson();
+        this.company = company;
     }
 
     public int getMileStoneID() {
@@ -131,11 +124,11 @@ public class Milestone {
         this.archived = archived;
     }
 
-    public int getCompanyID() {
-        return companyID;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setCompanyID(int companyID) {
-        this.companyID = companyID;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }

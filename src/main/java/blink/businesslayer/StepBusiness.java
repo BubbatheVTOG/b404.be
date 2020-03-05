@@ -2,11 +2,13 @@ package blink.businesslayer;
 
 import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
+import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,9 +23,9 @@ public class StepBusiness {
 
     /**
      * Gets higher level steps from the database
-     * @param workflowID - workflowID of steps to retrieve from database
+     * @param workflowID WorkflowID of steps to retrieve from database
      * @return Step objects containing data from the database
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public List<Step> getSteps(String workflowID) {
         try {
@@ -41,9 +43,9 @@ public class StepBusiness {
 
     /**
      * Get related steps from higher level step
-     * @param step - higher level step to retrieve stepID from
-     * @return array of steps containing related steps
-     * @throws InternalServerErrorException - Error connecting to database or executing query
+     * @param step Higher level step to retrieve stepID from
+     * @return Array of steps containing related steps
+     * @throws InternalServerErrorException Error connecting to database or executing query
      */
     public List<Step> getRelatedSteps(Step step) {
         List<Step> relatedSteps;
@@ -62,11 +64,11 @@ public class StepBusiness {
     }
 
     /**
-     * Insert a list of ste[s into the database
-     * @param steps - list of steps to insert into the database
+     * Insert a list of steps into the database
+     * @param steps List of steps to insert into the database
      * @return Success Message
      */
-    public int insertSteps(List<Step> steps) {
+    int insertSteps(List<Step> steps) {
         int numInsertedSteps;
         try {
             numInsertedSteps = stepDB.insertSteps(steps);
@@ -78,11 +80,11 @@ public class StepBusiness {
 
     /**
      * Deletes existing steps by workflowID and adds updated step list
-     * @param steps - updated list of steps
-     * @param workflowID - workflowID to delete existing steps by
+     * @param steps Updated list of steps
+     * @param workflowID WorkflowID to delete existing steps by
      * @return Success Message
      */
-    public int updateSteps(List<Step> steps, String workflowID) {
+    public int updateSteps(List<Step> steps, int workflowID) {
         int numUpdatedSteps;
         try {
             numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
@@ -100,7 +102,7 @@ public class StepBusiness {
 
     /**
      * Delete steps by workflowID
-     * @param workflowID - workflowID to delete steps by
+     * @param workflowID WorkflowID to delete steps by
      * @return Success Message
      */
     public int deleteStepsByWorkflowID(String workflowID) {
@@ -115,5 +117,34 @@ public class StepBusiness {
             throw new InternalServerErrorException(ex.getMessage());
         }
         return numDeletedSteps;
+    }
+
+    public List<Step> jsonToStepList(JsonArray children, int workflowID) {
+        List<Step> steps = new ArrayList<>();
+
+        for(JsonElement jsonElement : children) {
+            JsonObject jsonArrayObject = jsonElement.getAsJsonObject();
+            Step step;
+            if(jsonArrayObject.get("children").isJsonNull()) {
+                step = new Step.StepBuilder(
+                        workflowID,
+                        jsonArrayObject.get("completed").getAsBoolean(),
+                        jsonArrayObject.get("asynchronous").getAsBoolean())
+                        .description(jsonArrayObject.get("subtitle").getAsString())
+                        .uuid(jsonArrayObject.get("uuid").getAsInt())
+                        .verbID(jsonArrayObject.get("title").getAsInt())
+                        .fileID(jsonArrayObject.get("fileID").getAsInt())
+                        .build();
+            } else {
+                step = new Step.StepBuilder(
+                        workflowID,
+                        jsonArrayObject.get("completed").getAsBoolean(),
+                        jsonArrayObject.get("asynchronous").getAsBoolean())
+                        .childSteps(jsonToStepList(jsonArrayObject.get("children").getAsJsonArray(), workflowID))
+                        .build();
+            }
+            steps.add(step);
+        }
+        return steps;
     }
 }
