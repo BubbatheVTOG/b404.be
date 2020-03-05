@@ -65,8 +65,8 @@ public class WorkflowDB {
         catch(BadRequestException bre){
             throw new BadRequestException(bre.getMessage());
         }
-        catch(Exception npe){
-            throw new BadRequestException("Exception in workflow data layer.");
+        catch(Exception e){
+            throw new BadRequestException(e.getMessage());
         }
     }
 

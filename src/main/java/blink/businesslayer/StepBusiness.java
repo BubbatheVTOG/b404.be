@@ -44,10 +44,7 @@ public class StepBusiness {
         catch(BadRequestException bre){
             throw new BadRequestException(bre.getMessage());
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Null pointer in step business layer");
-        }
-        catch(Exception npe){
+        catch(Exception e){
             throw new BadRequestException("Exception in step business layer.");
         }
     }
