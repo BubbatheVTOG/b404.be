@@ -55,6 +55,12 @@ public class MilestoneService {
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(NullPointerException npe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, "Null Pointer");
+        }
+        catch(InternalServerErrorException npe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, "Database failure");
+        }
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
@@ -89,9 +95,6 @@ public class MilestoneService {
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(NullPointerException npe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, "Null Pointer");
-        }
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
