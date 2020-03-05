@@ -20,23 +20,28 @@ public class Workflow {
     private double percentComplete;
 
     public Workflow(int workflowID, String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, boolean archived, Company company, int milestoneID, List<Step> steps) {
-        this.workflowID = workflowID;
-        this.description = description;
-        this.name = name;
-        this.createdDate = createdDate;
-        this.lastUpdatedDate = lastUpdatedDate;
-        this.startDate = startDate;
-        this.deliveryDate = deliveryDate;
-        this.completedDate = completedDate;
-        this.archived = archived;
-        this.company = company;
-        this.milestoneID = milestoneID;
-        this.steps = steps;
-        this.percentComplete = this.calcPercentComplete();
+        try{
+            this.workflowID = workflowID;
+            this.description = description;
+            this.name = name;
+            this.createdDate = createdDate;
+            this.lastUpdatedDate = lastUpdatedDate;
+            this.startDate = startDate;
+            this.deliveryDate = deliveryDate;
+            this.completedDate = completedDate;
+            this.archived = archived;
+            this.company = company;
+            this.milestoneID = milestoneID;
+            this.steps = steps;
+            this.percentComplete = this.calcPercentComplete();
 
-        //If completed and not already marked as complete, mark complete
-        if(this.percentComplete == 1 && this.completedDate == null){
-            this.completedDate = new Date();
+            //If completed and not already marked as complete, mark complete
+            if(this.percentComplete == 1 && this.completedDate == null){
+                this.completedDate = new Date();
+            }
+        }
+        catch(Exception e){
+            throw new BadRequestException("Error in Workflow construction");
         }
     }
 
@@ -125,25 +130,20 @@ public class Workflow {
     }
 
     private double calcPercentComplete() {
-        try {
-            double totalSteps = 0;
-            double completeSteps = 0;
-            for (Step step : this.steps) {
-                if (!step.getChildSteps().isEmpty()) {
-                    Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
-                    totalSteps = updatedCounts[0];
-                    completeSteps = updatedCounts[1];
-                }
-                if (step.getCompleted()) {
-                    completeSteps++;
-                }
-                totalSteps++;
+        double totalSteps = 0;
+        double completeSteps = 0;
+        for (Step step : this.steps) {
+            if (!step.getChildSteps().isEmpty()) {
+                Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
+                totalSteps = updatedCounts[0];
+                completeSteps = updatedCounts[1];
             }
-            return (totalSteps == 0) ? 1 : (completeSteps / totalSteps);
+            if (step.getCompleted()) {
+                completeSteps++;
+            }
+            totalSteps++;
         }
-        catch(Exception e){
-            throw new BadRequestException("Error in percent complete calculation");
-        }
+        return (totalSteps == 0) ? 1 : (completeSteps / totalSteps);
     }
 
     private Double[] calcPercentComplete(List<Step> steps, Double totalSteps, Double completeSteps) {
