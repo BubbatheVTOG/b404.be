@@ -4,6 +4,7 @@ import blink.businesslayer.CompanyBusiness;
 import blink.businesslayer.WorkflowBusiness;
 import blink.utility.objects.Milestone;
 
+import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +53,9 @@ public class MilestoneDB {
                     return milestoneList;
                 }
             }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Null Pointer in data layer");
         }
     }
 
