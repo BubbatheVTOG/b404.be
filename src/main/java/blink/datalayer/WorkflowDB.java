@@ -23,54 +23,6 @@ public class WorkflowDB {
     }
 
     /**
-     * Get all workflows
-     * @return List of workflow objects
-     * @throws SQLException Error connecting to database or executing query
-     */
-    public List<Workflow> getConcreteWorkflows() throws SQLException {
-        try(Connection conn = this.dbConn.connect()) {
-
-            //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-                //Set parameters and execute query
-                try (ResultSet result = preparedStatement.executeQuery()) {
-
-                    List<Workflow> workflowList = new ArrayList<>();
-                    while (result.next()) {
-                        String workflowID = result.getString("workflowID");
-                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
-                                result.getString("workflow.name"),
-                                result.getString("workflow.description"),
-                                result.getDate("workflow.createdDate"),
-                                result.getDate("workflow.lastUpdatedDate"),
-                                result.getDate("workflow.startDate"),
-                                result.getDate("workflow.deliveryDate"),
-                                result.getDate("workflow.completedDate"),
-                                result.getBoolean("workflow.archived"),
-                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(workflowID))
-                        );
-                    }
-
-                    //Return milestone
-                    return workflowList;
-                }
-            }
-        }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Error with workflow data layer null checking");
-        }
-        catch(Exception e){
-            throw new BadRequestException(e.getMessage());
-        }
-    }
-
-    /**
      * Get all workflows pertaining to a list of CompanyID's
      * @param companyIDList List of company IDs to retrieve workflows by
      * @return List of workflow objects assigned to company with companyID
@@ -92,20 +44,7 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        String workflowID = result.getString("workflowID");
-                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
-                                result.getString("workflow.name"),
-                                result.getString("workflow.description"),
-                                result.getDate("workflow.createdDate"),
-                                result.getDate("workflow.lastUpdatedDate"),
-                                result.getDate("workflow.startDate"),
-                                result.getDate("workflow.deliveryDate"),
-                                result.getDate("workflow.completedDate"),
-                                result.getBoolean("workflow.archived"),
-                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(workflowID))
-                        );
+                        workflowList.add(this.parseWorkflow(result);
                     }
 
                     //Return workflow
@@ -146,6 +85,54 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 null,
                                 0,
+                                this.stepBusiness.getSteps(workflowID))
+                        );
+                    }
+
+                    //Return milestone
+                    return workflowList;
+                }
+            }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Error with workflow data layer null checking");
+        }
+        catch(Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    /**
+     * Get all workflows
+     * @return List of workflow objects
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Workflow> getConcreteWorkflows() throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = "SELECT * FROM workflow " +
+                    "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+                    while (result.next()) {
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
+                                result.getString("workflow.name"),
+                                result.getString("workflow.description"),
+                                result.getDate("workflow.createdDate"),
+                                result.getDate("workflow.lastUpdatedDate"),
+                                result.getDate("workflow.startDate"),
+                                result.getDate("workflow.deliveryDate"),
+                                result.getDate("workflow.completedDate"),
+                                result.getBoolean("workflow.archived"),
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(workflowID))
                         );
                     }
@@ -463,5 +450,22 @@ public class WorkflowDB {
 
             preparedStatement.executeUpdate();
         }
+    }
+
+    private Workflow parseWorkflow(ResultSet result) throws SQLException{
+        String workflowID = result.getString("workflowID");
+        return new Workflow(Integer.parseInt(workflowID),
+                result.getString("workflow.name"),
+                result.getString("workflow.description"),
+                result.getDate("workflow.createdDate"),
+                result.getDate("workflow.lastUpdatedDate"),
+                result.getDate("workflow.startDate"),
+                result.getDate("workflow.deliveryDate"),
+                result.getDate("workflow.completedDate"),
+                result.getBoolean("workflow.archived"),
+                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                this.stepBusiness.getSteps(workflowID))
+        );
     }
 }
