@@ -77,7 +77,7 @@ public class WorkflowBusiness {
             //Ensure requester still exists
             personBusiness.getPersonByUUID(uuid);
 
-            return this.workflowDB.getAllTemplateWorkflows();
+            return this.workflowDB.getTemplateWorkflows();
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
         catch(NotFoundException nfe){

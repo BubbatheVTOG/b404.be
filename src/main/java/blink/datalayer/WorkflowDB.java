@@ -6,6 +6,7 @@ import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getAllTemplateWorkflows() throws SQLException {
+    public List<Workflow> getTemplateWorkflows() throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -393,7 +394,7 @@ public class WorkflowDB {
                     this.stepBusiness.getSteps(workflowID)
             );
         }catch(Exception e){
-            throw new BadRequestException(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 }

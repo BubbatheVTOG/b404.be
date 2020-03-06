@@ -93,7 +93,7 @@ public class WorkflowService {
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
 

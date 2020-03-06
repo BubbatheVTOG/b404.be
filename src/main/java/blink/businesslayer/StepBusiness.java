@@ -110,9 +110,7 @@ public class StepBusiness {
     public int deleteStepsByWorkflowID(String workflowID) {
         int numDeletedSteps = 0;
         try {
-            if(stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID)) <= 0) {
-                throw new NotFoundException("No records with that workflowID exist.");
-            }
+            stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID));
         } catch (NumberFormatException ex) {
             throw new BadRequestException(WORKFLOWID_ERROR);
         } catch (SQLException ex) {
