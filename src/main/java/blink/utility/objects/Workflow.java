@@ -124,35 +124,27 @@ public class Workflow {
     }
 
     private double calcPercentComplete() {
-        double totalSteps = 0;
-        double completeSteps = 0;
-        for (Step step : this.steps) {
-            if (!step.getChildSteps().isEmpty()) {
-                Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
-                totalSteps = updatedCounts[0];
-                completeSteps = updatedCounts[1];
-            }
-            if (step.getCompleted()) {
-                completeSteps++;
-            }
-            totalSteps++;
-        }
-        return (totalSteps == 0) ? 1 : (completeSteps / totalSteps);
+        int[] counts = this.calcPercentComplete(this.steps, 0, 0);
+        int totalSteps = counts[0];
+        int completeSteps = counts[1];
+        return (totalSteps == 0) ? 1 : ((double)completeSteps / (double)totalSteps);
     }
 
-    private Double[] calcPercentComplete(List<Step> steps, Double totalSteps, Double completeSteps) {
+    private int[] calcPercentComplete(List<Step> steps, int totalSteps, int completeSteps) {
         for(Step step : steps){
             if(!step.getChildSteps().isEmpty()){
-                Double[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
+                int[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
                 totalSteps = updatedCounts[0];
                 completeSteps = updatedCounts[1];
             }
-            if(step.getCompleted()){
-                completeSteps++;
+            else {
+                if (step.getCompleted()) {
+                    completeSteps++;
+                }
+                totalSteps++;
             }
-            totalSteps++;
         }
-        return new Double[] {totalSteps, completeSteps};
+        return new int[] {totalSteps, completeSteps};
     }
 
     public Company getCompany() {
