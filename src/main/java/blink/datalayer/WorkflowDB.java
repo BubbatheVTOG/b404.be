@@ -27,7 +27,7 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getAllWorkflows() throws SQLException {
+    public List<Workflow> getConcreteWorkflows() throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -124,7 +124,7 @@ public class WorkflowDB {
      * @return List of workflow objects assigned to company with companyID
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getAllWorkflows(List<Integer> companyIDList) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(List<Integer> companyIDList) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -169,12 +169,12 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getAllWorkflows(boolean archived) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -195,8 +195,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(workflowID))
                         );
                     }
@@ -215,12 +215,12 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getAllWorkflows(List<Integer> companyIDList, boolean archived) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(List<Integer> companyIDList, boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE workflow.archived = ? " +
                                 "AND companyID IN ?;";
 
@@ -243,8 +243,8 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getInt("workflow.milestoneID"),
                                 this.stepBusiness.getSteps(workflowID))
                         );
                     }
@@ -265,7 +265,7 @@ public class WorkflowDB {
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
         String query = "SELECT * FROM workflow " +
-                            "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                            "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                             "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();

@@ -48,11 +48,11 @@ public class WorkflowBusiness {
 
             List<Workflow> workflowList = new ArrayList<>();
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                workflowList = workflowDB.getAllWorkflows();
+                workflowList = workflowDB.getConcreteWorkflows();
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
+                workflowList.addAll(workflowDB.getConcreteWorkflows(companyIDList));
             }
 
             return workflowList;
@@ -101,11 +101,11 @@ public class WorkflowBusiness {
 
             List<Workflow> workflowList = new ArrayList<>();
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                workflowList = workflowDB.getAllWorkflows(archived);
+                workflowList = workflowDB.getConcreteWorkflows(archived);
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                workflowList.addAll(workflowDB.getAllWorkflows(companyIDList, archived));
+                workflowList.addAll(workflowDB.getConcreteWorkflows(companyIDList, archived));
             }
 
             return workflowList;
@@ -121,7 +121,7 @@ public class WorkflowBusiness {
     }
 
     /**
-     * Wrapper function of getAllWorkflows that gets all active workflows
+     * Wrapper function of getConcreteWorkflows that gets all active workflows
      * @param uuid Requester's UUID
      * @return List of all workflows relevant to the user
      */
@@ -130,7 +130,7 @@ public class WorkflowBusiness {
     }
 
     /**
-     * Wrapper function of getAllWorkflows that gets all archived workflows
+     * Wrapper function of getConcreteWorkflows that gets all archived workflows
      * @param uuid Requester's UUID
      * @return List of all workflows relevant to the user
      */

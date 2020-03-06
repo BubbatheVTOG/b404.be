@@ -35,7 +35,7 @@ public class WorkflowService {
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @GET
-    @Operation(summary = "getAllWorkflows", description = "Gets all workflows in the system")
+    @Operation(summary = "getConcreteWorkflows", description = "Gets all workflows in the system")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
