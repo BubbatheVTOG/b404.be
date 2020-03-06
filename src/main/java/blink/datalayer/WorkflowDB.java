@@ -42,7 +42,7 @@ public class WorkflowDB {
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
                         String workflowID = result.getString("workflowID");
-                        workflowList.add(new Workflow(workflowID == null ? 0 : Integer.parseInt(workflowID),
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -53,7 +53,7 @@ public class WorkflowDB {
                                 result.getBoolean("workflow.archived"),
                                 result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
                                 result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
-                                workflowID == null ? null : this.stepBusiness.getSteps(workflowID))
+                                this.stepBusiness.getSteps(workflowID))
                         );
                     }
 
@@ -81,7 +81,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -92,8 +92,8 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        int workflowID = result.getInt("workflowID");
-                        workflowList.add(new Workflow(workflowID,
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -102,9 +102,9 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.stepBusiness.getSteps(workflowID))
                         );
                     }
 
@@ -126,7 +126,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -137,8 +137,8 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        int workflowID = result.getInt("workflowID");
-                        workflowList.add(new Workflow(result.getInt("workflowID"),
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -147,9 +147,9 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.stepBusiness.getSteps(workflowID))
                         );
                     }
 
@@ -172,7 +172,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE workflow.archived = ? " +
                                 "AND companyID IN ?;";
 
@@ -185,8 +185,8 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        int workflowID = result.getInt("workflowID");
-                        workflowList.add(new Workflow(workflowID,
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
                                 result.getString("workflow.name"),
                                 result.getString("workflow.description"),
                                 result.getDate("workflow.createdDate"),
@@ -195,9 +195,9 @@ public class WorkflowDB {
                                 result.getDate("workflow.deliveryDate"),
                                 result.getDate("workflow.completedDate"),
                                 result.getBoolean("workflow.archived"),
-                                this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(Integer.toString(workflowID)))
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.stepBusiness.getSteps(workflowID))
                         );
                     }
 
@@ -217,7 +217,7 @@ public class WorkflowDB {
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
         String query = "SELECT * FROM workflow " +
-                            "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                            "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                             "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
@@ -231,7 +231,7 @@ public class WorkflowDB {
                 Workflow workflow = null;
 
                 while (result.next()) {
-                    workflow = new Workflow(result.getInt("workflowID"),
+                    workflow = new Workflow(workflowID,
                             result.getString("workflow.name"),
                             result.getString("workflow.description"),
                             result.getDate("workflow.createdDate"),
@@ -240,8 +240,8 @@ public class WorkflowDB {
                             result.getDate("workflow.deliveryDate"),
                             result.getDate("workflow.completedDate"),
                             result.getBoolean("workflow.archived"),
-                            this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                            result.getInt("workflow.milestoneID"),
+                            result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                            result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
                             this.stepBusiness.getSteps(Integer.toString(workflowID))
                     );
                 }

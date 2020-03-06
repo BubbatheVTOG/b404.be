@@ -1,6 +1,5 @@
 package blink.utility.objects;
 
-import javax.ws.rs.BadRequestException;
 import java.util.Date;
 import java.util.List;
 
