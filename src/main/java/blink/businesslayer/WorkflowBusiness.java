@@ -68,6 +68,28 @@ public class WorkflowBusiness {
     }
 
     /**
+     * Get all template workflows
+     * @return List of template workflows
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public List<Workflow> getTemplateWorkflows(String uuid) throws InternalServerErrorException {
+        try{
+            //Ensure requester still exists
+            personBusiness.getPersonByUUID(uuid);
+
+            return this.workflowDB.getAllTemplateWorkflows();
+        }
+        //If requester uuid does not exist then they were deleted and should not have access anymore
+        catch(NotFoundException nfe){
+            throw new NotAuthorizedException("Requesting UUID was not found.");
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Get all workflows by archive status
      * @param uuid Uuid of the requesting user
      * @return List of active workflows

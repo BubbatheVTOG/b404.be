@@ -64,6 +64,40 @@ public class WorkflowService {
     }
 
     /**
+     * Get template workflows
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for template workflows returned
+     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/templates")
+    @GET
+    @Operation(summary = "getTemplateWorkflows", description = "Gets all template workflows")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of template workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTemplateWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            List<Workflow> workflowList = workflowBusiness.getTemplateWorkflows(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Get active workflows
      * @param jwt JSON web token for authorization
      * @return HTTP Response: 200 OK for active workflows returned
