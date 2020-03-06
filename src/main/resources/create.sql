@@ -9,22 +9,6 @@ CREATE TABLE `accessLevel` (
   PRIMARY KEY (`accessLevelID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `company`;
-CREATE TABLE `company` (
-  `companyID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) DEFAULT NULL,
-  PRIMARY KEY (`companyID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-DROP TABLE IF EXISTS `file`;
-CREATE TABLE `file` (
-  `fileID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) DEFAULT NULL,
-  `file` blob DEFAULT NULL,
-  `stepID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`fileID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 DROP TABLE IF EXISTS `person`;
 CREATE TABLE `person` (
@@ -40,11 +24,47 @@ CREATE TABLE `person` (
   PRIMARY KEY (`UUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+DROP TABLE IF EXISTS `userPreferences`;
+CREATE TABLE `userPreferences` (
+  `UUID` char(36) NOT NULL,
+  `signaturePDF` blob DEFAULT NULL,
+  `signatureFont` varchar(20) NOT NULL,
+  PRIMARY KEY (`UUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `company`;
+CREATE TABLE `company` (
+  `companyID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`companyID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 DROP TABLE IF EXISTS `personCompany`;
 CREATE TABLE `personCompany` (
  `UUID` char(36) NOT NULL,
  `companyID` int(11) NOT NULL,
  PRIMARY KEY (`UUID`,`companyID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `file`;
+CREATE TABLE `file` (
+  `fileID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  `file` blob DEFAULT NULL
+  PRIMARY KEY (`fileID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+DROP TABLE IF EXISTS `verb`;
+CREATE TABLE `verb` (
+  `verbID` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `description` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`verbID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -61,24 +81,6 @@ CREATE TABLE `step` (
   `asynchronous` boolean NOT NULL DEFAULT 0,
   `completed` boolean NOT NULL DEFAULT 0,
   PRIMARY KEY (`stepID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `userPreferences`;
-CREATE TABLE `userPreferences` (
-  `UUID` char(36) NOT NULL,
-  `signaturePDF` blob DEFAULT NULL,
-  `signatureFont` varchar(20) NOT NULL,
-  PRIMARY KEY (`UUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `verb`;
-CREATE TABLE `verb` (
-  `verbID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
-  `description` varchar(60) DEFAULT NULL,
-  PRIMARY KEY (`verbID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -112,10 +114,6 @@ CREATE TABLE `workflow` (
   `milestoneID` int(11) DEFAULT NULL,
   PRIMARY KEY (`workflowID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-ALTER TABLE `file`
-ADD CONSTRAINT `fk_file_1`
-FOREIGN KEY (`stepID`) REFERENCES `step`(`stepID`);
 
 ALTER TABLE `person`
 ADD CONSTRAINT `fk_person_1`
