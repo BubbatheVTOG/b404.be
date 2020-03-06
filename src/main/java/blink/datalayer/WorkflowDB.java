@@ -65,6 +65,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID)" +
                                 "WHERE milestoneID IS NULL;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
