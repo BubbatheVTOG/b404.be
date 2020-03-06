@@ -44,7 +44,7 @@ public class WorkflowDB {
 
                     List<Workflow> workflowList = new ArrayList<>();
                     while (result.next()) {
-                        workflowList.add(this.parseWorkflow(result);
+                        workflowList.add(this.parseWorkflow(result));
                     }
 
                     //Return workflow
