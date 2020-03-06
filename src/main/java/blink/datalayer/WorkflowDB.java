@@ -206,12 +206,6 @@ public class WorkflowDB {
                 }
             }
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Null pointer in data layer");
-        }
-        catch(SQLException sqle){
-            throw new BadRequestException(sqle.getMessage());
-        }
     }
 
     /**
