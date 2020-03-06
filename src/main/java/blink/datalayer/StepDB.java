@@ -82,7 +82,7 @@ public class StepDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM step " +
-                                "WHERE relatedStep = ? " +
+                                "WHERE parentStepID = ? " +
                                 "ORDER BY step.orderNumber;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
