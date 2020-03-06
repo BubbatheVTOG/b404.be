@@ -389,19 +389,23 @@ public class WorkflowDB {
     }
 
     private Workflow parseWorkflow(ResultSet result) throws SQLException{
-        String workflowID = result.getString("workflowID");
-        return new Workflow(Integer.parseInt(workflowID),
-                result.getString("workflow.name"),
-                result.getString("workflow.description"),
-                result.getDate("workflow.createdDate"),
-                result.getDate("workflow.lastUpdatedDate"),
-                result.getDate("workflow.startDate"),
-                result.getDate("workflow.deliveryDate"),
-                result.getDate("workflow.completedDate"),
-                result.getBoolean("workflow.archived"),
-                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
-                this.stepBusiness.getSteps(workflowID)
-        );
+        try {
+            String workflowID = result.getString("workflowID");
+            return new Workflow(Integer.parseInt(workflowID),
+                    result.getString("workflow.name"),
+                    result.getString("workflow.description"),
+                    result.getDate("workflow.createdDate"),
+                    result.getDate("workflow.lastUpdatedDate"),
+                    result.getDate("workflow.startDate"),
+                    result.getDate("workflow.deliveryDate"),
+                    result.getDate("workflow.completedDate"),
+                    result.getBoolean("workflow.archived"),
+                    result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                    result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                    this.stepBusiness.getSteps(workflowID)
+            );
+        }catch(Exception e){
+            throw new BadRequestException(e.getMessage());
+        }
     }
 }
