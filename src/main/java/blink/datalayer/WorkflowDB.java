@@ -16,11 +16,18 @@ public class WorkflowDB {
     private DBConn dbConn;
     private StepBusiness stepBusiness;
     private CompanyBusiness companyBusiness;
+    private String joinStatement;
+    private String leftJoinStatement;
 
     public WorkflowDB(){
         this.dbConn = new DBConn();
         this.stepBusiness = new StepBusiness();
         this.companyBusiness = new CompanyBusiness();
+
+        this.joinStatement = "SELECT * FROM workflow " +
+                                        "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) ";
+        this.leftJoinStatement = "SELECT * FROM workflow " +
+                                    "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) ";
     }
 
     /**
@@ -33,9 +40,8 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                    "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                    "WHERE milestone.companyID IN ?;";
+            String query = this.joinStatement +
+                            "WHERE milestone.companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -64,8 +70,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID)" +
+            String query = this.joinStatement +
                                 "WHERE milestoneID IS NULL;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -94,8 +99,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                    "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID);";
+            String query = this.leftJoinStatement;
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -124,9 +128,8 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                    "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                    "WHERE workflow.archived = ?;";
+            String query = this.leftJoinStatement +
+                            "WHERE workflow.archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -157,10 +160,9 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                                "WHERE workflow.archived = ? " +
-                                "AND milestone.companyID IN ?;";
+            String query = this.leftJoinStatement +
+                            "WHERE workflow.archived = ? " +
+                            "AND milestone.companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -189,9 +191,8 @@ public class WorkflowDB {
      */
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
-        String query = "SELECT * FROM workflow " +
-                            "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                            "WHERE workflow.workflowID = ?;";
+        String query = this.joinStatement +
+                        "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {

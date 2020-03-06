@@ -48,7 +48,7 @@ public class WorkflowBusiness {
 
             List<Workflow> workflowList = new ArrayList<>();
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                workflowList = workflowDB.getConcreteWorkflows();
+                workflowList = workflowDB.getAllWorkflows();
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
