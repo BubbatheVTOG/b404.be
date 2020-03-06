@@ -40,7 +40,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.joinStatement +
+            String query = this.leftJoinStatement +
                             "WHERE milestone.companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -70,7 +70,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.joinStatement +
+            String query = this.leftJoinStatement +
                                 "WHERE milestoneID IS NULL;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -99,7 +99,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.leftJoinStatement;
+            String query = this.joinStatement;
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -128,7 +128,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.leftJoinStatement +
+            String query = this.joinStatement +
                             "WHERE workflow.archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -160,7 +160,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.leftJoinStatement +
+            String query = this.joinStatement +
                             "WHERE workflow.archived = ? " +
                             "AND milestone.companyID IN ?;";
 
@@ -191,7 +191,7 @@ public class WorkflowDB {
      */
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
-        String query = this.joinStatement +
+        String query = this.leftJoinStatement +
                         "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
