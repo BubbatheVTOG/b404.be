@@ -39,7 +39,7 @@ public class WorkflowDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.joinStatement;
+            String query = this.leftJoinStatement;
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -99,7 +99,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = this.leftJoinStatement +
-                                "WHERE milestoneID IS NULL;";
+                                "WHERE workflow.milestoneID IS NULL;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
