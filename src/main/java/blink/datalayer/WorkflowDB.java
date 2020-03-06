@@ -209,7 +209,7 @@ public class WorkflowDB {
     }
 
     /**
-     * Get all workflows based on archived or not archived
+     * Get all workflows based on archived or not archived pertaining to a set of companies
      * @param companyIDList List of company IDs to retrieve workflows by
      * @param archived Search for either archived or unarchived workflows
      * @return List of workflow objects
@@ -265,7 +265,7 @@ public class WorkflowDB {
     public Workflow getWorkflowByID(final int workflowID) throws SQLException {
         //Prepare sql statement
         String query = "SELECT * FROM workflow " +
-                            "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                            "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                             "WHERE workflow.workflowID = ?;";
 
         try (Connection conn = this.dbConn.connect();
