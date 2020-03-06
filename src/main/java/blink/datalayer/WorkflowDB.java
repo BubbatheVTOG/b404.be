@@ -124,7 +124,7 @@ public class WorkflowDB {
      * @return List of workflow objects assigned to company with companyID
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getConcreteWorkflows(List<Integer> companyIDList) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(final List<Integer> companyIDList) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -169,7 +169,7 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getConcreteWorkflows(boolean archived) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(final boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -215,7 +215,7 @@ public class WorkflowDB {
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
      */
-    public List<Workflow> getConcreteWorkflows(List<Integer> companyIDList, boolean archived) throws SQLException {
+    public List<Workflow> getConcreteWorkflows(final List<Integer> companyIDList, final boolean archived) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -335,7 +335,7 @@ public class WorkflowDB {
      * @param description description of new workflow to be added
      * @throws SQLException Error connecting to database or executing update
      */
-    public int insertWorkflow(String name, String description, Date createdDate, Date lastUpdatedDate, Date startDate, Date deliveryDate, int companyID, int milestoneID) throws SQLException {
+    public int insertWorkflow(final String name, final String description, final Date createdDate, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final int companyID, final int milestoneID) throws SQLException {
         //Prepare sql statement
         String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
@@ -370,7 +370,7 @@ public class WorkflowDB {
      * @param lastUpdatedDate The date to set the lastUpdatedDate to
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate) throws SQLException {
         //Prepare sql statement
         String query = "INSERT INTO workflow (name, description, lastUpdatedDate) " +
                             "VALUES (?, ?, ?) " +
@@ -401,7 +401,7 @@ public class WorkflowDB {
      * @param companyID The new companyID
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(int workflowID, String name, String description, Date lastUpdatedDate, Date startDate, Date deliveryDate, Date completedDate, int companyID) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, final int companyID) throws SQLException {
         //Prepare sql statement
         String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate, companyID) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?) " +
