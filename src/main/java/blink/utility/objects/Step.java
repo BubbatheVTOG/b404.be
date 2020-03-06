@@ -90,11 +90,6 @@ public class Step {
             return this;
         }
 
-        public StepBuilder expanded(boolean expanded) {
-            this.expanded = expanded;
-            return this;
-        }
-
         public StepBuilder childSteps(List<Step> childSteps) {
             this.childSteps = childSteps;
             this.expanded = !this.childSteps.isEmpty();
@@ -152,7 +147,10 @@ public class Step {
 
     public List<Step> getChildSteps() { return childSteps; }
 
-    public void setChildSteps(List<Step> childSteps) { this.childSteps = childSteps; }
+    public void setChildSteps(List<Step> childSteps) {
+        this.childSteps = childSteps;
+        this.expanded = !this.childSteps.isEmpty();
+    }
 
     public boolean hasChildren() { return !childSteps.isEmpty(); }
 
