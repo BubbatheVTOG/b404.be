@@ -97,7 +97,7 @@ public class Step {
 
         public StepBuilder childSteps(List<Step> childSteps) {
             this.childSteps = childSteps;
-            this.expanded = !(this.childSteps == null || this.childSteps.isEmpty());
+            this.expanded = !this.childSteps.isEmpty();
             return this;
         }
 
