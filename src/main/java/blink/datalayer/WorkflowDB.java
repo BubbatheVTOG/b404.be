@@ -129,7 +129,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -174,7 +174,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -220,7 +220,7 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "LEFT JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE workflow.archived = ? " +
                                 "AND companyID IN ?;";
 
