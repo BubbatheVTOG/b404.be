@@ -71,6 +71,51 @@ public class WorkflowDB {
     }
 
     /**
+     * Get all workflows pertaining to a list of CompanyID's
+     * @param companyIDList List of company IDs to retrieve workflows by
+     * @return List of workflow objects assigned to company with companyID
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Workflow> getAllWorkflows(final List<Integer> companyIDList) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = "SELECT * FROM workflow " +
+                    "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                    "WHERE milestone.companyID IN ?;";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+                    while (result.next()) {
+                        String workflowID = result.getString("workflowID");
+                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
+                                result.getString("workflow.name"),
+                                result.getString("workflow.description"),
+                                result.getDate("workflow.createdDate"),
+                                result.getDate("workflow.lastUpdatedDate"),
+                                result.getDate("workflow.startDate"),
+                                result.getDate("workflow.deliveryDate"),
+                                result.getDate("workflow.completedDate"),
+                                result.getBoolean("workflow.archived"),
+                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
+                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
+                                this.stepBusiness.getSteps(workflowID))
+                        );
+                    }
+
+                    //Return workflow
+                    return workflowList;
+                }
+            }
+        }
+    }
+
+    /**
      * Get all workflows
      * @return List of workflow objects
      * @throws SQLException Error connecting to database or executing query
@@ -84,7 +129,7 @@ public class WorkflowDB {
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-                //Set parameters and execute query
+                //Execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
@@ -119,51 +164,6 @@ public class WorkflowDB {
     }
 
     /**
-     * Get all workflows by CompanyID
-     * @param companyIDList List of company IDs to retrieve workflows by
-     * @return List of workflow objects assigned to company with companyID
-     * @throws SQLException Error connecting to database or executing query
-     */
-    public List<Workflow> getConcreteWorkflows(final List<Integer> companyIDList) throws SQLException {
-        try(Connection conn = this.dbConn.connect()) {
-
-            //Prepare sql statement
-            String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                                "WHERE companyID IN ?;";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
-
-                //Set parameters and execute query
-                try (ResultSet result = preparedStatement.executeQuery()) {
-
-                    List<Workflow> workflowList = new ArrayList<>();
-                    while (result.next()) {
-                        String workflowID = result.getString("workflowID");
-                        workflowList.add(new Workflow(Integer.parseInt(workflowID),
-                                result.getString("workflow.name"),
-                                result.getString("workflow.description"),
-                                result.getDate("workflow.createdDate"),
-                                result.getDate("workflow.lastUpdatedDate"),
-                                result.getDate("workflow.startDate"),
-                                result.getDate("workflow.deliveryDate"),
-                                result.getDate("workflow.completedDate"),
-                                result.getBoolean("workflow.archived"),
-                                result.getString("milestone.companyID") == null ? null : this.companyBusiness.getCompanyByID(result.getString("milestone.companyID")),
-                                result.getString("workflow.milestoneID") == null ? 0 : result.getInt("workflow.milestoneID"),
-                                this.stepBusiness.getSteps(workflowID))
-                        );
-                    }
-
-                    //Return workflow
-                    return workflowList;
-                }
-            }
-        }
-    }
-
-    /**
      * Get all workflows based on archived or not archived
      * @param archived Search for either archived or unarchived workflows
      * @return List of workflow objects
@@ -174,13 +174,13 @@ public class WorkflowDB {
 
             //Prepare sql statement
             String query = "SELECT * FROM workflow " +
-                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
-                                "WHERE archived = ?;";
+                    "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
+                    "WHERE workflow.archived = ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setBoolean(1, archived);
 
                 //Set parameters and execute query
+                preparedStatement.setBoolean(1, archived);
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
@@ -206,6 +206,12 @@ public class WorkflowDB {
                 }
             }
         }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Null pointer in data layer");
+        }
+        catch(SQLException sqle){
+            throw new BadRequestException(sqle.getMessage());
+        }
     }
 
     /**
@@ -222,13 +228,13 @@ public class WorkflowDB {
             String query = "SELECT * FROM workflow " +
                                 "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID) " +
                                 "WHERE workflow.archived = ? " +
-                                "AND companyID IN ?;";
+                                "AND milestone.companyID IN ?;";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setBoolean(1, archived);
-                preparedStatement.setArray(2, (java.sql.Array)companyIDList);
 
                 //Set parameters and execute query
+                preparedStatement.setBoolean(1, archived);
+                preparedStatement.setArray(2, (java.sql.Array)companyIDList);
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
@@ -273,7 +279,6 @@ public class WorkflowDB {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, workflowID);
-
             try (ResultSet result = preparedStatement.executeQuery()) {
 
                 Workflow workflow = null;

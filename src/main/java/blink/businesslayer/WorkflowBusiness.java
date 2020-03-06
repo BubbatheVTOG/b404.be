@@ -52,7 +52,7 @@ public class WorkflowBusiness {
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                workflowList.addAll(workflowDB.getConcreteWorkflows(companyIDList));
+                workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
             }
 
             return workflowList;
