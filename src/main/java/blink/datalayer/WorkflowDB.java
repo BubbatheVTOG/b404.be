@@ -31,6 +31,34 @@ public class WorkflowDB {
     }
 
     /**
+     * Get all workflows
+     * @return List of workflow objects
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Workflow> getAllWorkflows() throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = this.joinStatement;
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+                    while (result.next()) {
+                        workflowList.add(this.parseWorkflow(result));
+                    }
+
+                    //Return milestone
+                    return workflowList;
+                }
+            }
+        }
+    }
+
+    /**
      * Get all workflows pertaining to a list of CompanyID's
      * @param companyIDList List of company IDs to retrieve workflows by
      * @return List of workflow objects assigned to company with companyID
@@ -76,34 +104,6 @@ public class WorkflowDB {
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
                 //Execute query
-                try (ResultSet result = preparedStatement.executeQuery()) {
-
-                    List<Workflow> workflowList = new ArrayList<>();
-                    while (result.next()) {
-                        workflowList.add(this.parseWorkflow(result));
-                    }
-
-                    //Return milestone
-                    return workflowList;
-                }
-            }
-        }
-    }
-
-    /**
-     * Get all workflows
-     * @return List of workflow objects
-     * @throws SQLException Error connecting to database or executing query
-     */
-    public List<Workflow> getConcreteWorkflows() throws SQLException {
-        try(Connection conn = this.dbConn.connect()) {
-
-            //Prepare sql statement
-            String query = this.joinStatement;
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-                //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
