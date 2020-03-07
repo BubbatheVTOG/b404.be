@@ -366,19 +366,6 @@ public class WorkflowBusiness {
                 }
             }
 
-            Workflow updatedWorkflow = new Workflow(workflowID,
-                                                    name,
-                                                    description,
-                                                    existingWorkflow.getCreatedDate(),
-                                                    today,
-                                                    null,
-                                                    null,
-                                                    existingWorkflow.getCompletedDate(),
-                                                    existingWorkflow.isArchived(),
-                                                    null,
-                                                    0,
-                                                    steps);
-
             //Insert workflow template
             this.workflowDB.updateWorkflow(workflowID, name, description, today);
 
