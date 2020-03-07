@@ -56,7 +56,7 @@ public class StepDB {
                                 .orderNumber(result.getInt(ORDERNUMBER))
                                 .description(result.getString(DESCRIPTION))
                                 .parentStep(result.getInt(PARENTSTEPID))
-                                .uuid(result.getInt(UUID))
+                                .uuid(result.getString(UUID))
                                 .verbID(result.getInt(VERBID))
                                 .fileID(result.getInt(FILEID))
                                 .build();
@@ -101,7 +101,7 @@ public class StepDB {
                                 .orderNumber(result.getInt(ORDERNUMBER))
                                 .description(result.getString(DESCRIPTION))
                                 .parentStep(result.getInt(PARENTSTEPID))
-                                .uuid(result.getInt(UUID))
+                                .uuid(result.getString(UUID))
                                 .verbID(result.getInt(VERBID))
                                 .fileID(result.getInt(FILEID))
                                 .build();
@@ -135,7 +135,7 @@ public class StepDB {
                     preparedStatement.setInt(1, counter);
                     preparedStatement.setString(2, step.getDescription());
                     preparedStatement.setInt(3, 0);
-                    preparedStatement.setInt(4, step.getUUID());
+                    preparedStatement.setString(4, step.getUUID());
                     preparedStatement.setInt(5, step.getVerbID());
                     preparedStatement.setInt(6, step.getFileID());
                     preparedStatement.setInt(7, step.getWorkflowID());
@@ -172,7 +172,7 @@ public class StepDB {
             preparedStatement.setInt(1, counter);
             preparedStatement.setString(2, step.getDescription());
             preparedStatement.setInt(3, parentStepID);
-            preparedStatement.setInt(4, step.getUUID());
+            preparedStatement.setString(4, step.getUUID());
             preparedStatement.setInt(5, step.getVerbID());
             preparedStatement.setInt(6, step.getFileID());
             preparedStatement.setInt(7, step.getWorkflowID());
@@ -220,7 +220,7 @@ public class StepDB {
                         preparedStatement.setInt(1, counter);
                         preparedStatement.setString(2, step.getDescription());
                         preparedStatement.setInt(3, 0);
-                        preparedStatement.setInt(4, step.getUUID());
+                        preparedStatement.setString(4, step.getUUID());
                         preparedStatement.setInt(5, step.getVerbID());
                         preparedStatement.setInt(6, step.getFileID());
                         preparedStatement.setInt(7, step.getWorkflowID());
