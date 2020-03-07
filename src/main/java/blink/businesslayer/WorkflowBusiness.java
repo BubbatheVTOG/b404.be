@@ -229,7 +229,7 @@ public class WorkflowBusiness {
             if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
                 throw new BadRequestException("A workflow must contain steps");
             }
-            JsonObject stepsJson = workflowJson.getAsJsonObject("steps");
+            JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
             if(stepsJson.size() == 0){
                 throw new BadRequestException("Steps must be provided.");
             }
@@ -301,7 +301,7 @@ public class WorkflowBusiness {
             if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
                 throw new BadRequestException("A workflow must contain steps");
             }
-            JsonObject stepsJson = workflowJson.getAsJsonObject("steps");
+            JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
             if(stepsJson.size() == 0){
                 throw new BadRequestException("Steps must be provided.");
             }
@@ -360,7 +360,7 @@ public class WorkflowBusiness {
             //Ensure steps are present and not empty
             List<Step> steps = existingWorkflow.getSteps();
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                JsonObject stepsJson = workflowJson.getAsJsonObject("steps");
+                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
                 if(stepsJson.size() != 0){
                     steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
                 }
@@ -432,7 +432,7 @@ public class WorkflowBusiness {
             //Ensure steps are present and not empty
             List<Step> steps = existingWorkflow.getSteps();
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                JsonObject stepsJson = workflowJson.getAsJsonObject("steps");
+                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
                 if(stepsJson.size() != 0){
                     steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
                 }
