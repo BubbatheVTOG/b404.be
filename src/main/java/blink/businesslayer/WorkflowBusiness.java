@@ -241,7 +241,7 @@ public class WorkflowBusiness {
             List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
-            return new Workflow(workflowID, name, description, today, today, null, null, null, false, null, 0, steps);
+            return this.getWorkflowByID(Integer.toString(workflowID));
         }
         catch(JsonSyntaxException jse){
             throw new BadRequestException("Json String invalid format.");
@@ -316,7 +316,7 @@ public class WorkflowBusiness {
             List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
             this.stepBusiness.insertSteps(steps);
 
-            return new Workflow(workflowID, name, description, today, today, parsedStartDate, parsedDeliveryDate, null, false, company, milestoneIDInteger, steps);
+            return this.getWorkflowByID(Integer.toString(workflowID));
         }
         catch(JsonSyntaxException jse){
             throw new BadRequestException("Json String invalid format.");
@@ -385,7 +385,7 @@ public class WorkflowBusiness {
             //Inserted updated workflow steps
             this.stepBusiness.updateSteps(steps, workflowID);
 
-            return updatedWorkflow;
+            return this.getWorkflowByID(Integer.toString(workflowID));
         }
         catch(JsonSyntaxException jse){
             throw new BadRequestException("Json String invalid format.");
@@ -470,7 +470,7 @@ public class WorkflowBusiness {
             //Inserted updated workflow steps
             this.stepBusiness.updateSteps(steps, workflowID);
 
-            return updatedWorkflow;
+            return this.getWorkflowByID(Integer.toString(workflowID));
         }
         catch(JsonSyntaxException jse){
             throw new BadRequestException("Json String invalid format.");
