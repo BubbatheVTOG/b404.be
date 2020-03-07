@@ -210,7 +210,6 @@ public class WorkflowBusiness {
     public Workflow insertTemplateWorkflow(String workflowJsonString){
         try{
             JsonObject workflowJson = gson.fromJson(workflowJsonString, JsonObject.class);
-
             //Ensure name is present and retrieve it
             if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
                 throw new BadRequestException("A workflow name is required");
@@ -249,6 +248,9 @@ public class WorkflowBusiness {
         }
         catch(SQLException sqle){
             throw new InternalServerErrorException();
+        }
+        catch(Exception e){
+            throw new BadRequestException(workflowJsonString);
         }
     }
 
