@@ -10,7 +10,7 @@ public class Step {
     @SerializedName("subtitle")
     private String description;
     private int parentStepID;
-    private int uuid;
+    private String uuid;
     @SerializedName("title")
     private int verbID;
     private int fileID;
@@ -40,7 +40,7 @@ public class Step {
         private int orderNumber;
         private String description;
         private int parentStepID;
-        private int uuid;
+        private String uuid;
         private int verbID;
         private int fileID;
         private int workflowID;
@@ -75,7 +75,7 @@ public class Step {
             return this;
         }
 
-        public StepBuilder uuid(int uuid) {
+        public StepBuilder uuid(String uuid) {
             this.uuid = uuid;
             return this;
         }
@@ -117,9 +117,9 @@ public class Step {
 
     public void setParentStepID(int parentStepID) { this.parentStepID = parentStepID; }
 
-    public int getUUID() { return uuid; }
+    public String getUUID() { return uuid; }
 
-    public void setUUID(int uuid) { this.uuid = uuid; }
+    public void setUUID(String uuid) { this.uuid = uuid; }
 
     public int getVerbID() { return verbID; }
 

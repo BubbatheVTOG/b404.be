@@ -249,6 +249,7 @@ public class WorkflowBusiness {
         catch(SQLException sqle){
             throw new InternalServerErrorException();
         }
+        //TODO: return to InternalServerErrorException after done testing
         catch(Exception e){
             throw new BadRequestException(e.getMessage());
         }
