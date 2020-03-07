@@ -250,7 +250,7 @@ public class WorkflowBusiness {
             throw new InternalServerErrorException();
         }
         catch(Exception e){
-            throw new BadRequestException(workflowJsonString);
+            throw new BadRequestException(e.getMessage());
         }
     }
 

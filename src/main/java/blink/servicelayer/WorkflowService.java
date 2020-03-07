@@ -284,7 +284,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)      @FormParam("workflow") String workflowJson,
+    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)      String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -338,7 +338,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -392,7 +392,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true)  String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
