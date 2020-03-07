@@ -2,7 +2,6 @@ package blink.datalayer;
 
 import blink.utility.objects.Step;
 
-import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +146,7 @@ public class StepDB {
                     if (step.getParentStepID() != 0) {
                         try (ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
                             insertedKeys.next();
-                            numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
+                            numInsertedSteps += insertChildSteps(step.getChildren(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
                         }
                     }
                     counter++;
@@ -184,7 +183,7 @@ public class StepDB {
             if (step.getParentStepID() != 0) {
                 try (ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
                     insertedKeys.next();
-                    numInsertedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
+                    numInsertedSteps += insertChildSteps(step.getChildren(), preparedStatement, insertedKeys.getInt(1), numInsertedSteps);
                 }
             }
             counter++;
@@ -231,7 +230,7 @@ public class StepDB {
                         if (step.getParentStepID() != 0) {
                             try (ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
                                 insertedKeys.next();
-                                numUpdatedSteps += insertChildSteps(step.getChildSteps(), preparedStatement, insertedKeys.getInt(1), numUpdatedSteps);
+                                numUpdatedSteps += insertChildSteps(step.getChildren(), preparedStatement, insertedKeys.getInt(1), numUpdatedSteps);
                             }
                         }
                         counter++;

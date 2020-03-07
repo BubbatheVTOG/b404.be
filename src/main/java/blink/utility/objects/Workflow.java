@@ -132,8 +132,8 @@ public class Workflow {
 
     private int[] calcPercentComplete(List<Step> steps, int totalSteps, int completeSteps) {
         for(Step step : steps){
-            if(!step.getChildSteps().isEmpty()){
-                int[] updatedCounts = this.calcPercentComplete(step.getChildSteps(), totalSteps, completeSteps);
+            if(!step.getChildren().isEmpty()){
+                int[] updatedCounts = this.calcPercentComplete(step.getChildren(), totalSteps, completeSteps);
                 totalSteps = updatedCounts[0];
                 completeSteps = updatedCounts[1];
             }

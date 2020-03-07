@@ -18,7 +18,7 @@ public class Step {
     private boolean asynchronous;
     private boolean completed;
     private boolean expanded;
-    private List<Step> childSteps;
+    private List<Step> children;
 
     private Step(StepBuilder stepBuilder) {
         this.stepID = stepBuilder.stepID;
@@ -32,7 +32,7 @@ public class Step {
         this.asynchronous = stepBuilder.asynchronous;
         this.completed = stepBuilder.completed;
         this.expanded = stepBuilder.expanded;
-        this.childSteps = stepBuilder.childSteps;
+        this.children = stepBuilder.childSteps;
     }
 
     public static class StepBuilder {
@@ -145,13 +145,15 @@ public class Step {
 
     public void setAsynchronous(boolean asynchronous) { this.asynchronous = asynchronous; }
 
-    public List<Step> getChildSteps() { return childSteps; }
+    public List<Step> getChildren() { return children; }
 
-    public void setChildSteps(List<Step> childSteps) {
-        this.childSteps = childSteps;
-        this.expanded = !this.childSteps.isEmpty();
+    public void setChildren(List<Step> children) {
+        this.children = children;
+        this.expanded = this.hasChildren();
     }
 
-    public boolean hasChildren() { return !childSteps.isEmpty(); }
+    public boolean hasChildren() {
+        boolean fdsa = children == null;
+        return !(children == null || children.isEmpty()); }
 
 }

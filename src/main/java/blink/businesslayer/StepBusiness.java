@@ -3,14 +3,12 @@ package blink.businesslayer;
 import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,7 +31,7 @@ public class StepBusiness {
         try {
             List<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
             for (Step step : steps) {
-                step.setChildSteps(this.getRelatedSteps(step));
+                step.setChildren(this.getRelatedSteps(step));
             }
             return steps;
         } catch(NumberFormatException nfe) {
@@ -57,9 +55,9 @@ public class StepBusiness {
             throw new InternalServerErrorException("Problem returning related steps.");
         }
         if (relatedSteps != null) {
-            step.setChildSteps(relatedSteps);
-            for(Step relatedStep : step.getChildSteps()){
-                relatedStep.setChildSteps(this.getRelatedSteps(relatedStep));
+            step.setChildren(relatedSteps);
+            for(Step relatedStep : step.getChildren()){
+                relatedStep.setChildren(this.getRelatedSteps(relatedStep));
             }
         }
         return relatedSteps;
@@ -125,12 +123,10 @@ public class StepBusiness {
      * @return ArrayList<Step>
      */
     public List<Step> jsonToStepList(JsonArray steps, int workflowID) {
-        Collection<Step> stepCollection;
-
         Gson gson = new GsonBuilder().serializeNulls().create();
-        stepCollection = gson.fromJson(steps, new TypeToken<List<Step>>(){}.getType());
+        List<Step> stepList = Arrays.asList(gson.fromJson(steps, Step[].class));
 
-        return insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
+        return insertWorkflowID(stepList, workflowID);
     }
 
     /**
@@ -143,7 +139,7 @@ public class StepBusiness {
         for(Step step: steps) {
             step.setWorkflowID(workflowID);
             if(step.hasChildren()) {
-                insertWorkflowID(step.getChildSteps(), workflowID);
+                insertWorkflowID(step.getChildren(), workflowID);
             }
         }
         return steps;
