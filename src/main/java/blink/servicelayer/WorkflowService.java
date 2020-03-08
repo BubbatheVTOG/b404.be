@@ -417,9 +417,8 @@ public class WorkflowService {
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
-        //TODO replace this after finishing testing
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
