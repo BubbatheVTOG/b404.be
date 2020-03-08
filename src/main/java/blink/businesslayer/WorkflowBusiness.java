@@ -328,7 +328,7 @@ public class WorkflowBusiness {
 
             //If name present, retrieve it
             String name = existingWorkflow.getName();
-            if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
+            if(workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
                 name = workflowJson.get("name").getAsString();
             }
 
@@ -378,7 +378,7 @@ public class WorkflowBusiness {
 
             //If name present, retrieve it
             String name = existingWorkflow.getName();
-            if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
+            if(workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
                 name = workflowJson.get("name").getAsString();
             }
 
