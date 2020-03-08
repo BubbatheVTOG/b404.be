@@ -85,8 +85,8 @@ public class WorkflowBusiness {
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
@@ -116,8 +116,8 @@ public class WorkflowBusiness {
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
@@ -198,8 +198,8 @@ public class WorkflowBusiness {
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
@@ -244,7 +244,7 @@ public class WorkflowBusiness {
             throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException(sqle);
         }
     }
 
@@ -356,7 +356,7 @@ public class WorkflowBusiness {
             throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException(sqle);
         }
     }
 
@@ -416,7 +416,7 @@ public class WorkflowBusiness {
             throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
@@ -450,8 +450,8 @@ public class WorkflowBusiness {
             throw new BadRequestException("Workflow ID must be a valid integer");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
@@ -471,8 +471,8 @@ public class WorkflowBusiness {
             workflowDB.updateWorkflowArchiveStatus(workflow.getWorkflowID(), status);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
-        catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
