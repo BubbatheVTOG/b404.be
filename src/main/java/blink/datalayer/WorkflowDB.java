@@ -287,7 +287,7 @@ public class WorkflowDB {
                 preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
                 preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
                 preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
-                preparedStatement.setInt(8, milestoneID);
+                preparedStatement.setInt(7, milestoneID);
 
                 preparedStatement.executeUpdate();
 
