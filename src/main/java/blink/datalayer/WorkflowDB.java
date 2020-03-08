@@ -327,9 +327,9 @@ public class WorkflowDB {
      */
     public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, JsonArray steps) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, lastUpdatedDate) " +
-                            "VALUES (?, ?, ?) " +
-                            "WHERE workflowID = ?;";
+        String query = "UPDATE workflow " +
+                       "SET name = ?, description = ?, lastUpdatedDate = ? " +
+                       "WHERE workflowID = ?;";
 
         try {
             Connection conn = this.dbConn.connect();
@@ -374,9 +374,9 @@ public class WorkflowDB {
      */
     public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, JsonArray steps) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate) " +
-                            "VALUES (?, ?, ?, ?, ?, ?) " +
-                            "WHERE workflowID = ?;";
+        String query = "UPDATE workflow " +
+                       "SET name = ?, description = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, completedDate = ? " +
+                       "WHERE workflowID = ?;";
 
         try {
             Connection conn = this.dbConn.connect();
