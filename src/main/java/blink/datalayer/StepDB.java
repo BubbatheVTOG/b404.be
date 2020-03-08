@@ -194,44 +194,9 @@ public class StepDB {
      * @throws SQLException Error connecting to the database or executing update
      */
     public int updateSteps(List<Step> steps, int workflowID, Connection conn) throws SQLException {
-        int numUpdatedSteps = 0;
+        this.deleteStepsByWorkflowID(workflowID, conn);
 
-        //Prepare sql statement
-        String query = "DELETE FROM step " +
-                            "WHERE step.workflowID = ?;";
-
-        try (PreparedStatement deleteStatement = conn.prepareStatement(query)) {
-            deleteStatement.setInt(1, workflowID);
-            deleteStatement.executeUpdate();
-
-            query = "INSERT INTO step (orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, completed) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                int counter = 1;
-                for (Step step : steps) {
-                    preparedStatement.setInt(1, counter);
-                    preparedStatement.setString(2, step.getDescription());
-                    preparedStatement.setInt(3, 0);
-                    preparedStatement.setString(4, step.getUUID());
-                    preparedStatement.setInt(5, step.getVerbID());
-                    preparedStatement.setInt(6, step.getFileID());
-                    preparedStatement.setInt(7, step.getWorkflowID());
-                    preparedStatement.setBoolean(8, step.getCompleted());
-                    numUpdatedSteps += preparedStatement.executeUpdate();
-
-                    if (step.hasChildren()) {
-                        try (ResultSet insertedKeys = preparedStatement.getGeneratedKeys()) {
-                            insertedKeys.next();
-                            numUpdatedSteps += insertChildSteps(step.getChildren(), preparedStatement, insertedKeys.getInt(1), numUpdatedSteps);
-                        }
-                    }
-                    counter++;
-                }
-            }
-        }
-
-        return numUpdatedSteps;
+        return this.insertSteps(steps, conn);
     }
 
     /**
