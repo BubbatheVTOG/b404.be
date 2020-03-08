@@ -3,14 +3,13 @@ package blink.businesslayer;
 import blink.datalayer.StepDB;
 import blink.utility.objects.Step;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,7 +32,7 @@ public class StepBusiness {
         try {
             List<Step> steps = stepDB.getHigherLevelSteps(Integer.parseInt(workflowID));
             for (Step step : steps) {
-                step.setChildSteps(this.getRelatedSteps(step));
+                step.setChildren(this.getRelatedSteps(step));
             }
             return steps;
         } catch(NumberFormatException nfe) {
@@ -57,9 +56,9 @@ public class StepBusiness {
             throw new InternalServerErrorException("Problem returning related steps.");
         }
         if (relatedSteps != null) {
-            step.setChildSteps(relatedSteps);
-            for(Step relatedStep : step.getChildSteps()){
-                relatedStep.setChildSteps(this.getRelatedSteps(relatedStep));
+            step.setChildren(relatedSteps);
+            for(Step relatedStep : step.getChildren()){
+                relatedStep.setChildren(this.getRelatedSteps(relatedStep));
             }
         }
         return relatedSteps;
@@ -70,10 +69,12 @@ public class StepBusiness {
      * @param steps List of steps to insert into the database
      * @return Success Message
      */
-    int insertSteps(List<Step> steps) {
+    public int insertSteps(JsonArray steps, int workflowID, Connection conn) {
         int numInsertedSteps;
         try {
-            numInsertedSteps = stepDB.insertSteps(steps);
+            List<Step> stepList = this.jsonToStepList(steps, workflowID);
+
+            numInsertedSteps = this.stepDB.insertSteps(stepList, conn);
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -86,10 +87,12 @@ public class StepBusiness {
      * @param workflowID WorkflowID to delete existing steps by
      * @return Success Message
      */
-    public int updateSteps(List<Step> steps, int workflowID) {
+    public int updateSteps(JsonArray steps, int workflowID, Connection conn) {
         int numUpdatedSteps;
         try {
-            numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
+            List<Step> stepList = this.jsonToStepList(steps, workflowID);
+
+            numUpdatedSteps = this.stepDB.updateSteps(stepList, workflowID, conn);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
@@ -107,12 +110,10 @@ public class StepBusiness {
      * @param workflowID WorkflowID to delete steps by
      * @return Success Message
      */
-    public int deleteStepsByWorkflowID(String workflowID) {
+    public int deleteStepsByWorkflowID(String workflowID, Connection conn) {
         int numDeletedSteps = 0;
         try {
-            if(stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID)) <= 0) {
-                throw new NotFoundException("No records with that workflowID exist.");
-            }
+            this.stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID), conn);
         } catch (NumberFormatException ex) {
             throw new BadRequestException(WORKFLOWID_ERROR);
         } catch (SQLException ex) {
@@ -123,16 +124,19 @@ public class StepBusiness {
 
     /**
      * Convert jsonToStepList so backend can use it
-     * @param jsonObject which is the top level object containing workflowID and children
+     * @param steps json array of all steps
      * @return ArrayList<Step>
      */
-    public List<Step> jsonToStepList(JsonObject jsonObject, int workflowID) {
-        Collection<Step> stepCollection;
+    public List<Step> jsonToStepList(JsonArray steps, int workflowID) {
+        try {
+            Gson gson = new GsonBuilder().serializeNulls().create();
+            List<Step> stepList = Arrays.asList(gson.fromJson(steps, Step[].class));
 
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        stepCollection = gson.fromJson(jsonObject.get("children"), new TypeToken<List<Step>>(){}.getType());
-
-        return insertWorkflowID(new ArrayList<>(stepCollection), workflowID);
+            return insertWorkflowID(stepList, workflowID);
+        }
+        catch(Exception e){
+            throw new BadRequestException("Step json invalidly formatted");
+        }
     }
 
     /**
@@ -145,7 +149,7 @@ public class StepBusiness {
         for(Step step: steps) {
             step.setWorkflowID(workflowID);
             if(step.hasChildren()) {
-                insertWorkflowID(step.getChildSteps(), workflowID);
+                insertWorkflowID(step.getChildren(), workflowID);
             }
         }
         return steps;
