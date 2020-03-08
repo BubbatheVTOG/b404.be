@@ -200,7 +200,7 @@ public class StepDB {
     }
 
     /**
-     * Conncect to database and delete step by UUID
+     * Connect to database and delete step by UUID
      * @param workflowID workflowID to delete from database
      * @return number of deleted steps
      * @throws SQLException Error connecting to database or executing update
