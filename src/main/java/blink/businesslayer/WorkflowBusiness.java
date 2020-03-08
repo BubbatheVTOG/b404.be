@@ -312,7 +312,7 @@ public class WorkflowBusiness {
             throw new BadRequestException("Json String invalid format.");
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException();
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
