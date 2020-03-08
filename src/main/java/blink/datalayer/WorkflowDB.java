@@ -269,10 +269,10 @@ public class WorkflowDB {
      * @param description description of new workflow to be added
      * @throws SQLException Error connecting to database or executing update
      */
-    public int insertWorkflow(final String name, final String description, final Date createdDate, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final int companyID, final int milestoneID, JsonArray steps) throws SQLException {
+    public int insertWorkflow(final String name, final String description, final Date createdDate, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final int milestoneID, JsonArray steps) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, companyID, milestoneID) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO workflow (name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, milestoneID) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?);";
 
         try {
             Connection conn = this.dbConn.connect();
@@ -287,7 +287,6 @@ public class WorkflowDB {
                 preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
                 preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
                 preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
-                preparedStatement.setInt(7, companyID);
                 preparedStatement.setInt(8, milestoneID);
 
                 preparedStatement.executeUpdate();
@@ -371,13 +370,12 @@ public class WorkflowDB {
      * @param startDate The updated start date
      * @param deliveryDate The updated delivery date
      * @param completedDate The updated completed date
-     * @param companyID The new companyID
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, final int companyID, JsonArray steps) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, JsonArray steps) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate, companyID) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+        String query = "INSERT INTO workflow (name, description, lastUpdatedDate, startDate, deliveryDate, completedDate) " +
+                            "VALUES (?, ?, ?, ?, ?, ?) " +
                             "WHERE workflowID = ?;";
 
         try {
@@ -391,7 +389,6 @@ public class WorkflowDB {
                 preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
                 preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
                 preparedStatement.setDate(6, new java.sql.Date(completedDate.getTime()));
-                preparedStatement.setInt(7, companyID);
                 preparedStatement.setInt(8, workflowID);
 
                 preparedStatement.executeUpdate();

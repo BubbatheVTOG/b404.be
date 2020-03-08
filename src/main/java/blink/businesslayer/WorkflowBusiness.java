@@ -279,12 +279,6 @@ public class WorkflowBusiness {
             }
             Date parsedDeliveryDate = this.parseDate(workflowJson.get("deliveryDate").getAsString());
 
-            //Ensure companyID is provided and retrieve company object
-            if(!workflowJson.has("companyID") || workflowJson.get("companyID").isJsonNull()){
-                throw new BadRequestException("A workflow must be assigned to a company");
-            }
-            Company company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").getAsString());
-
             //Ensure milestoneID is provided and ensure that milestone exists
             if(!workflowJson.has("milestoneID") || workflowJson.get("milestoneID").isJsonNull()){
                 throw new BadRequestException("A workflow must be assigned to a milestone");
@@ -304,7 +298,7 @@ public class WorkflowBusiness {
             Date today = new Date();
 
             //Insert workflow
-            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger, stepsJson);
+            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, milestoneIDInteger, stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -407,13 +401,6 @@ public class WorkflowBusiness {
                 deliveryDate = this.parseDate(workflowJson.get("deliveryDate").getAsString());
             }
 
-            //Get company by companyID if present, otherwise use existing value
-            Company company = existingWorkflow.getCompany();
-            if(workflowJson.has("companyID")) {
-                company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").getAsString());
-            }
-
-
             //Get passed in steps or pre-existing steps
             JsonArray stepsJson = (JsonArray) new Gson().toJsonTree(existingWorkflow.getSteps(), new TypeToken<List<Step>>() {}.getType());
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
@@ -421,7 +408,7 @@ public class WorkflowBusiness {
             }
 
             //Insert workflow template
-            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, existingWorkflow.getCompletedDate(), company.getCompanyID(), stepsJson);
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, existingWorkflow.getCompletedDate(), stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
