@@ -19,18 +19,14 @@ import java.util.stream.Collectors;
 
 public class WorkflowBusiness {
     private WorkflowDB workflowDB;
-    private StepBusiness stepBusiness;
     private PersonBusiness personBusiness;
-    private CompanyBusiness companyBusiness;
     private MilestoneBusiness milestoneBusiness;
     private Gson gson;
     private SimpleDateFormat dateParser;
 
     public WorkflowBusiness(){
         this.workflowDB = new WorkflowDB();
-        this.stepBusiness = new StepBusiness();
         this.personBusiness = new PersonBusiness();
-        this.companyBusiness = new CompanyBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
         this.gson = new GsonBuilder().serializeNulls().create();
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
