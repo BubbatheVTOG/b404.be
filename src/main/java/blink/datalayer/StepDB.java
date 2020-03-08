@@ -132,7 +132,7 @@ public class StepDB {
             for (Step step : steps) {
                 preparedStatement.setInt(1, counter);
                 preparedStatement.setString(2, step.getDescription());
-                preparedStatement.setInt(3, 0);
+                preparedStatement.setNull(3, Types.INTEGER);
                 preparedStatement.setString(4, step.getUUID());
                 preparedStatement.setInt(5, step.getVerbID());
                 preparedStatement.setInt(6, step.getFileID());
