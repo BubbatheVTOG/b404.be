@@ -31,6 +31,7 @@ public class ApplicationConfig extends Application {
         resources.add(blink.servicelayer.PersonService.class);
         resources.add(blink.servicelayer.CompanyService.class);
         resources.add(blink.servicelayer.MilestoneService.class);
+        resources.add(blink.servicelayer.WorkflowService.class);
         resources.add(blink.servicelayer.VerbService.class);
 
         resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);

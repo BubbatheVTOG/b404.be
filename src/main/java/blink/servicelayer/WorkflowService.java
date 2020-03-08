@@ -34,7 +34,7 @@ public class WorkflowService {
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @GET
-    @Operation(summary = "getAllWorkflows", description = "Gets all workflows in the system")
+    @Operation(summary = "getConcreteWorkflows", description = "Gets all workflows in the system")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
@@ -52,10 +52,47 @@ public class WorkflowService {
             return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
             return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get template workflows
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for template workflows returned
+     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/templates")
+    @GET
+    @Operation(summary = "getTemplateWorkflows", description = "Gets all template workflows")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of template workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTemplateWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isAdmin(jwt);
+
+            //Send parameters to business layer and store response
+            List<Workflow> workflowList = workflowBusiness.getTemplateWorkflows(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -193,7 +230,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+    public Response insertTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -246,7 +283,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)          @FormParam("workflow") String workflowJson,
+    public Response insertConcreteWorkflow(@RequestBody(description = "workflow", required = true)      String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -300,7 +337,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+    public Response updateTemplateWorkflow(@RequestBody(description = "Workflow Json Object", required = true) String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -354,7 +391,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true) @FormParam("workflow") String workflowJson,
+    public Response updateConcreteWorkflow(@RequestBody(description = "Workflow Json Object", required = true)  String workflowJson,
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
