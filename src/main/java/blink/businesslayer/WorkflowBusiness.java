@@ -515,7 +515,7 @@ public class WorkflowBusiness {
 
     /**
      * Utility for parsing date objects and detecting that format is valid
-     * @param dateString String of date; must be in format 'YYYY-MM-DD'
+     * @param dateString String of date; must be in format 'yyyy-MM-dd hh:mm:ss'
      * @return Date object
      * @throws BadRequestException if date in invalid format
      */
@@ -524,7 +524,7 @@ public class WorkflowBusiness {
             return dateParser.parse(dateString);
         }
         catch(ParseException pe){
-            throw new BadRequestException("Dates must be formatted as YYYY-MM-DD");
+            throw new BadRequestException("Dates must be formatted as yyyy-MM-dd hh:mm:ss");
         }
     }
 }

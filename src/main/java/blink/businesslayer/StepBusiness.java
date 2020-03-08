@@ -128,10 +128,15 @@ public class StepBusiness {
      * @return ArrayList<Step>
      */
     public List<Step> jsonToStepList(JsonArray steps, int workflowID) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        List<Step> stepList = Arrays.asList(gson.fromJson(steps, Step[].class));
+        try {
+            Gson gson = new GsonBuilder().serializeNulls().create();
+            List<Step> stepList = Arrays.asList(gson.fromJson(steps, Step[].class));
 
-        return insertWorkflowID(stepList, workflowID);
+            return insertWorkflowID(stepList, workflowID);
+        }
+        catch(Exception e){
+            throw new BadRequestException("Step json invalidly formatted");
+        }
     }
 
     /**
