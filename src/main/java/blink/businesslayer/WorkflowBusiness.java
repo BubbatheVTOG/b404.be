@@ -215,12 +215,12 @@ public class WorkflowBusiness {
             if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
                 throw new BadRequestException("A workflow name is required");
             }
-            String name = workflowJson.get("name").toString();
+            String name = workflowJson.get("name").getAsString();
 
             //Get description if present, otherwise null
             String description = null;
             if(workflowJson.has("description")) {
-                description = workflowJson.get("description").toString();
+                description = workflowJson.get("description").getAsString();
             }
 
             //Get current date for created and lastUpdated
@@ -265,35 +265,35 @@ public class WorkflowBusiness {
             if(!workflowJson.has("name") || workflowJson.get("name").isJsonNull()){
                 throw new BadRequestException("A workflow name is required");
             }
-            String name = workflowJson.get("name").toString();
+            String name = workflowJson.get("name").getAsString();
 
             //Get description if present, otherwise null
             String description = null;
             if(workflowJson.has("description")){
-                description = workflowJson.get("description").toString();
+                description = workflowJson.get("description").getAsString();
             }
 
             //Ensure start date and delivery date are present and retrieve them
             if(!workflowJson.has("startDate") || workflowJson.get("startDate").isJsonNull()){
                 throw new BadRequestException("A start date is required");
             }
-            Date parsedStartDate = this.parseDate(workflowJson.get("startDate").toString());
+            Date parsedStartDate = this.parseDate(workflowJson.get("startDate").getAsString());
             if(!workflowJson.has("deliveryDate") || workflowJson.get("deliveryDate").isJsonNull()){
                 throw new BadRequestException("A delivery date is required");
             }
-            Date parsedDeliveryDate = this.parseDate(workflowJson.get("deliveryDate").toString());
+            Date parsedDeliveryDate = this.parseDate(workflowJson.get("deliveryDate").getAsString());
 
             //Ensure companyID is provided and retrieve company object
             if(!workflowJson.has("companyID") || workflowJson.get("companyID").isJsonNull()){
                 throw new BadRequestException("A workflow must be assigned to a company");
             }
-            Company company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
+            Company company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").getAsString());
 
             //Ensure milestoneID is provided and ensure that milestone exists
             if(!workflowJson.has("milestoneID") || workflowJson.get("milestoneID").isJsonNull()){
                 throw new BadRequestException("A workflow must be assigned to a milestone");
             }
-            int milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(workflowJson.get("milestoneID").toString()).getMileStoneID();
+            int milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(workflowJson.get("milestoneID").getAsString()).getMileStoneID();
 
             //Ensure steps are provided and not empty
             if(!workflowJson.has("steps") || workflowJson.get("steps").isJsonNull()){
@@ -333,19 +333,19 @@ public class WorkflowBusiness {
             if(!workflowJson.has("workflowID") || workflowJson.get("workflowID").isJsonNull()){
                 throw new BadRequestException("A workflowID must be provided");
             }
-            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").toString());
+            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").getAsString());
             int workflowID = existingWorkflow.getWorkflowID();
 
             //If name present, retrieve it
             String name = existingWorkflow.getName();
             if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
-                name = workflowJson.get("name").toString();
+                name = workflowJson.get("name").getAsString();
             }
 
             //Get description if present, otherwise null
             String description = existingWorkflow.getDescription();
             if(workflowJson.has("description")) {
-                description = workflowJson.get("description").toString();
+                description = workflowJson.get("description").getAsString();
             }
 
             //Get current date for created and lastUpdated
@@ -383,19 +383,19 @@ public class WorkflowBusiness {
             if(!workflowJson.has("workflowID") || workflowJson.get("workflowID").isJsonNull()){
                 throw new BadRequestException("A workflowID must be provided");
             }
-            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").toString());
+            Workflow existingWorkflow = this.getWorkflowByID(workflowJson.get("workflowID").getAsString());
             int workflowID = existingWorkflow.getWorkflowID();
 
             //If name present, retrieve it
             String name = existingWorkflow.getName();
             if(!workflowJson.has("name") && !workflowJson.get("name").isJsonNull()){
-                name = workflowJson.get("name").toString();
+                name = workflowJson.get("name").getAsString();
             }
 
             //Get description if present, otherwise use existing value
             String description = existingWorkflow.getDescription();
             if(workflowJson.has("description")) {
-                description = workflowJson.get("description").toString();
+                description = workflowJson.get("description").getAsString();
             }
 
             //Get current date for created and lastUpdated
@@ -404,17 +404,17 @@ public class WorkflowBusiness {
             //Get start date if present, otherwise use existing values
             Date startDate = existingWorkflow.getStartDate();
             if(workflowJson.has("startDate")) {
-                startDate = this.parseDate(workflowJson.get("startDate").toString());
+                startDate = this.parseDate(workflowJson.get("startDate").getAsString());
             }
             Date deliveryDate = existingWorkflow.getDeliveryDate();
             if(workflowJson.has("deliveryDate")) {
-                deliveryDate = this.parseDate(workflowJson.get("deliveryDate").toString());
+                deliveryDate = this.parseDate(workflowJson.get("deliveryDate").getAsString());
             }
 
             //Get company by companyID if present, otherwise use existing value
             Company company = existingWorkflow.getCompany();
             if(workflowJson.has("companyID")) {
-                company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
+                company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").getAsString());
             }
 
 
