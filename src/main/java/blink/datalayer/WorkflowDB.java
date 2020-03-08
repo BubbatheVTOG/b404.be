@@ -451,6 +451,51 @@ public class WorkflowDB {
     }
 
     /**
+     * Get active workflows by userID
+     * @param uuid - ID of user to search by
+     * @return List of workflow objects with steps assigned to user
+     * @throws SQLException - Error connecting to database or executing query
+     */
+    public List<Workflow> getActiveUserWorkflows(String uuid) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = "SELECT * FROM workflow " +
+                    "JOIN step ON (workflow.workflowID = step.workflowID) " +
+                    "WHERE step.uuid = ?";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setString(1, uuid);
+
+                //Set parameters and execute query
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+                    while (result.next()) {
+                        int workflowID = result.getInt("workflowID");
+                        List<Step> stepList = this.stepBusiness.getSteps(Integer.toString(workflowID));
+                        workflowList.add(new Workflow(workflowID,
+                                result.getString("workflow.name"),
+                                result.getString("workflow.description"),
+                                result.getDate("workflow.createdDate"),
+                                result.getDate("workflow.lastUpdatedDate"),
+                                result.getDate("workflow.startDate"),
+                                result.getDate("workflow.deliveryDate"),
+                                result.getDate("workflow.completedDate"),
+                                result.getBoolean("workflow.archived"),
+                                this.companyBusiness.getCompanyByID(result.getString("companyID")),
+                                result.getInt("milestoneID"),
+                                stepList));
+                    }
+
+                    //Return workflow
+                    return workflowList;
+                }
+            }
+        }
+    }
+
+    /**
      * Update archive status of an existing workflow
      * @param workflowID ID of workflow to update
      * @param archiveStatus boolean to set archive status to
