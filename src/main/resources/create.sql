@@ -194,7 +194,7 @@ INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 4),
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 1), /* Coach to DB_DATABASE and RIT */
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 2),
-  ("20809d5b-7989-4e48-bdde-74033e2f2672", 3), /* Customer1 to Sample Company1 */
+  ("20809d5b-7989-4e48-bdde-74033e2f2672", 2), /* Customer1 to Rocheste Institute of Technology */
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), /* Customer2 to Sample Company1 */
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
