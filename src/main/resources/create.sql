@@ -199,6 +199,7 @@ INSERT INTO venture_creations.personCompany (UUID, companyID) VALUES
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
 INSERT INTO venture_creations.file (fileID, name, file) VALUES
+  (0, "No Linked File", null),
   (1, "Document.docx", null),
   (2, "Image.jpg", null),
   (3, "Video.mp4", null);

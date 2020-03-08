@@ -2,6 +2,7 @@ package blink.businesslayer;
 
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
@@ -235,11 +236,7 @@ public class WorkflowBusiness {
             }
 
             //Insert workflow template
-            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today);
-
-            //Convert step json to jsonArray using new workflowID
-            List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
-            this.stepBusiness.insertSteps(steps);
+            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -311,11 +308,7 @@ public class WorkflowBusiness {
             Date today = new Date();
 
             //Insert workflow
-            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger);
-
-            //Convert stepJson to jsonArray and insert
-            List<Step> steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
-            this.stepBusiness.insertSteps(steps);
+            int workflowID = this.workflowDB.insertWorkflow(name, description, today, today, parsedStartDate, parsedDeliveryDate, company.getCompanyID(), milestoneIDInteger, stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -358,20 +351,14 @@ public class WorkflowBusiness {
             //Get current date for created and lastUpdated
             Date today = new Date();
 
-            //Ensure steps are present and not empty
-            List<Step> steps = existingWorkflow.getSteps();
+            //Get passed in steps or pre-existing steps
+            JsonArray stepsJson = (JsonArray) new Gson().toJsonTree(existingWorkflow.getSteps(), new TypeToken<List<Step>>() {}.getType());
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
-                if(stepsJson.size() != 0){
-                    steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
-                }
+                stepsJson = workflowJson.getAsJsonArray("steps");
             }
 
             //Insert workflow template
-            this.workflowDB.updateWorkflow(workflowID, name, description, today);
-
-            //Inserted updated workflow steps
-            this.stepBusiness.updateSteps(steps, workflowID);
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -430,33 +417,15 @@ public class WorkflowBusiness {
                 company = this.companyBusiness.getCompanyByID(workflowJson.get("companyID").toString());
             }
 
-            //Ensure steps are present and not empty
-            List<Step> steps = existingWorkflow.getSteps();
+
+            //Get passed in steps or pre-existing steps
+            JsonArray stepsJson = (JsonArray) new Gson().toJsonTree(existingWorkflow.getSteps(), new TypeToken<List<Step>>() {}.getType());
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                JsonArray stepsJson = workflowJson.getAsJsonArray("steps");
-                if(stepsJson.size() != 0){
-                    steps = this.stepBusiness.jsonToStepList(stepsJson, workflowID);
-                }
+                stepsJson = workflowJson.getAsJsonArray("steps");
             }
 
-            Workflow updatedWorkflow = new Workflow(workflowID,
-                    name,
-                    description,
-                    existingWorkflow.getCreatedDate(),
-                    today,
-                    startDate,
-                    deliveryDate,
-                    existingWorkflow.getCompletedDate(),
-                    existingWorkflow.isArchived(),
-                    company,
-                    existingWorkflow.getMilestoneID(),
-                    steps);
-
             //Insert workflow template
-            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, updatedWorkflow.getCompletedDate(), company.getCompanyID());
-
-            //Inserted updated workflow steps
-            this.stepBusiness.updateSteps(steps, workflowID);
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, existingWorkflow.getCompletedDate(), company.getCompanyID(), stepsJson);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -485,8 +454,6 @@ public class WorkflowBusiness {
 
             //Retrieve the person from the database by UUID
             int numRowsDeleted = workflowDB.deleteWorkflowByID(workflowIDInteger);
-
-            this.stepBusiness.deleteStepsByWorkflowID(workflowID);
 
             //If null is returned, no user was found with given UUID
             if(numRowsDeleted == 0){

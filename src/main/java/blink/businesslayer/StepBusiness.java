@@ -7,6 +7,7 @@ import com.google.gson.*;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -68,10 +69,12 @@ public class StepBusiness {
      * @param steps List of steps to insert into the database
      * @return Success Message
      */
-    int insertSteps(List<Step> steps) {
+    public int insertSteps(JsonArray steps, int workflowID, Connection conn) {
         int numInsertedSteps;
         try {
-            numInsertedSteps = stepDB.insertSteps(steps);
+            List<Step> stepList = this.jsonToStepList(steps, workflowID);
+
+            numInsertedSteps = this.stepDB.insertSteps(stepList, conn);
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
@@ -84,10 +87,12 @@ public class StepBusiness {
      * @param workflowID WorkflowID to delete existing steps by
      * @return Success Message
      */
-    public int updateSteps(List<Step> steps, int workflowID) {
+    public int updateSteps(JsonArray steps, int workflowID, Connection conn) {
         int numUpdatedSteps;
         try {
-            numUpdatedSteps = stepDB.updateSteps(steps, workflowID);
+            List<Step> stepList = this.jsonToStepList(steps, workflowID);
+
+            numUpdatedSteps = this.stepDB.updateSteps(stepList, workflowID, conn);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
@@ -105,10 +110,10 @@ public class StepBusiness {
      * @param workflowID WorkflowID to delete steps by
      * @return Success Message
      */
-    public int deleteStepsByWorkflowID(String workflowID) {
+    public int deleteStepsByWorkflowID(String workflowID, Connection conn) {
         int numDeletedSteps = 0;
         try {
-            stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID));
+            this.stepDB.deleteStepsByWorkflowID(Integer.parseInt(workflowID), conn);
         } catch (NumberFormatException ex) {
             throw new BadRequestException(WORKFLOWID_ERROR);
         } catch (SQLException ex) {
