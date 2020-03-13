@@ -177,7 +177,8 @@ public class WorkflowDB {
             //Prepare sql statement
             StringBuilder query = new StringBuilder();
             query.append(this.leftJoinStatement);
-            query.append("WHERE milestone.companyID IN (");
+            query.append("WHERE milestone.archived = ?" +
+                            "AND milestone.companyID IN (");
             for(int x = 0; x < companyIDList.size(); x++){
                 if(x == companyIDList.size()-1){ query.append("?);"); }
                 else{ query.append("?,"); }

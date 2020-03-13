@@ -65,10 +65,18 @@ public class MilestoneDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM milestone WHERE companyID IN ?;";
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT * FROM milestone " +
+                            "WHERE milestone.companyID IN (");
+            for(int x = 0; x < companyIDList.size(); x++){
+                if(x == companyIDList.size()-1){ query.append("?);"); }
+                else{ query.append("?,"); }
+            }
 
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query.toString())) {
+                for(int x = 0; x < companyIDList.size(); x++){
+                    preparedStatement.setInt(x+1, companyIDList.get(x));
+                }
 
                 //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
@@ -146,11 +154,20 @@ public class MilestoneDB {
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = "SELECT * FROM milestone WHERE archived = ? AND companyID IN ?;";
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT * FROM milestone " +
+                    "WHERE archived = ? " +
+                    "AND milestone.companyID IN (");
+            for(int x = 0; x < companyIDList.size(); x++){
+                if(x == companyIDList.size()-1){ query.append("?);"); }
+                else{ query.append("?,"); }
+            }
 
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query.toString())) {
                 preparedStatement.setBoolean(1, archived);
-                preparedStatement.setArray(2, (java.sql.Array)companyIDList);
+                for(int x = 0; x < companyIDList.size(); x++){
+                    preparedStatement.setInt(x+2, companyIDList.get(x));
+                }
 
                 //Set parameters and execute query
                 try (ResultSet result = preparedStatement.executeQuery()) {
