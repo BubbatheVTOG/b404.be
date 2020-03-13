@@ -47,6 +47,7 @@ public class WorkflowService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
+            //TODO: fix this after debugging
             List<Integer> workflowList = workflowBusiness.getAllWorkflows(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message

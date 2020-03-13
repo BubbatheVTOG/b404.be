@@ -49,10 +49,11 @@ public class WorkflowBusiness {
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
                 return companyIDList;
+                //workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
             }
 
+            //TODO return this after debugging
             return null;//return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
