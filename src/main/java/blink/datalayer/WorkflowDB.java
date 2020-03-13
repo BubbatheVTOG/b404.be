@@ -74,7 +74,7 @@ public class WorkflowDB {
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
                 //Set parameters and execute query
-                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
+                preparedStatement.setArray(1, conn.createArrayOf("INTEGER", companyIDList.toArray()));
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();

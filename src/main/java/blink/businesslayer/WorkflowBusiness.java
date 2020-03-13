@@ -39,7 +39,7 @@ public class WorkflowBusiness {
      * @throws NotAuthorizedException Requester uuid was not found in the database
      * @throws InternalServerErrorException Error in data layer
      */
-    public List<Integer> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
+    public List<Workflow> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
@@ -49,12 +49,10 @@ public class WorkflowBusiness {
             }
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                return companyIDList;
-                //workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
+                workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
             }
 
-            //TODO return this after debugging
-            return null;//return workflowList;
+            return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
         catch(NotFoundException nfe){
