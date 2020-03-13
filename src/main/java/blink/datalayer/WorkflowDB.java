@@ -65,7 +65,7 @@ public class WorkflowDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows(final List<Integer> companyIDList) throws SQLException {
-        if(companyIDList.size() == 0){
+        if(companyIDList.isEmpty()){
             return new ArrayList<>();
         }
         try(Connection conn = this.dbConn.connect()) {
@@ -168,7 +168,7 @@ public class WorkflowDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getConcreteWorkflows(final List<Integer> companyIDList, final boolean archived) throws SQLException {
-        if(companyIDList.size() == 0){
+        if(companyIDList.isEmpty()){
             return new ArrayList<>();
         }
 
