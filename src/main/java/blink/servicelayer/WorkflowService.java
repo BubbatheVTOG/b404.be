@@ -2,6 +2,7 @@ package blink.servicelayer;
 
 import blink.businesslayer.Authorization;
 import blink.businesslayer.WorkflowBusiness;
+import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
@@ -459,6 +460,48 @@ public class WorkflowService {
         }
         catch(ForbiddenException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Gets a Person by UUID
+     * @return - HTTP Response: 200 OK for pending tasks returned
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         404 NOT FOUND if no user with that UUID exists
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/pending")
+    @GET
+    @Operation(summary = "getPendingTasks", description = "Gets all pending tasks for a user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of Step objects"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPendingTasks(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<Step> pendingTasks= workflowBusiness.getPendingTasks(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(pendingTasks));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
         }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());

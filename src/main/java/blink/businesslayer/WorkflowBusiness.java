@@ -452,6 +452,73 @@ public class WorkflowBusiness {
     }
 
     /**
+     * Get a person's pending tasks
+     * @param uuid String must be convertible to integer
+     * @return Success string
+     * @throws NotFoundException - UUID does not exist in database
+     * @throws BadRequestException - UUID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public List<Step> getPendingTasks(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+
+            //Ensure that requester exists in the database
+            this.personBusiness.getPersonByUUID(uuid);
+
+            List<Step> pendingSteps = new ArrayList<>();
+            List<Workflow> userWorkflows = this.workflowDB.getActiveUserWorkflows(uuid);
+
+            for(Workflow workflow : userWorkflows){
+                pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return pendingSteps;
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //ArithmeticException - If the password encryption process fails
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Helper function for searching step list and finding tasks which are ready to be worked on
+     * @param steps - step list to search through
+     * @param uuid - user to identify tasks from
+     * @return list of pending steps for this user in this workflow
+     */
+    private List<Step> findPendingSteps(List<Step> steps, String uuid){
+        List<Step> pendingSteps = new ArrayList<>();
+
+        for(int i = 0; i < steps.size(); i++){
+            Step currStep = steps.get(i);
+            //If leaf step
+            if(currStep.getChildren() == null || currStep.getChildren().isEmpty()){
+                //If asynchronous and assigned to user, step is pending
+                if(currStep.getAsynchronous() && currStep.getUUID().equals(uuid)){
+                    pendingSteps.add(currStep);
+                }
+                //If synchronous
+                else{
+                    //If assigned to user and (first step or first incomplete step), it is pending
+                    if(currStep.getUUID().equals(uuid) && ((i == 0 || steps.get(i-1).getCompleted()) && !currStep.getCompleted())){
+                        pendingSteps.add(currStep);
+                    }
+                }
+            }
+            //If pending composite step, check child steps
+            else if((i == 0 || steps.get(i-1).getCompleted()) && !currStep.getCompleted()){
+                pendingSteps.addAll(this.findPendingSteps(currStep.getChildren(), uuid));
+            }
+        }
+
+        return pendingSteps;
+    }
+
+    /**
      * Archive or unarchive an existing workflow
      * @param workflowID ID of workflow to archive
      * @throws NotFoundException WorkflowID does not exist
