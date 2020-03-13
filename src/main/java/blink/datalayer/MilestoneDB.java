@@ -1,10 +1,8 @@
 package blink.datalayer;
 
 import blink.businesslayer.CompanyBusiness;
-import blink.businesslayer.WorkflowBusiness;
 import blink.utility.objects.Milestone;
 
-import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -215,6 +213,39 @@ public class MilestoneDB {
 
                     //Return milestone
                     return milestone;
+                }
+            }
+        }
+    }
+
+    /**
+     * Get milestone information based on the milestoneID
+     * @param milestoneID milestoneID to retrieve milestone from
+     * @return milestone object or null if not found
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Integer> getWorkflowsByMilestoneID(final int milestoneID) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = "SELECT workflowID FROM milestone " +
+                            "JOIN workflow ON (milestone.milestoneID = workflow.milestoneID) " +
+                            "WHERE milestone.milestoneID = ?;";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                preparedStatement.setInt(1, milestoneID);
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Integer> workflowIDList = new ArrayList<>();
+
+                    while (result.next()) {
+                        workflowIDList.add(result.getInt("workflowID"));
+                    }
+
+                    //Return milestone
+                    return workflowIDList;
                 }
             }
         }

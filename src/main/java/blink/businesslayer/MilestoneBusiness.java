@@ -4,6 +4,7 @@ import blink.datalayer.MilestoneDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.Milestone;
 import blink.utility.objects.Person;
+import blink.utility.objects.Workflow;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -21,12 +22,14 @@ public class MilestoneBusiness {
     private MilestoneDB milestoneDB;
     private PersonBusiness personBusiness;
     private CompanyBusiness companyBusiness;
+    private WorkflowBusiness workflowBusiness;
     private SimpleDateFormat dateParser;
 
     public MilestoneBusiness(){
         this.milestoneDB = new MilestoneDB();
         this.personBusiness = new PersonBusiness();
         this.companyBusiness = new CompanyBusiness();
+        this.workflowBusiness = new WorkflowBusiness();
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
 
@@ -181,6 +184,38 @@ public class MilestoneBusiness {
         //Error converting milestone to integer
         catch(NumberFormatException nfe){
             throw new BadRequestException("Milestone ID must be a valid integer");
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Get a milestone from the database by milestoneID
+     * @param uuid id of requesting user
+     * @param milestoneID MilestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotFoundException MilestoneID does not exist in database
+     * @throws BadRequestException MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public List<Workflow> getWorkflowsByMilestoneID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Checks that milestoneID exists and user has access
+            Integer milestoneIDInteger = this.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+
+            //Retrieve a list of workflow ID's belonging to this milestone
+            List<Integer> workflowIDs = milestoneDB.getWorkflowsByMilestoneID(milestoneIDInteger);
+
+            //Leverage workflow business to get workflows
+            List<Workflow> workflowList = new ArrayList<>();
+            for(Integer id : workflowIDs){
+                workflowList.add(this.workflowBusiness.getWorkflowByID(uuid, Integer.toString(id)));
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return workflowList;
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
