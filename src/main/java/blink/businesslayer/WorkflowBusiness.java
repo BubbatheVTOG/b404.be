@@ -490,12 +490,9 @@ public class WorkflowBusiness {
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
 
-            //Ensure that requester exists in the database
-            this.personBusiness.getPersonByUUID(uuid);
+            List<Workflow> userWorkflows = this.getActiveWorkflows(uuid);
 
             List<Step> pendingSteps = new ArrayList<>();
-            List<Workflow> userWorkflows = this.workflowDB.getActiveUserWorkflows(uuid);
-
             for(Workflow workflow : userWorkflows){
                 pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
             }
@@ -505,7 +502,7 @@ public class WorkflowBusiness {
         }
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
-        catch(SQLException ex){
+        catch(Exception ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
