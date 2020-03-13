@@ -39,7 +39,7 @@ public class WorkflowBusiness {
      * @throws NotAuthorizedException Requester uuid was not found in the database
      * @throws InternalServerErrorException Error in data layer
      */
-    public List<Workflow> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
+    public List<Integer> getAllWorkflows(String uuid) throws NotAuthorizedException, InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
@@ -50,9 +50,10 @@ public class WorkflowBusiness {
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 workflowList.addAll(workflowDB.getAllWorkflows(companyIDList));
+                return companyIDList;
             }
 
-            return workflowList;
+            return null;//return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
         catch(NotFoundException nfe){
@@ -92,7 +93,7 @@ public class WorkflowBusiness {
      * @return List of active workflows
      * @throws InternalServerErrorException Error in data layer
      */
-    private List<Integer> getAllWorkflows(String uuid, boolean archived) throws InternalServerErrorException {
+    private List<Workflow> getAllWorkflows(String uuid, boolean archived) throws InternalServerErrorException {
         try{
             Person requester = personBusiness.getPersonByUUID(uuid);
 
@@ -103,10 +104,9 @@ public class WorkflowBusiness {
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 workflowList.addAll(workflowDB.getConcreteWorkflows(companyIDList, archived));
-                return companyIDList;
             }
 
-            return null;//return workflowList;
+            return workflowList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
         catch(NotFoundException nfe){
@@ -124,7 +124,7 @@ public class WorkflowBusiness {
      * @return List of all workflows relevant to the user
      */
     public List<Workflow> getActiveWorkflows(String uuid){
-        return null;//return this.getAllWorkflows(uuid, false);
+        return this.getAllWorkflows(uuid, false);
     }
 
     /**
@@ -133,7 +133,7 @@ public class WorkflowBusiness {
      * @return List of all workflows relevant to the user
      */
     public List<Workflow> getArchivedWorkflows(String uuid){
-        return null;//return this.getAllWorkflows(uuid, true);
+        return this.getAllWorkflows(uuid, true);
     }
 
     /**
