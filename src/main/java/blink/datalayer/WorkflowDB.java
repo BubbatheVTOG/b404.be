@@ -184,6 +184,38 @@ public class WorkflowDB {
     }
 
     /**
+     * Get milestone information based on the milestoneID
+     * @param milestoneID milestoneID to retrieve milestone from
+     * @return milestone object or null if not found
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Workflow> getWorkflowsByMilestoneID(final int milestoneID) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = this.joinStatement +
+                            "WHERE milestone.milestoneID = ?;";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                preparedStatement.setInt(1, milestoneID);
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+
+                    while (result.next()) {
+                        workflowList.add(this.parseWorkflow(result));
+                    }
+
+                    //Return milestone
+                    return workflowList;
+                }
+            }
+        }
+    }
+
+    /**
      * Get workflow information based on the workflowID
      * @param workflowID workflowID to retrieve workflow from
      * return workflow object or null if not found

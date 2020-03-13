@@ -200,6 +200,32 @@ public class WorkflowBusiness {
     }
 
     /**
+     * Get a milestone from the database by milestoneID
+     * @param uuid id of requesting user
+     * @param milestoneID MilestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotFoundException MilestoneID does not exist in database
+     * @throws BadRequestException MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public List<Workflow> getWorkflowsByMilestoneID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Checks that milestoneID exists and user has access
+            Integer milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+
+            //Retrieve a list of workflow ID's belonging to this milestone
+            List<Workflow> workflowList = this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return workflowList;
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Inserts a template workflow
      * @param workflowJsonString String representation of workflow json object
      * @return Inserted workflow
