@@ -494,7 +494,9 @@ public class WorkflowBusiness {
 
             List<Step> pendingSteps = new ArrayList<>();
             for(Workflow workflow : userWorkflows){
-                pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
+                pendingSteps.addAll(workflow.getSteps());
+                //TODO revert this
+                //pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
