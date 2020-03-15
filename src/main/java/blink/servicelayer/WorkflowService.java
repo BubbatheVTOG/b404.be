@@ -2,6 +2,7 @@ package blink.servicelayer;
 
 import blink.businesslayer.Authorization;
 import blink.businesslayer.WorkflowBusiness;
+import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
@@ -193,6 +194,49 @@ public class WorkflowService {
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(workflow));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch (BadRequestException bre) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        } catch (NotAuthorizedException nae) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        } catch (NotFoundException nfe) {
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        } catch (Exception e) {
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get a set of workflows related to a milestone by ID
+     * @param milestoneID ID of milestone to retrieve
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for archived milestones returned
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT_FOUND for MilestoneID not found
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/milestone/{id}")
+    @GET
+    @Operation(summary = "getWorkflowsByMilestoneID", description = "Gets a set of workflows related to a milestone by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of workflow objects which each contain keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: MilestoneID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWorkflowsByMilestoneID(@Parameter(in = ParameterIn.PATH, name = "id") @PathParam("id") String milestoneID,
+                                              @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<Workflow> workflowList = workflowBusiness.getWorkflowsByMilestoneID(JWTUtility.getUUIDFromToken(jwt), milestoneID);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(workflowList));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch (BadRequestException bre) {
@@ -468,6 +512,50 @@ public class WorkflowService {
         }
         catch(Exception e){
             return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Gets a Person by UUID
+     * @return - HTTP Response: 200 OK for pending tasks returned
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         404 NOT FOUND if no user with that UUID exists
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/pending")
+    @GET
+    @Operation(summary = "getPendingTasks", description = "Gets all pending tasks for a user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of Step objects"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPendingTasks(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<Step> pendingTasks= workflowBusiness.getPendingTasks(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(pendingTasks));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //TODO:Revert this
+            // return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 

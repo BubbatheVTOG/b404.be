@@ -2,6 +2,7 @@ package blink.datalayer;
 
 import blink.businesslayer.CompanyBusiness;
 import blink.businesslayer.StepBusiness;
+import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
 import com.google.gson.JsonArray;
 
@@ -64,16 +65,27 @@ public class WorkflowDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getAllWorkflows(final List<Integer> companyIDList) throws SQLException {
+        if(companyIDList.isEmpty()){
+            return new ArrayList<>();
+        }
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.leftJoinStatement +
-                            "WHERE milestone.companyID IN ?;";
+            StringBuilder query = new StringBuilder();
+            query.append(this.leftJoinStatement);
+            query.append("WHERE milestone.companyID IN (");
+            for(int x = 0; x < companyIDList.size(); x++){
+                if(x == companyIDList.size()-1){ query.append("?);"); }
+                else{ query.append("?,"); }
+            }
 
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query.toString())) {
 
                 //Set parameters and execute query
-                preparedStatement.setArray(1, (java.sql.Array)companyIDList);
+                for(int x = 0; x < companyIDList.size(); x++){
+                    preparedStatement.setInt(x+1, companyIDList.get(x));
+                }
+
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
@@ -156,18 +168,29 @@ public class WorkflowDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Workflow> getConcreteWorkflows(final List<Integer> companyIDList, final boolean archived) throws SQLException {
+        if(companyIDList.isEmpty()){
+            return new ArrayList<>();
+        }
+
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
-            String query = this.joinStatement +
-                            "WHERE workflow.archived = ? " +
-                            "AND milestone.companyID IN ?;";
+            StringBuilder query = new StringBuilder();
+            query.append(this.leftJoinStatement);
+            query.append("WHERE workflow.archived = ? " +
+                            "AND milestone.companyID IN (");
+            for(int x = 0; x < companyIDList.size(); x++){
+                if(x == companyIDList.size()-1){ query.append("?);"); }
+                else{ query.append("?,"); }
+            }
 
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query.toString())) {
 
                 //Set parameters and execute query
                 preparedStatement.setBoolean(1, archived);
-                preparedStatement.setArray(2, (java.sql.Array)companyIDList);
+                for(int x = 0; x < companyIDList.size(); x++){
+                    preparedStatement.setInt(x+2, companyIDList.get(x));
+                }
                 try (ResultSet result = preparedStatement.executeQuery()) {
 
                     List<Workflow> workflowList = new ArrayList<>();
@@ -176,6 +199,38 @@ public class WorkflowDB {
                     }
 
                     //Return workflow
+                    return workflowList;
+                }
+            }
+        }
+    }
+
+    /**
+     * Get milestone information based on the milestoneID
+     * @param milestoneID milestoneID to retrieve milestone from
+     * @return milestone object or null if not found
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public List<Workflow> getWorkflowsByMilestoneID(final int milestoneID) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = this.joinStatement +
+                            "WHERE milestone.milestoneID = ?;";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                //Set parameters and execute query
+                preparedStatement.setInt(1, milestoneID);
+                try (ResultSet result = preparedStatement.executeQuery()) {
+
+                    List<Workflow> workflowList = new ArrayList<>();
+
+                    while (result.next()) {
+                        workflowList.add(this.parseWorkflow(result));
+                    }
+
+                    //Return milestone
                     return workflowList;
                 }
             }

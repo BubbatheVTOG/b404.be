@@ -3,6 +3,7 @@ package blink.servicelayer;
 import blink.businesslayer.Authorization;
 import blink.businesslayer.MilestoneBusiness;
 import blink.utility.objects.Milestone;
+import blink.utility.objects.Workflow;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -134,8 +135,9 @@ public class MilestoneService {
      * Get a milestone by milestoneID
      * @param milestoneID ID of milestone to retrieve
      * @param jwt JSON web token for authorization
-     * @return HTTP Response: 200 OK for archived milestones returned
-     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     * @return HTTP Response: 200 OK for milestone returned
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT_FOUND for MilestoneID not found
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/{id}")

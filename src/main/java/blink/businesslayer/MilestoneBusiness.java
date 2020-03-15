@@ -4,6 +4,7 @@ import blink.datalayer.MilestoneDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.Milestone;
 import blink.utility.objects.Person;
+import blink.utility.objects.Workflow;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;

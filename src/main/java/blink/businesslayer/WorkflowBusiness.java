@@ -200,6 +200,32 @@ public class WorkflowBusiness {
     }
 
     /**
+     * Get a milestone from the database by milestoneID
+     * @param uuid id of requesting user
+     * @param milestoneID MilestoneID must be convertible to integer
+     * @return Milestone object with matching id
+     * @throws NotFoundException MilestoneID does not exist in database
+     * @throws BadRequestException MilestoneID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public List<Workflow> getWorkflowsByMilestoneID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Checks that milestoneID exists and user has access
+            Integer milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+
+            //Retrieve a list of workflow ID's belonging to this milestone
+            List<Workflow> workflowList = this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return workflowList;
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Inserts a template workflow
      * @param workflowJsonString String representation of workflow json object
      * @return Inserted workflow
@@ -449,6 +475,63 @@ public class WorkflowBusiness {
         catch(SQLException sqle){
             throw new InternalServerErrorException(sqle.getMessage());
         }
+    }
+
+    /**
+     * Get a person's pending tasks
+     * @param uuid String must be convertible to integer
+     * @return Success string
+     * @throws NotFoundException - UUID does not exist in database
+     * @throws BadRequestException - UUID was either null or invalid integer
+     * @throws InternalServerErrorException - Error in data layer
+     */
+    public List<Step> getPendingTasks(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+
+            List<Workflow> userWorkflows = this.getActiveWorkflows(uuid);
+
+            List<Step> pendingSteps = new ArrayList<>();
+            for(Workflow workflow : userWorkflows){
+                pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return pendingSteps;
+        }
+        //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
+        //ArithmeticException - If the password encryption process fails
+        catch(Exception ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Helper function for searching step list and finding tasks which are ready to be worked on
+     * @param steps - step list to search through
+     * @param uuid - user to identify tasks from
+     * @return list of pending steps for this user in this workflow
+     */
+    private List<Step> findPendingSteps(List<Step> steps, String uuid){
+        List<Step> pendingSteps = new ArrayList<>();
+
+        for(int i = 0; i < steps.size(); i++){
+            Step currStep = steps.get(i);
+            //If step is not already complete, asynchronous, first step or first incomplete step then it is pending
+            if(!currStep.getCompleted() && (currStep.getAsynchronous() || currStep.getOrderNumber() == 1 || steps.get(i - 1).getCompleted())){
+                //If leaf step assigned to requester, add to list
+                if ((currStep.getChildren() == null || currStep.getChildren().isEmpty()) && currStep.getUUID().equals(uuid)) {
+                    pendingSteps.add(currStep);
+                }
+                //If composite step, check children
+                else{
+                    pendingSteps.addAll(this.findPendingSteps(currStep.getChildren(), uuid));
+                }
+            }
+        }
+
+        return pendingSteps;
     }
 
     /**
