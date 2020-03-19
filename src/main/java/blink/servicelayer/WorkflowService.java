@@ -516,7 +516,7 @@ public class WorkflowService {
     }
 
     /**
-     * Gets a Person by UUID
+     * Gets all pending tasks for a specific user
      * @return - HTTP Response: 200 OK for pending tasks returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         404 NOT FOUND if no user with that UUID exists
@@ -543,9 +543,6 @@ public class WorkflowService {
             return ResponseBuilder.buildSuccessResponse(gson.toJson(pendingTasks));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
@@ -553,9 +550,7 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //TODO:Revert this
-            // return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
