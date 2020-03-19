@@ -15,7 +15,7 @@ public class Person {
 	private String lName;
 	private String email;
 	private String title;
-	private ArrayList<Company> companies;
+	private List<Company> companies;
 	private int accessLevelID;
 
 	//Fully parameterised constructor
@@ -85,7 +85,7 @@ public class Person {
 		this.title = title;
 	}
 
-	public void setCompanies(ArrayList<Company> companies) { this.companies = companies; }
+	public void setCompanies(List<Company> companies) { this.companies = companies; }
 
 	public void setAccessLevelID(int accessLevelID) { this.accessLevelID = accessLevelID; }
 }

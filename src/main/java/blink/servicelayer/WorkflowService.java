@@ -466,8 +466,7 @@ public class WorkflowService {
     }
 
     /**
-     *
-     * Delete a person from the database
+     * Delete a workflow from the database
      * @param id ID of workflow to delete
      * @param jwt JSON Web Token for authorizing request
      * @return HTTP Response: 200 OK for workflow deleted successfully
@@ -526,7 +525,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getPendingTasks", description = "Gets all pending tasks for a user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of Step objects"),
+            @ApiResponse(code = 200, message = "List of pending Step objects"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")

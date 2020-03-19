@@ -113,6 +113,36 @@ public class PersonBusiness {
     }
 
     /**
+     * Get a person's signature from the database by UUID
+     * @param uuid Person UUID
+     * @return Person object of person found in database
+     * @throws NotFoundException UUID does not exist in database
+     * @throws BadRequestException UUID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public Person getPersonSignature(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            //Initial parameter validation; throws BadRequestException if there is an issue
+            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+
+            //Retrieve the person from the database by String
+            Person person = personDB.getPersonByUUID(uuid);
+
+            //If null is returned, no user was found with given UUID
+            if(person == null){
+                throw new NotFoundException("No user with that UUID exists.");
+            }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Insert a new person into the database
      * @param username New person's username
      * @param password New person's password
