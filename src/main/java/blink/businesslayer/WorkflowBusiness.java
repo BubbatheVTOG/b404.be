@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -366,13 +367,13 @@ public class WorkflowBusiness {
             Date today = new Date();
 
             //Get passed in steps or pre-existing steps
-            JsonArray stepsJson = (JsonArray) new Gson().toJsonTree(existingWorkflow.getSteps(), new TypeToken<List<Step>>() {}.getType());
+            List<Step> steps = existingWorkflow.getSteps();
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                stepsJson = workflowJson.getAsJsonArray("steps");
+                steps = stepBusiness.jsonToStepList(workflowJson.getAsJsonArray("steps"), workflowID);
             }
 
             //Insert workflow template
-            this.workflowDB.updateWorkflow(workflowID, name, description, today, stepsJson);
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, steps);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -426,13 +427,13 @@ public class WorkflowBusiness {
             }
 
             //Get passed in steps or pre-existing steps
-            JsonArray stepsJson = (JsonArray) new Gson().toJsonTree(existingWorkflow.getSteps(), new TypeToken<List<Step>>() {}.getType());
+            List<Step> steps = existingWorkflow.getSteps();
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                stepsJson = workflowJson.getAsJsonArray("steps");
+                steps = stepBusiness.jsonToStepList(workflowJson.getAsJsonArray("steps"), workflowID);
             }
 
             //Insert workflow template
-            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, existingWorkflow.getCompletedDate(), stepsJson);
+            this.workflowDB.updateWorkflow(workflowID, name, description, today, startDate, deliveryDate, existingWorkflow.getCompletedDate(), steps);
 
             return this.getWorkflowByID(Integer.toString(workflowID));
         }
@@ -577,16 +578,77 @@ public class WorkflowBusiness {
         return "Successfully unarchived workflow.";
     }
 
-    public void markStepComplete(String stepID){
-        Step step = this.stepBusiness.getStep(stepID);
-        Workflow workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+    /**
+     * Marks a given step as complete and updates the workflow accordingly
+     * @param stepID ID of step to mark as complete
+     * @return
+     */
+    public String markStepComplete(String stepID){
+        try {
+            //Mark the step as complete
+            Step step = this.stepBusiness.markStepComplete(stepID);
 
-        workflow.setSteps(this.findStepCompletions(workflow.getSteps()));
+            //Get workflow and find nested completions that may have occurred
+            Workflow workflow = this.findStepCompletions(this.getWorkflowByID(Integer.toString(step.getWorkflowID())));
+
+            //Update any changes in the step completion
+            this.workflowDB.updateWorkflow(workflow.getWorkflowID(),
+                    workflow.getName(),
+                    workflow.getDescription(),
+                    workflow.getLastUpdatedDate(),
+                    workflow.getStartDate(),
+                    workflow.getDeliveryDate(),
+                    workflow.getCompletedDate(),
+                    workflow.getSteps());
+
+            return "Step successfully completed.";
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
     }
 
-    public List<Step> findStepCompletions(List<Step> steps){
-        //TODO implement step completions
-        return null;
+    private Workflow findStepCompletions(Workflow workflow){
+        for(Step step : workflow.getSteps()){
+            if(!step.getChildren().isEmpty()) {
+                int[] results = findStepCompletions(step.getChildren(), 0, 0);
+                if(results[0] == results[1]){
+                    step.setCompleted(true);
+                }
+            }
+        }
+
+        //Recreate workflow to calculate percentComplete and completedDate if changed
+        return new Workflow(workflow.getWorkflowID(),
+                workflow.getName(),
+                workflow.getDescription(),
+                workflow.getCreatedDate(),
+                workflow.getLastUpdatedDate(),
+                workflow.getStartDate(),
+                workflow.getDeliveryDate(),
+                workflow.getCompletedDate(),
+                workflow.isArchived(),
+                workflow.getCompany(),
+                workflow.getMilestoneID(),
+                workflow.getSteps());
+    }
+
+    private int[] findStepCompletions(List<Step> steps, int totalSteps, int completeSteps){
+        for(Step step : steps) {
+            if (!step.getChildren().isEmpty()){
+                int[] results = findStepCompletions(step.getChildren(), 0, 0);
+                if(results[0] == results[1]){
+                    step.setCompleted(true);
+                    completeSteps++;
+                }
+            }
+            else if(step.isCompleted()){
+                completeSteps++;
+            }
+            totalSteps++;
+        }
+
+        return new int[]{totalSteps, completeSteps};
     }
 
     /**

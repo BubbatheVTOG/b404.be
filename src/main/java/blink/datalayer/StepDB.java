@@ -2,6 +2,7 @@ package blink.datalayer;
 
 import blink.utility.objects.Step;
 
+import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -229,13 +230,44 @@ public class StepDB {
     }
 
     /**
-     * Connect to the database and updateSteps
-     * @param steps list of steps to insert into database
-     * @param workflowID workflowID to delete steps by before inserting updated list
+     * Updates a step by stepID
+     * @param step step to update in the database
      * @throws SQLException Error connecting to the database or executing update
      */
-    public int updateSteps(List<Step> steps, int workflowID, Connection conn) throws SQLException {
-        this.deleteStepsByWorkflowID(workflowID, conn);
+    public void updateStep(Step step) {
+        try(Connection conn = this.dbConn.connect()) {
+            String query = "UPDATE step " +
+                    "SET orderNumber = ?, description = ?, parentStepID = ?, UUID = ?, verbID = ?, fileID = ?, workflowID = ?, asynchronous = ?, completed = ? " +
+                    "WHERE stepID = ?";
+
+            try(PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                preparedStatement.setInt(1, step.getOrderNumber());
+                preparedStatement.setString(2, step.getDescription());
+                preparedStatement.setInt(3, step.getParentStepID());
+                preparedStatement.setString(4, step.getUUID());
+                preparedStatement.setInt(5, step.getVerbID());
+                preparedStatement.setInt(6, step.getFileID());
+                preparedStatement.setInt(7, step.getWorkflowID());
+                preparedStatement.setBoolean(8, step.getAsynchronous());
+                preparedStatement.setBoolean(9, step.getCompleted());
+                preparedStatement.setInt(10, step.getStepID());
+
+                preparedStatement.execute();
+            }
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException("Error connecting to the database");
+        }
+    }
+
+    /**
+     * Connect to the database and updateSteps
+     * @param steps list of steps to insert into database
+     * @throws SQLException Error connecting to the database or executing update
+     */
+    public int updateSteps(List<Step> steps, Connection conn) throws SQLException {
+        this.deleteStepsByWorkflowID(steps.get(0).getWorkflowID(), conn);
 
         return this.insertSteps(steps, conn);
     }

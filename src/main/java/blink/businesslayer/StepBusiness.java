@@ -90,7 +90,7 @@ public class StepBusiness {
 
     /**
      * Insert a list of steps into the database
-     * @param steps List of steps to insert into the database
+     * @param steps JsonArray of steps to insert into the database
      * @return Success Message
      */
     public int insertSteps(JsonArray steps, int workflowID, Connection conn) {
@@ -107,16 +107,13 @@ public class StepBusiness {
 
     /**
      * Deletes existing steps by workflowID and adds updated step list
-     * @param steps Updated list of steps
-     * @param workflowID WorkflowID to delete existing steps by
+     * @param stepList Updated list of step objects
      * @return Success Message
      */
-    public int updateSteps(JsonArray steps, int workflowID, Connection conn) {
+    public int updateSteps(List<Step> stepList, Connection conn) {
         int numUpdatedSteps;
         try {
-            List<Step> stepList = this.jsonToStepList(steps, workflowID);
-
-            numUpdatedSteps = this.stepDB.updateSteps(stepList, workflowID, conn);
+            numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
@@ -126,7 +123,23 @@ public class StepBusiness {
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
+
         return numUpdatedSteps;
+    }
+
+
+    public Step markStepComplete(String stepID){
+        Step step = this.getStep(stepID);
+
+        //TODO talk about this check
+        if(step.getWorkflowID() == 0){
+            throw new BadRequestException("That step is part of a template workflow and cannot be marked complete.");
+        }
+
+        step.setCompleted(true);
+        this.stepDB.updateStep(step);
+
+        return this.getStep(stepID);
     }
 
     /**
