@@ -27,6 +27,47 @@ public class StepDB {
 
     /**
      * Retrieves all higher level steps from the database
+     * @param stepID stepID of step to retrieve
+     * @return step with matching stepID or null
+     * @throws SQLException Error connecting to the database or executing query
+     */
+    public Step getStep(int stepID) throws SQLException {
+        try(Connection conn = this.dbConn.connect()) {
+
+            //Prepare sql statement
+            String query = "SELECT * FROM step " +
+                            "WHERE stepID = ?";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                //Execute query
+                preparedStatement.setInt(1, stepID);
+
+                try (ResultSet result = preparedStatement.executeQuery()) {
+                    Step step = null;
+
+                    while (result.next()) {
+                        return new Step.StepBuilder(
+                                result.getInt(WORKFLOWID),
+                                result.getBoolean(ASYNCHRONOUS),
+                                result.getBoolean(COMPLETED))
+                                .stepID(result.getInt(STEPID))
+                                .orderNumber(result.getInt(ORDERNUMBER))
+                                .description(result.getString(DESCRIPTION))
+                                .parentStep(result.getInt(PARENTSTEPID))
+                                .uuid(result.getString(UUID))
+                                .verbID(result.getInt(VERBID))
+                                .fileID(result.getInt(FILEID))
+                                .build();
+                    }
+                    //Return higher level steps
+                    return step;
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves all higher level steps from the database
      * @param workflowID workflowID of higher level steps to retrieve
      * @return list of higher level steps containing lists of lower level steps
      * @throws SQLException Error connecting to the database or executing query

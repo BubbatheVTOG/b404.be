@@ -155,11 +155,9 @@ public class Workflow {
         this.company = company;
     }
 
-    public List<Step> getSteps() {
-        return this.steps;
-    }
+    public List<Step> getSteps() { return this.steps; }
 
-    public void setCompany(List<Step> steps) {
-        this.steps = steps;
-    }
+    public void setSteps(List<Step> steps) { this.steps = steps; }
+
+    public void setCompany(List<Step> steps) { this.steps = steps; }
 }

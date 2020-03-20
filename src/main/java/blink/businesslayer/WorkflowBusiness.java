@@ -21,6 +21,7 @@ public class WorkflowBusiness {
     private WorkflowDB workflowDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
+    private StepBusiness stepBusiness;
     private Gson gson;
     private SimpleDateFormat dateParser;
 
@@ -28,6 +29,7 @@ public class WorkflowBusiness {
         this.workflowDB = new WorkflowDB();
         this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
+        this.stepBusiness = new StepBusiness();
         this.gson = new GsonBuilder().serializeNulls().create();
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
@@ -573,6 +575,18 @@ public class WorkflowBusiness {
     public String unarchiveWorkflow(String workflowID){
         this.updateWorkflowArchiveStatus(workflowID, false);
         return "Successfully unarchived workflow.";
+    }
+
+    public void markStepComplete(String stepID){
+        Step step = this.stepBusiness.getStep(stepID);
+        Workflow workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+
+        workflow.setSteps(this.findStepCompletions(workflow.getSteps()));
+    }
+
+    public List<Step> findStepCompletions(List<Step> steps){
+        //TODO implement step completions
+        return null;
     }
 
     /**

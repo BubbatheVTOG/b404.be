@@ -1,5 +1,9 @@
 package blink.utility.objects;
-import java.util.ArrayList;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.ws.rs.InternalServerErrorException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -11,6 +15,8 @@ public class Person {
 	private String username;
 	private transient String passwordHash;
 	private transient String salt;
+	private Blob signature;
+	private String signatureFont;
 	private String fName;
 	private String lName;
 	private String email;
@@ -24,6 +30,8 @@ public class Person {
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
+		this.signature = null;
+		this.signatureFont = null;
 		this.fName = fName;
 		this.lName = lName;
 		this.email = email;
@@ -31,17 +39,15 @@ public class Person {
 		this.accessLevelID = accessLevelID;
 	}
 
-	public String getUuid() {
-		return this.uuid;
-	}
+	public String getUuid() { return this.uuid; }
 
-	public String getPasswordHash() {
-		return this.passwordHash;
-	}
+	public String getPasswordHash() { return this.passwordHash; }
 
-	public String getSalt() {
-		return this.salt;
-	}
+	public String getSalt() { return this.salt; }
+
+	public Blob getSignature() { return signature; }
+
+	public String getSignatureFont() { return signatureFont; }
 
 	public String getFName() { return this.fName; }
 
@@ -51,27 +57,32 @@ public class Person {
 
 	public String getEmail() { return this.email; }
 
-	public String getTitle() {
-		return this.title;
-	}
+	public String getTitle() { return this.title; }
 
 	public List<Company> getCompanies() {return companies;}
 
-	public int getAccessLevelID() {
-		return this.accessLevelID;
+	public int getAccessLevelID() { return this.accessLevelID; }
+
+	public void setUuid(String uuid) { this.uuid = uuid; }
+
+	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+	public void setSalt(String salt) { this.salt = salt; }
+
+	public void setSignature(String fileString) {
+		byte [] blobAsByteArray = Base64.getMimeDecoder().decode(fileString);
+		try {
+			this.signature = new SerialBlob(blobAsByteArray);
+		} catch(NullPointerException sqle) {
+			this.signature = null;
+		} catch(SQLException sqle) {
+			throw new InternalServerErrorException(sqle.getMessage());
+		}
 	}
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+	public void setSignature(Blob signature) { this.signature = signature; }
 
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+	public void setSignatureFont(String signatureFont) { this.signatureFont = signatureFont; }
 
 	public void setFName(String fName) { this.fName = fName; }
 
@@ -81,9 +92,7 @@ public class Person {
 
 	public void setEmail(String email) { this.email = email; }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+	public void setTitle(String title) { this.title = title; }
 
 	public void setCompanies(List<Company> companies) { this.companies = companies; }
 

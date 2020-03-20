@@ -18,9 +18,33 @@ import java.util.List;
  */
 public class StepBusiness {
 
+    private static final String STEPID_ERROR = "stepID must be a valid integer.";
     private static final String WORKFLOWID_ERROR = "workflowID must be a valid integer.";
 
     private StepDB stepDB = new StepDB();
+
+    /**
+     * Gets higher level steps from the database
+     * @param stepID ID of step to retrieve from database
+     * @return Step object containing data from the database
+     * @throws NotFoundException stepID not present in the database
+     * @throws BadRequestException stepID was an invalid integer
+     * @throws InternalServerErrorException Error connecting to database or executing query
+     */
+    public Step getStep(String stepID) {
+        try {
+            Step step = stepDB.getStep(Integer.parseInt(stepID));
+
+            if(step == null){
+                throw new NotFoundException("No step with that stepID exists");
+            }
+            return step;
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException(STEPID_ERROR);
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
 
     /**
      * Gets higher level steps from the database

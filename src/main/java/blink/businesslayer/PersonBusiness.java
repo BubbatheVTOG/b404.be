@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
 import blink.utility.objects.Person;
+import blink.utility.objects.PersonSignature;
 import blink.utility.security.PasswordEncryption;
 
 /**
@@ -122,16 +123,14 @@ public class PersonBusiness {
      */
     public Person getPersonSignature(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            //Initial parameter validation; throws BadRequestException if there is an issue
-            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
-
-            //Retrieve the person from the database by String
-            Person person = personDB.getPersonByUUID(uuid);
+            Person person = this.personDB.getPersonByUUID(uuid);
 
             //If null is returned, no user was found with given UUID
             if(person == null){
                 throw new NotFoundException("No user with that UUID exists.");
             }
+
+            person = this.personDB.getPersonSignature(person);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;
