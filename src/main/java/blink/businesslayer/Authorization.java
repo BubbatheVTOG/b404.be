@@ -20,8 +20,8 @@ public class Authorization {
 
     /**
      * Checks that a user is logged in properly by validating the JSON Web Token
-     * @param jwt - JSON Web token
-     * @throws NotAuthorizedException - JWT is either invalid or expired
+     * @param jwt JSON Web token
+     * @throws NotAuthorizedException JWT is either invalid or expired
      */
     public static void isLoggedIn(String jwt) throws NotAuthorizedException{
         //Check that JSON Web Token is valid
@@ -32,9 +32,9 @@ public class Authorization {
 
     /**
      * Checks that a user is logged in and is and administrator
-     * @param jwt - JSON Web Token
-     * @throws NotAuthorizedException - User provided invalid or expired JWT
-     * @throws ForbiddenException - User is not an administrator
+     * @param jwt JSON Web Token
+     * @throws NotAuthorizedException User provided invalid or expired JWT
+     * @throws ForbiddenException User is not an administrator
      */
     public static void isAdmin(String jwt) throws NotAuthorizedException, ForbiddenException {
         isLoggedIn(jwt);
@@ -48,10 +48,10 @@ public class Authorization {
 
     /**
      * Checks that a user is logged in and is either an administrator or changing their own information
-     * @param jwt - JSON Web Token
-     * @param targetUUID - The UUID of person information that is trying to be altered
-     * @throws NotAuthorizedException - User provided invalid or expired JWT
-     * @throws ForbiddenException - User is not an administrator or the target person
+     * @param jwt JSON Web Token
+     * @param targetUUID The UUID of person information that is trying to be altered
+     * @throws NotAuthorizedException User provided invalid or expired JWT
+     * @throws ForbiddenException User is not an administrator or the target person
      */
     public static void isAdminOrSelf(String jwt, String targetUUID) throws NotAuthorizedException, ForbiddenException {
         isLoggedIn(jwt);

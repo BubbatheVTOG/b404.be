@@ -9,9 +9,9 @@ public class FileDB {
 
     /**
      * Get file information based on the fileID
-     * @param fileID - fileID to retrieve file from
+     * @param fileID fileID to retrieve file from
      * @return file object or null if not found
-     * @throws SQLException - Error connecting to database or executing query
+     * @throws SQLException Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
         //Prepare sql statement
@@ -41,11 +41,11 @@ public class FileDB {
 
     /**
      * Connect to database and add
-     * @param fileID - fileID of new file to be added
-     * @param name - name of new file to be added
-     * @param file - file of new file to be added
-     * @param stepID - stepID of new file to be added
-     * @throws SQLException - Error connecting to database or executing update
+     * @param fileID fileID of new file to be added
+     * @param name name of new file to be added
+     * @param file file of new file to be added
+     * @param stepID stepID of new file to be added
+     * @throws SQLException Error connecting to database or executing update
      */
     public void insertFile(final int fileID, final String name, final Blob file, final int stepID) throws SQLException {
         //Prepare sql statement
@@ -66,9 +66,9 @@ public class FileDB {
 
     /**
      * Connect to database and delete a file by fileID
-     * @param fileID - fileID to delete from database
+     * @param fileID fileID to delete from database
      * @return the number of deleted rows
-     * @throws SQLException - Error connecting to database or executing update
+     * @throws SQLException Error connecting to database or executing update
      */
     public int deleteFileByFileID(final int fileID) throws SQLException {
         //Prepare the sql statement
