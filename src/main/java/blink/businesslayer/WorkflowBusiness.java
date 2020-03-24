@@ -583,10 +583,11 @@ public class WorkflowBusiness {
      * @param stepID ID of step to mark as complete
      * @return
      */
-    public String markStepComplete(String stepID){
+    public String markStepComplete(String stepID, String uuid){
         try {
             //Mark the step as complete
-            Step step = this.stepBusiness.markStepComplete(stepID);
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+            Step step = this.stepBusiness.markStepComplete(stepID, requester.getUuid());
 
             //Get workflow and find nested completions that may have occurred
             Workflow workflow = this.findStepCompletions(this.getWorkflowByID(Integer.toString(step.getWorkflowID())));
@@ -609,15 +610,6 @@ public class WorkflowBusiness {
     }
 
     private Workflow findStepCompletions(Workflow workflow){
-        for(Step step : workflow.getSteps()){
-            if(!step.getChildren().isEmpty()) {
-                int[] results = findStepCompletions(step.getChildren(), 0, 0);
-                if(results[0] == results[1]){
-                    step.setCompleted(true);
-                }
-            }
-        }
-
         //Recreate workflow to calculate percentComplete and completedDate if changed
         return new Workflow(workflow.getWorkflowID(),
                 workflow.getName(),
@@ -630,25 +622,23 @@ public class WorkflowBusiness {
                 workflow.isArchived(),
                 workflow.getCompany(),
                 workflow.getMilestoneID(),
-                workflow.getSteps());
+                findStepCompletions(workflow.getSteps()));
     }
 
-    private int[] findStepCompletions(List<Step> steps, int totalSteps, int completeSteps){
+    private List<Step> findStepCompletions(List<Step> steps){
         for(Step step : steps) {
             if (!step.getChildren().isEmpty()){
-                int[] results = findStepCompletions(step.getChildren(), 0, 0);
-                if(results[0] == results[1]){
-                    step.setCompleted(true);
-                    completeSteps++;
+                step.setChildren(findStepCompletions(step.getChildren()));
+
+                boolean completed = true;
+                for(Step child : step.getChildren()){
+                    completed = completed && child.getCompleted();
                 }
+                step.setCompleted(completed);
             }
-            else if(step.isCompleted()){
-                completeSteps++;
-            }
-            totalSteps++;
         }
 
-        return new int[]{totalSteps, completeSteps};
+        return steps;
     }
 
     /**

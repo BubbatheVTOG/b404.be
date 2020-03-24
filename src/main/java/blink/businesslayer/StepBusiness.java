@@ -5,6 +5,7 @@ import blink.utility.objects.Step;
 import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.Connection;
@@ -128,12 +129,15 @@ public class StepBusiness {
     }
 
 
-    public Step markStepComplete(String stepID){
+    public Step markStepComplete(String stepID, String uuid){
         Step step = this.getStep(stepID);
 
         //TODO talk about this check
         if(step.getWorkflowID() == 0){
             throw new BadRequestException("That step is part of a template workflow and cannot be marked complete.");
+        }
+        if(!step.getUUID().equals(uuid)){
+            throw new ForbiddenException("This step is not assigned to you, therefore you cannot complete it.");
         }
 
         step.setCompleted(true);

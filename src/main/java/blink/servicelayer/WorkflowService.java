@@ -654,4 +654,49 @@ public class WorkflowService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
+
+    /**
+     * Mark an individual step as complete
+     * @param stepID ID of workflow to unarchive
+     * @return HTTP Response: 200 OK for workflow unarchived successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/step/complete")
+    @PUT
+    @Operation(summary = "unarchiveWorkflow", description = "Unarchive an existing workflow")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: Step ID must be a valid integer for a step in a concrete workflow.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No step with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response markStepComplete(@RequestBody(description = "id", required = true) @FormParam("id") String stepID,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
 }
