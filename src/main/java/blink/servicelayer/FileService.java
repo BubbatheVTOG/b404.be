@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import java.util.List;
 
 /**
  * Service Layer entity responsible for receiving requests having to do with file information
@@ -76,6 +77,51 @@ public class FileService {
     }
 
     /**
+     * Get all files by milestoneID from the database
+     * @Param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for file returned
+     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                        500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/id/{milestoneID}")
+    @GET
+    @Operation(summary = "getAllFilesByMilestone", description = "Gets all files by milestoneID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File object containing fileID, name, file, confidential and stepID"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllFilesByMilestone(@Parameter(in = ParameterIn.PATH, description = "milestoneID", required = true) @PathParam("milestoneID") String milestoneID,
+                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<File> files = fileBusiness.getAllFilesByMilestone(milestoneID);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Insert a file into the database
      * @Param file json object containing name, file and confidential
      * @Param jwt JSON web token for authorization
@@ -97,7 +143,7 @@ public class FileService {
         try {
             Authorization.isLoggedIn(jwt);
 
-            JsonObject jsonObject = (new JsonParser().parse(json).getAsJsonObject());
+            JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.getFile(Integer.toString(fileBusiness.insertFile(jsonObject)));
 
@@ -145,7 +191,7 @@ public class FileService {
         try {
             Authorization.isLoggedIn(jwt);
 
-            JsonObject jsonObject = (new JsonParser().parse(json).getAsJsonObject());
+            JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.getFile(Integer.toString(fileBusiness.insertFile(jsonObject, stepID)));
 
@@ -188,7 +234,7 @@ public class FileService {
         try {
             Authorization.isLoggedIn(jwt);
 
-            JsonObject jsonObject = (new JsonParser().parse(json).getAsJsonObject());
+            JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = null;
 

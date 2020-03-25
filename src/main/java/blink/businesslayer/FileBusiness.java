@@ -2,6 +2,7 @@ package blink.businesslayer;
 
 import blink.datalayer.FileDB;
 import blink.utility.objects.File;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.google.gson.JsonObject;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -25,8 +26,20 @@ public class FileBusiness {
      */
     public File getFile(String fileID) {
         try {
-            File file = fileDB.getFileByID(Integer.parseInt(fileID));
-            return file;
+            return fileDB.getFileByID(Integer.parseInt(fileID));
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Get all files by milestoneID
+     * @param milestoneID to retrieve files by
+     * @return list of files
+     */
+    public List<File> getAllFilesByMilestone(String milestoneID) {
+        try {
+            return fileDB.getAllFilesByMilestone(Integer.parseInt(milestoneID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -52,7 +65,7 @@ public class FileBusiness {
     public int insertFile(JsonObject jsonObject) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
-            return fileDB.insertFile(file.getName(), file.getFile(), file.getConfidential());
+            return fileDB.insertFile(file.getName(), file.getBlobFile(), file.getConfidential());
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -67,7 +80,7 @@ public class FileBusiness {
     public int insertFile(JsonObject jsonObject, String stepID) {
         try {
             File file = jsonObjectToFileObject(jsonObject, stepID);
-            return fileDB.insertFile(file.getName(), file.getFile(), file.getConfidential(), file.getStepID());
+            return fileDB.insertFile(file.getName(), file.getBlobFile(), file.getConfidential(), file.getStepID());
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -82,7 +95,7 @@ public class FileBusiness {
     public int updateFile(JsonObject jsonObject, String fileID) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
-            return fileDB.updateFile(file.getName(), file.getFile(), file.getConfidential(), Integer.parseInt(fileID));
+            return fileDB.updateFile(file.getName(), file.getBlobFile(), file.getConfidential(), Integer.parseInt(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -98,7 +111,7 @@ public class FileBusiness {
     public int updateFile(JsonObject jsonObject, String stepID, String fileID) {
         try {
             File file = jsonObjectToFileObject(jsonObject, stepID);
-            return fileDB.updateFile(file.getName(), file.getFile(), file.getConfidential(), file.getStepID(), Integer.parseInt(fileID));
+            return fileDB.updateFile(file.getName(), file.getBlobFile(), file.getConfidential(), file.getStepID(), Integer.parseInt(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }

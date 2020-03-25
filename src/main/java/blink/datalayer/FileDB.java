@@ -31,7 +31,7 @@ public class FileDB {
                 while (result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            result.getBlob("file"),
+                            file.convertFileToBase64(result.getBlob("file")),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));
                 }
@@ -62,7 +62,7 @@ public class FileDB {
                 while(result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            result.getBlob("file"),
+                            file.convertFileToBase64(result.getBlob("file")),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));
 
@@ -72,6 +72,37 @@ public class FileDB {
             }
         }
     }
+
+    public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT * FROM file join step on step.fileID = file.fileID " +
+                                          "join workflow on workflow.workflowID = step.workflowID " +
+                                          "join milestone on workflow.milestoneID = milestone.milestoneID " +
+                                          "WHERE milestone.milestoneID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, milestoneID);
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                File file = null;
+
+                while(result.next()) {
+                    file = new File(result.getInt("fileID"),
+                            result.getString("name"),
+                            file.convertFileToBase64(result.getBlob("file")),
+                            result.getBoolean("confidential"),
+                            result.getInt("stepID"));
+
+                    files.add(file);
+                }
+                return files;
+            }
+        }
+    }
+
 
     /**
      * Connect to database and add
