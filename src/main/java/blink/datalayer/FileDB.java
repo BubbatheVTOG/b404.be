@@ -37,7 +37,7 @@ public class FileDB {
                 while (result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            file.convertFileToBase64(result.getBytes("file")),
+                            result.getBytes("file"),
                             //blob.length() == 0 ? null : file.convertFileToBase64(blob),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));

@@ -13,14 +13,6 @@ public class File {
     private boolean confidential;
     private int stepID;
 
-    public File(int fileID, String name, Blob blobFile, boolean confidential, int stepID) {
-        this.fileID = fileID;
-        this.name = name;
-        this.blobFile = blobFile;
-        this.confidential = confidential;
-        this.stepID = stepID;
-    }
-
     public File(int fileID, String name, String base64File, boolean confidential, int stepID) {
         this.fileID = fileID;
         this.name = name;
@@ -29,10 +21,11 @@ public class File {
         this.stepID = stepID;
     }
 
-    public File(int fileID, String name, byte[] byteFile, boolean confidential, int stepID) {
+    public File(int fileID, String name, byte[] byteFile, boolean confidential, int stepID) throws SQLException{
         this.fileID = fileID;
         this.name = name;
         this.byteFile = byteFile;
+        this.base64File = this.convertFileToBase64(byteFile);
         this.confidential = confidential;
         this.stepID = stepID;
     }
@@ -42,13 +35,6 @@ public class File {
         this.name = name;
         this.blobFile = blobFile;
         this.confidential = confidential;
-    }
-
-    public File(String name, Blob blobFile, boolean confidential, int stepID) {
-        this.name = name;
-        this.blobFile = blobFile;
-        this.confidential = confidential;
-        this.stepID = stepID;
     }
 
     public File(String name, Blob blobFile, boolean confidential) {
