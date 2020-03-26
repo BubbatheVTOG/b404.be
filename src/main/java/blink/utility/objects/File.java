@@ -33,7 +33,7 @@ public class File {
         this.fileID = fileID;
         this.name = name;
         this.byteFile = byteFile;
-        this.base64File = this.convertFileToBase64(byteFile);
+        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
         this.stepID = stepID;
     }
