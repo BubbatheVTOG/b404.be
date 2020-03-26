@@ -87,7 +87,7 @@ public class File {
             byte [] blobAsByteArray = blobFile.getBytes(1l, (int)blobFile.length());
             return Base64.getEncoder().encodeToString(blobAsByteArray);
         } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
+            throw new InternalServerErrorException(blobFile.toString());
         }
     }
 }
