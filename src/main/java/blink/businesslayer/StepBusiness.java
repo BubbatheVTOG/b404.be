@@ -5,6 +5,7 @@ import blink.utility.objects.Step;
 import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.Connection;
@@ -18,9 +19,33 @@ import java.util.List;
  */
 public class StepBusiness {
 
+    private static final String STEPID_ERROR = "stepID must be a valid integer.";
     private static final String WORKFLOWID_ERROR = "workflowID must be a valid integer.";
 
     private StepDB stepDB = new StepDB();
+
+    /**
+     * Gets higher level steps from the database
+     * @param stepID ID of step to retrieve from database
+     * @return Step object containing data from the database
+     * @throws NotFoundException stepID not present in the database
+     * @throws BadRequestException stepID was an invalid integer
+     * @throws InternalServerErrorException Error connecting to database or executing query
+     */
+    public Step getStep(String stepID) {
+        try {
+            Step step = stepDB.getStep(Integer.parseInt(stepID));
+
+            if(step == null){
+                throw new NotFoundException("No step with that stepID exists");
+            }
+            return step;
+        } catch(NumberFormatException nfe) {
+            throw new BadRequestException(STEPID_ERROR);
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
 
     /**
      * Gets higher level steps from the database
@@ -66,7 +91,7 @@ public class StepBusiness {
 
     /**
      * Insert a list of steps into the database
-     * @param steps List of steps to insert into the database
+     * @param steps JsonArray of steps to insert into the database
      * @return Success Message
      */
     public int insertSteps(JsonArray steps, int workflowID, Connection conn) {
@@ -83,16 +108,13 @@ public class StepBusiness {
 
     /**
      * Deletes existing steps by workflowID and adds updated step list
-     * @param steps Updated list of steps
-     * @param workflowID WorkflowID to delete existing steps by
+     * @param stepList Updated list of step objects
      * @return Success Message
      */
-    public int updateSteps(JsonArray steps, int workflowID, Connection conn) {
+    public int updateSteps(List<Step> stepList, Connection conn) {
         int numUpdatedSteps;
         try {
-            List<Step> stepList = this.jsonToStepList(steps, workflowID);
-
-            numUpdatedSteps = this.stepDB.updateSteps(stepList, workflowID, conn);
+            numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
@@ -102,7 +124,26 @@ public class StepBusiness {
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
         }
+
         return numUpdatedSteps;
+    }
+
+
+    public Step markStepComplete(String stepID, String uuid){
+        Step step = this.getStep(stepID);
+
+        //TODO talk about this check
+        if(step.getWorkflowID() == 0){
+            throw new BadRequestException("That step is part of a template workflow and cannot be marked complete.");
+        }
+        if(!step.getUUID().equals(uuid)){
+            throw new ForbiddenException("This step is not assigned to you, therefore you cannot complete it.");
+        }
+
+        step.setCompleted(true);
+        this.stepDB.updateStep(step);
+
+        return this.getStep(stepID);
     }
 
     /**
