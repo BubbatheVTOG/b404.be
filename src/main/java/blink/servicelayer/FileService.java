@@ -265,7 +265,8 @@ public class FileService {
         }
     }
 
-    @PUT
+    @Path("/id/{id}")
+    @DELETE
     @Operation(summary = "deleteFile", description = "delete an existing file")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Updated a file object with name, file, and confidential"),
