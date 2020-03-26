@@ -88,6 +88,8 @@ public class File {
             return Base64.getEncoder().encodeToString(blobAsByteArray);
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
+        } catch(NullPointerException npe) {
+            throw new InternalServerErrorException(blobFile.toString());
         }
     }
 }
