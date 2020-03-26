@@ -2,6 +2,8 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
+import javax.validation.constraints.Null;
+import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
+        Blob fdsa = null;
         //Prepare sql statement
         String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
@@ -33,6 +36,7 @@ public class FileDB {
                 File file = null;
 
                 while (result.next()) {
+                    fdsa = result.getBlob("file");
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
                             file.convertFileToBase64(result.getBlob("file")),
@@ -41,6 +45,9 @@ public class FileDB {
                 }
                 return file;
             }
+        }
+        catch(NullPointerException npe){
+            throw new InternalServerErrorException(fdsa.toString());
         }
     }
 
