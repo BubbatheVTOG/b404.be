@@ -39,7 +39,8 @@ public class FileDB {
                     blob = result.getBlob("file");
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            blob.length() == 0 ? null : file.convertFileToBase64(blob),
+                            file.convertFileToBase64(result.getBytes("file")),
+                            //blob.length() == 0 ? null : file.convertFileToBase64(blob),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));
                 }
@@ -73,7 +74,8 @@ public class FileDB {
                 while(result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            file.convertFileToBase64(result.getBlob("file")),
+                            result.getBytes("file"),
+                            //file.convertFileToBase64(result.getBlob("file")),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));
 
@@ -103,7 +105,8 @@ public class FileDB {
                 while(result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            file.convertFileToBase64(result.getBlob("file")),
+                            result.getBytes("file"),
+                            //file.convertFileToBase64(result.getBlob("file")),
                             result.getBoolean("confidential"),
                             result.getInt("stepID"));
 

@@ -1,6 +1,5 @@
 package blink.utility.objects;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -8,6 +7,7 @@ import java.util.Base64;
 public class File {
     private int fileID;
     private String name;
+    private byte[] byteFile;
     private Blob blobFile;
     private String base64File;
     private boolean confidential;
@@ -25,6 +25,14 @@ public class File {
         this.fileID = fileID;
         this.name = name;
         this.base64File = base64File;
+        this.confidential = confidential;
+        this.stepID = stepID;
+    }
+
+    public File(int fileID, String name, byte[] byteFile, boolean confidential, int stepID) {
+        this.fileID = fileID;
+        this.name = name;
+        this.byteFile = byteFile;
         this.confidential = confidential;
         this.stepID = stepID;
     }
@@ -68,6 +76,10 @@ public class File {
 
     public void setBase64File(String base64File) { this.base64File = base64File; }
 
+    public byte[] getByteFile() { return byteFile; }
+
+    public void setByteFile(byte[] byteFile) { this.byteFile = byteFile; }
+
     public boolean getConfidential() { return confidential; }
 
     public void setConfidential(boolean confidential) { this.confidential = confidential; }
@@ -78,16 +90,12 @@ public class File {
 
     /**
      * Converts blob into Base64 string
-     * @param blobFile
+     * @param byteFile
      * @return base64 string
      * @throws SQLException
      */
-    public String convertFileToBase64(Blob blobFile) throws SQLException {
-        try {
-            byte [] blobAsByteArray = blobFile.getBytes(1l, (int)blobFile.length());
-            return Base64.getEncoder().encodeToString(blobAsByteArray);
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
+    public String convertFileToBase64(byte[] byteFile) throws SQLException {
+        //byte [] blobAsByteArray = blobFile.getBytes(1l, (int)blobFile.length());
+        return Base64.getEncoder().encodeToString(byteFile);
     }
 }

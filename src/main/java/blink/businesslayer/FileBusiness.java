@@ -2,7 +2,6 @@ package blink.businesslayer;
 
 import blink.datalayer.FileDB;
 import blink.utility.objects.File;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.google.gson.JsonObject;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -136,7 +135,7 @@ public class FileBusiness {
      * @return blob format of base64 file
      */
     public Blob convertFileToBlob(String file) {
-        byte [] blobAsByteArray = Base64.getMimeDecoder().decode(file);
+        byte [] blobAsByteArray = Base64.getDecoder().decode(file);
         try {
             return new SerialBlob(blobAsByteArray);
         } catch(SQLException sqle) {
