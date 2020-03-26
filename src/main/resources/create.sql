@@ -55,6 +55,8 @@ CREATE TABLE `file` (
   `fileID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) DEFAULT NULL,
   `file` blob DEFAULT NULL,
+  `confidential` boolean NOT NULL,
+  `stepID` int DEFAULT NULL,
   PRIMARY KEY (`fileID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -149,6 +151,10 @@ ALTER TABLE `userPreferences`
 ADD CONSTRAINT `fk_userPreferences_1`
 FOREIGN KEY (`UUID`) REFERENCES `person`(`UUID`) ON DELETE CASCADE;
 
+ALTER TABLE `file`
+ADD CONSTRAINT `fk_file_1`
+FOREIGN KEY (`stepID`) REFERENCES `step` (`stepID`);
+
 INSERT INTO DB_DATABASE.accessLevel (accessLevelID, accessLevelName) VALUES
   (1, "Administrator"),
   (2, "Director"),
@@ -198,11 +204,11 @@ INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), /* Customer2 to Sample Company1 */
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
-INSERT INTO DB_DATABASE.file (fileID, name, file) VALUES
-  (0, "No Linked File", null),
-  (1, "Document.docx", null),
-  (2, "Image.jpg", null),
-  (3, "Video.mp4", null);
+INSERT INTO DB_DATABASE.file (fileID, name, file, confidential, stepID) VALUES
+  (1, "Document.docx", null, 0, null),
+  (2, "Image.jpg", null, 0, null),
+  (3, "Video.mp4", null, 0, null),
+  (4, "No Linked File", null, 0, null);
 
 INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
   (1, "Sign", "Sign"),
