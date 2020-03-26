@@ -683,7 +683,9 @@ public class WorkflowService {
             Authorization.isLoggedIn(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
