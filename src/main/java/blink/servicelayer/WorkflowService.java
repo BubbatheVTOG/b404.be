@@ -676,7 +676,7 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response markStepComplete(@RequestBody(description = "id", required = true) @FormParam("id") String stepID,
+    public Response markStepComplete(@RequestBody(description = "id", required = true) @QueryParam("id") String stepID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
