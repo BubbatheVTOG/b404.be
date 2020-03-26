@@ -584,10 +584,12 @@ public class WorkflowBusiness {
      * @return
      */
     public String markStepComplete(String stepID, String uuid){
+        Workflow workflow = null;
         try {
             //Mark the step as complete
             Person requester = this.personBusiness.getPersonByUUID(uuid);
             Step step = this.stepBusiness.getStep(stepID);
+
             if(step.hasChildren()){
                 throw new BadRequestException("This is a composite step and cannot be marked complete.");
             }
@@ -595,7 +597,7 @@ public class WorkflowBusiness {
                 throw new NotAuthorizedException("This step is not assigned to you and cannot be marked as completed");
             }
 
-            Workflow workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+            workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
 
             //Get workflow and find nested completions that may have occurred
             workflow = new Workflow(workflow.getWorkflowID(),
@@ -611,7 +613,7 @@ public class WorkflowBusiness {
                     workflow.getMilestoneID(),
                     findStepCompletions(workflow.getSteps(), step.getStepID()));
 
-            //Update any changes in the step completion
+            //Update changes in the step completion
             this.workflowDB.updateWorkflow(workflow.getWorkflowID(),
                     workflow.getName(),
                     workflow.getDescription(),
@@ -624,7 +626,7 @@ public class WorkflowBusiness {
             return "Step successfully completed.";
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
+            throw new InternalServerErrorException(gson.toJson(workflow));
         }
     }
 
