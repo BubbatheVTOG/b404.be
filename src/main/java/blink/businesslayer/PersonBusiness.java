@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
 import blink.utility.objects.Person;
+import blink.utility.objects.PersonSignature;
 import blink.utility.security.PasswordEncryption;
 
 /**
@@ -102,6 +103,34 @@ public class PersonBusiness {
             if(person == null){
                 throw new NotFoundException("No user with that UUID exists.");
             }
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
+     * Get a person's signature from the database by UUID
+     * @param uuid Person UUID
+     * @return Person object of person found in database
+     * @throws NotFoundException UUID does not exist in database
+     * @throws BadRequestException UUID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public Person getPersonSignature(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            Person person = this.personDB.getPersonByUUID(uuid);
+
+            //If null is returned, no user was found with given UUID
+            if(person == null){
+                throw new NotFoundException("No user with that UUID exists.");
+            }
+
+            person = this.personDB.getPersonSignature(person);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return person;

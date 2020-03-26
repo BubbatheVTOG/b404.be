@@ -4,11 +4,15 @@ import blink.businesslayer.CompanyBusiness;
 import blink.businesslayer.StepBusiness;
 import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -379,7 +383,7 @@ public class WorkflowDB {
      * @param lastUpdatedDate The date to set the lastUpdatedDate to
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, JsonArray steps) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, List<Step> steps) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE workflow " +
                        "SET name = ?, description = ?, lastUpdatedDate = ? " +
@@ -398,7 +402,7 @@ public class WorkflowDB {
 
                 preparedStatement.executeUpdate();
 
-                this.stepBusiness.updateSteps(steps, workflowID, conn);
+                this.stepBusiness.updateSteps(steps, conn);
             }
             catch (Exception e) {
                 conn.rollback();
@@ -426,7 +430,7 @@ public class WorkflowDB {
      * @param completedDate The updated completed date
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, JsonArray steps) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, List<Step> steps) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE workflow " +
                        "SET name = ?, description = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, completedDate = ? " +
@@ -447,7 +451,7 @@ public class WorkflowDB {
 
                 preparedStatement.executeUpdate();
 
-                this.stepBusiness.updateSteps(steps, workflowID, conn);
+                this.stepBusiness.updateSteps(steps, conn);
             }
             catch (Exception e) {
                 conn.rollback();
