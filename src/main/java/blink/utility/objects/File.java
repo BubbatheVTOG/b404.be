@@ -7,7 +7,7 @@ import java.util.Base64;
 public class File {
     private int fileID;
     private String name;
-    private byte[] byteFile;
+    private transient byte[] byteFile;
     private Blob blobFile;
     private String base64File;
     private boolean confidential;
