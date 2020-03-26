@@ -587,10 +587,26 @@ public class WorkflowBusiness {
         try {
             //Mark the step as complete
             Person requester = this.personBusiness.getPersonByUUID(uuid);
-            Step step = this.stepBusiness.markStepComplete(stepID, requester.getUuid());
+            Step step = this.stepBusiness.getStep(stepID);
+            if(step.hasChildren()){
+                throw new BadRequestException("This is a composite step and cannot be marked complete.");
+            }
+
+            Workflow workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
 
             //Get workflow and find nested completions that may have occurred
-            Workflow workflow = this.findStepCompletions(this.getWorkflowByID(Integer.toString(step.getWorkflowID())));
+            workflow = new Workflow(workflow.getWorkflowID(),
+                    workflow.getName(),
+                    workflow.getDescription(),
+                    workflow.getCreatedDate(),
+                    workflow.getLastUpdatedDate(),
+                    workflow.getStartDate(),
+                    workflow.getDeliveryDate(),
+                    workflow.getCompletedDate(),
+                    workflow.isArchived(),
+                    workflow.getCompany(),
+                    workflow.getMilestoneID(),
+                    findStepCompletions(workflow.getSteps(), step.getStepID()));
 
             //Update any changes in the step completion
             this.workflowDB.updateWorkflow(workflow.getWorkflowID(),
@@ -609,26 +625,13 @@ public class WorkflowBusiness {
         }
     }
 
-    private Workflow findStepCompletions(Workflow workflow){
-        //Recreate workflow to calculate percentComplete and completedDate if changed
-        return new Workflow(workflow.getWorkflowID(),
-                workflow.getName(),
-                workflow.getDescription(),
-                workflow.getCreatedDate(),
-                workflow.getLastUpdatedDate(),
-                workflow.getStartDate(),
-                workflow.getDeliveryDate(),
-                workflow.getCompletedDate(),
-                workflow.isArchived(),
-                workflow.getCompany(),
-                workflow.getMilestoneID(),
-                findStepCompletions(workflow.getSteps()));
-    }
-
-    private List<Step> findStepCompletions(List<Step> steps){
+    private List<Step> findStepCompletions(List<Step> steps, int stepID){
         for(Step step : steps) {
+            if(step.getStepID() == stepID){
+                step.setCompleted(true);
+            }
             if (!step.getChildren().isEmpty()){
-                step.setChildren(findStepCompletions(step.getChildren()));
+                step.setChildren(findStepCompletions(step.getChildren(), stepID));
 
                 boolean completed = true;
                 for(Step child : step.getChildren()){
