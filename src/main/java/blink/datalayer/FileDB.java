@@ -22,7 +22,6 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
-        Blob blob = null;
         //Prepare sql statement
         String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
@@ -36,7 +35,6 @@ public class FileDB {
                 File file = null;
 
                 while (result.next()) {
-                    blob = result.getBlob("file");
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
                             file.convertFileToBase64(result.getBytes("file")),
@@ -46,9 +44,6 @@ public class FileDB {
                 }
                 return file;
             }
-        }
-        catch(NullPointerException npe){
-            throw new InternalServerErrorException(Long.toString(blob.length()));
         }
     }
 
