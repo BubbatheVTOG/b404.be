@@ -128,24 +128,6 @@ public class StepBusiness {
         return numUpdatedSteps;
     }
 
-
-    public Step markStepComplete(String stepID, String uuid){
-        Step step = this.getStep(stepID);
-
-        //TODO talk about this check
-        if(step.getWorkflowID() == 0){
-            throw new BadRequestException("That step is part of a template workflow and cannot be marked complete.");
-        }
-        if(!step.getUUID().equals(uuid)){
-            throw new ForbiddenException("This step is not assigned to you, therefore you cannot complete it.");
-        }
-
-        step.setCompleted(true);
-        this.stepDB.updateStep(step);
-
-        return this.getStep(stepID);
-    }
-
     /**
      * Delete steps by workflowID
      * @param workflowID WorkflowID to delete steps by
