@@ -6,6 +6,7 @@ import java.util.List;
 
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
+import blink.utility.objects.PersonSignature;
 
 public class PersonDB {
     private DBConn dbConn;
@@ -171,6 +172,37 @@ public class PersonDB {
                         }
                         person.setCompanies(companies);
                     }
+                }
+
+                return person;
+            }
+        }
+    }
+
+    /**
+     * Connect to database and retrieve entry by UUID
+     * @param person existing person object to append signature information to
+     * @return Person object with signature information or null if not found
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public Person getPersonSignature(final Person person) throws SQLException {
+        //Prepare sql statement
+        String getPersonSignatureQuery = "SELECT * FROM person " +
+                                            "JOIN userPreferences ON (person.UUID = userPreferences.UUID) " +
+                                            "WHERE person.UUID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(getPersonSignatureQuery)) {
+
+            preparedStatement.setString(1, person.getUuid());
+
+            try (ResultSet result = preparedStatement.executeQuery()){
+
+                while (result.next()) {
+
+                    //Pull response content and map into a Person object
+                    person.setSignature(result.getBlob("signaturePDF"));
+                    person.setSignatureFont(result.getString("signatureFont"));
                 }
 
                 return person;
