@@ -9,6 +9,10 @@ import java.util.List;
 public class FileDB {
     private DBConn dbConn;
 
+    public FileDB(){
+        this.dbConn = new DBConn();
+    }
+
     /**
      * Get file information based on the fileID
      * @param fileID fileID to retrieve file from
