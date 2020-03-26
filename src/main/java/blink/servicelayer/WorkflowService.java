@@ -657,8 +657,8 @@ public class WorkflowService {
 
     /**
      * Mark an individual step as complete
-     * @param stepID ID of workflow to unarchive
-     * @return HTTP Response: 200 OK for workflow unarchived successfully
+     * @param stepID ID of step to mark complete
+     * @return HTTP Response: 200 OK for step marked complete successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint

@@ -82,7 +82,6 @@ public class FileService {
      * @return HTTP Response: 200 OK for file returned
      *                        401 UNAUTHORIZED for invalid JSON Web Token in header
      *                        500 INTERNAL SERVER ERROR for backend error
-     */
     @Path("/id/{milestoneID}")
     @GET
     @Operation(summary = "getAllFilesByMilestone", description = "Gets all files by milestoneID")
@@ -120,6 +119,7 @@ public class FileService {
             return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
+     */
 
     /**
      * Insert a file into the database
