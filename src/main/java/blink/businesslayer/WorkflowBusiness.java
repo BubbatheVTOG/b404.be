@@ -630,7 +630,7 @@ public class WorkflowBusiness {
             if(step.getStepID() == stepID){
                 step.setCompleted(true);
             }
-            if (!step.getChildren().isEmpty()){
+            if (step.hasChildren()){
                 step.setChildren(findStepCompletions(step.getChildren(), stepID));
 
                 boolean completed = true;
