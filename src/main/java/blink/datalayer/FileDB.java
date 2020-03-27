@@ -2,8 +2,6 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
-import javax.validation.constraints.Null;
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,44 +36,9 @@ public class FileDB {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
                             result.getBytes("file"),
-                            result.getBoolean("confidential"),
-                            result.getInt("stepID"));
+                            result.getBoolean("confidential"));
                 }
                 return file;
-            }
-        }
-    }
-
-    /**
-     * Return all files in the database
-     * @return List<files> containing all files in the database
-     * @throws SQLException error connecting to database or executing query
-     */
-    public List<File> getAllFiles() throws SQLException {
-        // List of files
-        List<File> files = new ArrayList<>();
-
-        //Prepare sql statement
-        String query = "SELECT * FROM file";
-
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-            //Execute Query
-            try (ResultSet result = preparedStatement.executeQuery()) {
-                File file = null;
-
-                while(result.next()) {
-                    file = new File(result.getInt("fileID"),
-                            result.getString("name"),
-                            result.getBytes("file"),
-                            //file.convertFileToBase64(result.getBlob("file")),
-                            result.getBoolean("confidential"),
-                            result.getInt("stepID"));
-
-                    files.add(file);
-                }
-                return files;
             }
         }
     }
@@ -83,7 +46,7 @@ public class FileDB {
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT * FROM file join step on step.fileID = file.fileID " +
+        String query = "SELECT file.fileID, file.name, file.file, file.confidential FROM file join step on step.fileID = file.fileID " +
                                           "join workflow on workflow.workflowID = step.workflowID " +
                                           "join milestone on workflow.milestoneID = milestone.milestoneID " +
                                           "WHERE milestone.milestoneID = ?;";
@@ -100,9 +63,7 @@ public class FileDB {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
                             result.getBytes("file"),
-                            //file.convertFileToBase64(result.getBlob("file")),
-                            result.getBoolean("confidential"),
-                            result.getInt("stepID"));
+                            result.getBoolean("confidential"));
 
                     files.add(file);
                 }
@@ -111,27 +72,22 @@ public class FileDB {
         }
     }
 
-
     /**
      * Connect to database and add
-     * @param name name of new file to be added
-     * @param file file of new file to be added
-     * @param confidential of new file to be added
-     * @param stepID stepID of new file to be added
+     * @param file
      * @throws SQLException Error connecting to database or executing update
      */
-    public int insertFile(final String name, final Blob file, final boolean confidential, final int stepID) throws SQLException {
+    public int insertFile(File file) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO file (name, file, confidential, stepID) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO file (name, file, confidential) VALUES (?, ?, ?);";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             //Set parameters and execute update
-            preparedStatement.setString(1, name);
-            preparedStatement.setBlob(2, file);
-            preparedStatement.setBoolean(3, confidential);
-            preparedStatement.setInt(4, stepID);
+            preparedStatement.setString(1, file.getName());
+            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBoolean(3, file.getConfidential());
 
             preparedStatement.executeUpdate();
 
@@ -141,56 +97,7 @@ public class FileDB {
         }
     }
 
-    /**
-     * Connect to database and add
-     * @param name name of new file to be added
-     * @param file file of new file to be added
-     * @param confidential of new file to be added
-     * @throws SQLException Error connecting to database or executing update
-     */
-    public int insertFile(final String name, final Blob file, final boolean confidential) throws SQLException {
-        //Prepare sql statement
-        String query = "INSERT INTO file (name, file, confidential, stepID) VALUES (?, ?, ?);";
-
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            //Set parameters and execute update
-            preparedStatement.setString(1, name);
-            preparedStatement.setBlob(2, file);
-            preparedStatement.setBoolean(3, confidential);
-
-            preparedStatement.executeUpdate();
-
-            try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                return resultSet.getInt(1);
-            }
-        }
-    }
-
-    public int updateFile(final String name, final Blob file, final boolean confidential, final int stepID, final int fileID) throws SQLException {
-        //Prepare sql statement
-        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ?, file.stepID = ? WHERE file.filedID = ?;";
-
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            //Set parameters and execute update
-            preparedStatement.setString(1, name);
-            preparedStatement.setBlob(2, file);
-            preparedStatement.setBoolean(3, confidential);
-            preparedStatement.setInt(4, stepID);
-            preparedStatement.setInt(5, fileID);
-
-            preparedStatement.executeUpdate();
-
-            try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                return resultSet.getInt(1);
-            }
-        }
-    }
-
-    public int updateFile(final String name, final Blob file, final boolean confidential, final int fileID) throws SQLException {
+    public int updateFile(File file, int fileID) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.filedID = ?;";
 
@@ -198,9 +105,9 @@ public class FileDB {
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
-            preparedStatement.setString(1, name);
-            preparedStatement.setBlob(2, file);
-            preparedStatement.setBoolean(3, confidential);
+            preparedStatement.setString(1, file.getName());
+            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBoolean(3, file.getConfidential());
             preparedStatement.setInt(4, fileID);
 
             preparedStatement.executeUpdate();
