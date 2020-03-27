@@ -74,7 +74,7 @@ public class FileDB {
 
     /**
      * Connect to database and add
-     * @param file
+     * @param file file to insert into the database
      * @throws SQLException Error connecting to database or executing update
      */
     public int insertFile(File file) throws SQLException {
@@ -97,6 +97,12 @@ public class FileDB {
         }
     }
 
+
+    /**
+     * Connect to database and add
+     * @param file existing file to update into the database
+     * @throws SQLException Error connecting to database or executing update
+     */
     public int updateFile(File file, int fileID) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.filedID = ?;";

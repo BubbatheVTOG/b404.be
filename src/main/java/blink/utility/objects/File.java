@@ -42,8 +42,6 @@ public class File {
 
     public Blob getBlobFile() { return blobFile; }
 
-    public void setBlobFile(Blob blob) { this.blobFile = blobFile; }
-
     public String getBase64File() { return base64File; }
 
     public void setBase64File(String base64File) { this.base64File = base64File; }
@@ -58,11 +56,10 @@ public class File {
 
     /**
      * Converts byte[] File to blob
-     * @param byteFile
+     * @param byteFile the byte array to convert to a blob
      * @return blob
-     * @throws SQLException
      */
-    public Blob convertFileToBlob(byte[] byteFile) {
+    private Blob convertFileToBlob(byte[] byteFile){
         try {
             return new SerialBlob(byteFile);
         } catch(SQLException sqle) {
@@ -72,11 +69,15 @@ public class File {
 
     /**
      * Converts byte[] File into Base64 string
-     * @param byteFile
+     * @param byteFile byte array to convert to base64
      * @return base64 string
-     * @throws SQLException
      */
-    public String convertFileToBase64(byte[] byteFile) {
-        return Base64.getEncoder().encodeToString(byteFile);
+    private String convertFileToBase64(byte[] byteFile) {
+        try{
+            return Base64.getEncoder().encodeToString(byteFile);
+        }
+        catch(Exception e){
+            throw new InternalServerErrorException(Integer.toString(byteFile.length));
+        }
     }
 }
