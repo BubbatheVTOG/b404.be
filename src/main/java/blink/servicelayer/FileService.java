@@ -169,54 +169,6 @@ public class FileService {
         }
     }
 
-    /**
-     * Insert a file into the database
-     * @Param file json object containing name, file and confidential
-     * @Param jwt JSON web token for authorization
-     * @return HTTP Response: 200 OK for successfully inserting a file
-     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                        403 FORBIDDEN if requester does not have access to the endpoint
-     *                        500 INTERNAL SERVER ERROR for backend error
-     */
-    @POST
-    @Operation(summary = "insertFile", description = "Insert a new file into the database")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "File Object which contains name, file, confidential"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
-    })
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) @FormParam("file") String json,
-                               @RequestBody(description = "stepID of the file", required = true) @FormParam("stepID") String stepID,
-                               @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
-        try {
-            Authorization.isLoggedIn(jwt);
-
-            JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-
-            File file = fileBusiness.getFile(Integer.toString(fileBusiness.insertFile(jsonObject, stepID)));
-
-            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
-        }
-        //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
-        catch(ForbiddenException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
-        }
-        catch(NotFoundException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
-        }
-        catch(NotAuthorizedException nae){
-            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
-        }
-        catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
     @PUT
     @Operation(summary = "updateFile", description = "Update an existing file")
     @ApiResponses(value = {
@@ -239,11 +191,7 @@ public class FileService {
 
             File file = null;
 
-            if(stepID != null) {
-                file = fileBusiness.getFile(Integer.toString(fileBusiness.updateFile(jsonObject, stepID, fileID)));
-            } else {
-                file = fileBusiness.getFile(Integer.toString(fileBusiness.updateFile(jsonObject, fileID)));
-            }
+            file = fileBusiness.getFile(Integer.toString(fileBusiness.updateFile(jsonObject, fileID)));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -266,7 +214,7 @@ public class FileService {
         }
     }
 
-    @Path("/id/{id}")
+    @Path("/delete/{id}")
     @DELETE
     @Operation(summary = "deleteFile", description = "delete an existing file")
     @ApiResponses(value = {
