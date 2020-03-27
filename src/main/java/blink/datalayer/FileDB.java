@@ -45,7 +45,7 @@ public class FileDB {
             }
         }
         catch(NullPointerException npe){
-            throw new InternalServerErrorException(blob.getBytes().toString());
+            throw new InternalServerErrorException(blob.toString());
         }
     }
 
