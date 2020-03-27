@@ -598,6 +598,9 @@ public class WorkflowBusiness {
             }
 
             workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+            if(workflow.getCompany() == null){
+                throw new BadRequestException("This step belongs to a template workflow and cannot be marked as complete");
+            }
 
             //Get workflow and find nested completions that may have occurred
             workflow = new Workflow(workflow.getWorkflowID(),

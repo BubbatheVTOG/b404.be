@@ -211,6 +211,7 @@ INSERT INTO DB_DATABASE.file (fileID, name, file, confidential, stepID) VALUES
   (4, "No Linked File", null, 0, null);
 
 INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
+  (0, "No Action Required", "No Action Required"),
   (1, "Sign", "Sign"),
   (2, "Submit", "Submit"),
   (3, "Send", "Complete"),
