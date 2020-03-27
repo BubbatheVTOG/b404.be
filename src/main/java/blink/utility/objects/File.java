@@ -11,7 +11,7 @@ public class File {
     private String name;
     private transient byte[] byteFile;
     private transient Blob blobFile;
-    private String base64File;
+    private String file;
     private boolean confidential;
 
     public File(int fileID, String name, byte[] byteFile, boolean confidential) {
@@ -19,14 +19,14 @@ public class File {
         this.name = name;
         this.byteFile = byteFile;
         this.blobFile = this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
-        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
+        this.file = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
     }
 
     public File(String name, byte[] byteFile, boolean confidential) {
         this.name = name;
         this.byteFile = byteFile;
-        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
+        this.file = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
     }
 
@@ -42,9 +42,9 @@ public class File {
 
     public Blob getBlobFile() { return blobFile; }
 
-    public String getBase64File() { return base64File; }
+    public String getFile() { return file; }
 
-    public void setBase64File(String base64File) { this.base64File = base64File; }
+    public void setFile(String file) { this.file = file; }
 
     public byte[] getByteFile() { return byteFile; }
 

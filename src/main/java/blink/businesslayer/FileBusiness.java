@@ -9,9 +9,11 @@ import java.util.List;
 
 public class FileBusiness {
     private FileDB fileDB;
+    private MilestoneBusiness milestoneBusiness;
 
     public FileBusiness() {
         this.fileDB = new FileDB();
+        this.milestoneBusiness = new MilestoneBusiness();
     }
 
     /**
@@ -34,6 +36,8 @@ public class FileBusiness {
      */
     public List<File> getAllFilesByMilestone(String milestoneID) {
         try {
+            milestoneBusiness.getMilestoneByID(milestoneID);
+
             return fileDB.getAllFilesByMilestone(Integer.parseInt(milestoneID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
