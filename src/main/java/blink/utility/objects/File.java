@@ -18,7 +18,7 @@ public class File {
         this.fileID = fileID;
         this.name = name;
         this.byteFile = byteFile;
-        this.blobFile = this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
+        this.blobFile = this.byteFile == 0 ? null : this.convertFileToBlob(byteFile);
         this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
     }

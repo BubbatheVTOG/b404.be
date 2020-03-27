@@ -21,7 +21,6 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
-        Blob blob = null;
         //Prepare sql statement
         String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
@@ -33,19 +32,14 @@ public class FileDB {
             try (ResultSet result = preparedStatement.executeQuery()) {
 
                 File file = null;
-
                 while (result.next()) {
-                    blob = result.getBlob("file");
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            result.getBytes("file"),
+                            result.getBytes("file") == null ?  new byte[]{} : result.getBytes("file"),
                             result.getBoolean("confidential"));
                 }
                 return file;
             }
-        }
-        catch(NullPointerException npe){
-            throw new InternalServerErrorException(blob.toString());
         }
     }
 
@@ -63,15 +57,11 @@ public class FileDB {
             preparedStatement.setInt(1, milestoneID);
 
             try(ResultSet result = preparedStatement.executeQuery()) {
-                File file = null;
-
                 while(result.next()) {
-                    file = new File(result.getInt("fileID"),
+                    files.add(new File(result.getInt("fileID"),
                             result.getString("name"),
                             result.getBytes("file"),
-                            result.getBoolean("confidential"));
-
-                    files.add(file);
+                            result.getBoolean("confidential")));
                 }
                 return files;
             }
