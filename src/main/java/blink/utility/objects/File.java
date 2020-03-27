@@ -10,7 +10,7 @@ public class File {
     private int fileID;
     private String name;
     private transient byte[] byteFile;
-    private Blob blobFile;
+    private transient Blob blobFile;
     private String base64File;
     private boolean confidential;
 
