@@ -584,15 +584,39 @@ public class WorkflowBusiness {
      * @return
      */
     public String markStepComplete(String stepID, String uuid){
+        Workflow workflow = null;
         try {
             //Mark the step as complete
             Person requester = this.personBusiness.getPersonByUUID(uuid);
-            Step step = this.stepBusiness.markStepComplete(stepID, requester.getUuid());
+            Step step = this.stepBusiness.getStep(stepID);
+
+            if(step.hasChildren()){
+                throw new BadRequestException("This is a composite step and cannot be marked complete.");
+            }
+            if(!step.getUUID().equals(requester.getUuid())){
+                throw new NotAuthorizedException("This step is not assigned to you and cannot be marked as completed");
+            }
+
+            workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+            if(workflow.getCompany() == null){
+                throw new BadRequestException("This step belongs to a template workflow and cannot be marked as complete");
+            }
 
             //Get workflow and find nested completions that may have occurred
-            Workflow workflow = this.findStepCompletions(this.getWorkflowByID(Integer.toString(step.getWorkflowID())));
+            workflow = new Workflow(workflow.getWorkflowID(),
+                    workflow.getName(),
+                    workflow.getDescription(),
+                    workflow.getCreatedDate(),
+                    workflow.getLastUpdatedDate(),
+                    workflow.getStartDate(),
+                    workflow.getDeliveryDate(),
+                    workflow.getCompletedDate(),
+                    workflow.isArchived(),
+                    workflow.getCompany(),
+                    workflow.getMilestoneID(),
+                    findStepCompletions(workflow.getSteps(), step.getStepID()));
 
-            //Update any changes in the step completion
+            //Update changes in the step completion
             this.workflowDB.updateWorkflow(workflow.getWorkflowID(),
                     workflow.getName(),
                     workflow.getDescription(),
@@ -605,30 +629,17 @@ public class WorkflowBusiness {
             return "Step successfully completed.";
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
+            throw new InternalServerErrorException(gson.toJson(workflow));
         }
     }
 
-    private Workflow findStepCompletions(Workflow workflow){
-        //Recreate workflow to calculate percentComplete and completedDate if changed
-        return new Workflow(workflow.getWorkflowID(),
-                workflow.getName(),
-                workflow.getDescription(),
-                workflow.getCreatedDate(),
-                workflow.getLastUpdatedDate(),
-                workflow.getStartDate(),
-                workflow.getDeliveryDate(),
-                workflow.getCompletedDate(),
-                workflow.isArchived(),
-                workflow.getCompany(),
-                workflow.getMilestoneID(),
-                findStepCompletions(workflow.getSteps()));
-    }
-
-    private List<Step> findStepCompletions(List<Step> steps){
+    private List<Step> findStepCompletions(List<Step> steps, int stepID){
         for(Step step : steps) {
-            if (!step.getChildren().isEmpty()){
-                step.setChildren(findStepCompletions(step.getChildren()));
+            if(step.getStepID() == stepID){
+                step.setCompleted(true);
+            }
+            if (step.hasChildren()){
+                step.setChildren(findStepCompletions(step.getChildren(), stepID));
 
                 boolean completed = true;
                 for(Step child : step.getChildren()){
