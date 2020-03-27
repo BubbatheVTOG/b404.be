@@ -65,7 +65,6 @@ DROP TABLE IF EXISTS `verb`;
 CREATE TABLE `verb` (
   `verbID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `description` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`verbID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -205,17 +204,18 @@ INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
 INSERT INTO DB_DATABASE.file (fileID, name, file, confidential, stepID) VALUES
+  (0, "No File Linked", null, 0, null),
   (1, "Document.docx", null, 0, null),
   (2, "Image.jpg", null, 0, null),
   (3, "Video.mp4", null, 0, null),
   (4, "No Linked File", null, 0, null);
 
-INSERT INTO DB_DATABASE.verb (verbID, name, description) VALUES
-  (0, "No Action Required", "No Action Required"),
-  (1, "Sign", "Sign"),
-  (2, "Submit", "Submit"),
-  (3, "Send", "Complete"),
-  (4, "Send", "Fill out");
+INSERT INTO DB_DATABASE.verb (verbID, name) VALUES
+  (0, "No Action Required"),
+  (1, "Sign"),
+  (2, "Submit"),
+  (3, "Send"),
+  (4, "Approve");
 
 INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, asynchronous, completed) VALUES
   (1, 1, "This is a higher level step.", null, null, 1, 1, 1, 0, 0),
