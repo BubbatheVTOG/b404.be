@@ -41,7 +41,7 @@ public class FileService {
      */
     @Path("/id/{id}")
     @GET
-    @Operation(summary = "getBase64File", description = "Gets a file")
+    @Operation(summary = "getFile", description = "Gets a file in base64 format")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "File object containing fileID, name, file, confidential and stepID"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
