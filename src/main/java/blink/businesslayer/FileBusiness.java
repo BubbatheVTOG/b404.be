@@ -186,7 +186,8 @@ public class FileBusiness {
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
 
                 //If user is not part of the company which the file belongs to they do not have access
-                if (!companyIDList.contains(companyID)) {
+                //If companyID was 0 then file is a template and can be downloaded for filling out after completion
+                if (companyID == 0 || !companyIDList.contains(companyID)) {
                     throw new NotAuthorizedException("You do not have access to this file.");
                 }
             }
