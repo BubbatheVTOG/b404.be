@@ -21,6 +21,7 @@ public class FileBusiness {
 
     public FileBusiness() {
         this.fileDB = new FileDB();
+        this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
     }
 
@@ -49,8 +50,6 @@ public class FileBusiness {
         }
         catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
-        }catch(Exception e){
-            throw new InternalServerErrorException(uuid);
         }
     }
 
