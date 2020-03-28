@@ -19,7 +19,7 @@ public class File {
         this.name = name;
         this.byteFile = byteFile == null ? new byte[]{} : byteFile;
         this.blobFile = this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
-        this.file = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
+        this.file = this.convertFileToBase64(this.byteFile);
         this.confidential = confidential;
     }
 
