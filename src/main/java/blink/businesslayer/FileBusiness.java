@@ -178,7 +178,7 @@ public class FileBusiness {
             return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
         catch(Exception e){
-            throw new InternalServerErrorException(e.getMessage());
+            throw new InternalServerErrorException(jsonObject.toString());
             //throw new BadRequestException("File json in incorrect format.");
         }
     }
