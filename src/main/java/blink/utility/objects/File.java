@@ -1,5 +1,7 @@
 package blink.utility.objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.Blob;
@@ -10,6 +12,7 @@ public class File {
     private int fileID;
     private String name;
     private transient byte[] byteFile;
+    @SerializedName("file")
     private String base64File;
     private boolean confidential;
 

@@ -1,10 +1,10 @@
 # Maven target directory
 /target
 
-# Compiled class base64File
+# Compiled class file
 *.class
 
-# Log base64File
+# Log file
 *.log
 
 # BlueJ files
