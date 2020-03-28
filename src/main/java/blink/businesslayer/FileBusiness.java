@@ -176,8 +176,8 @@ public class FileBusiness {
      * @param uuid id of requester
      */
     private void checkRequesterAccess(int fileID, String uuid) throws SQLException{
+        Person requester = this.personBusiness.getPersonByUUID(uuid);
         try {
-            Person requester = this.personBusiness.getPersonByUUID(uuid);
 
             //If internal user, they always have access
             if (!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
@@ -192,7 +192,7 @@ public class FileBusiness {
                 }
             }
         }catch(Exception e){
-            throw new InternalServerErrorException("Error in authorization function.");
+            throw new InternalServerErrorException(Integer.toString(requester.getAccessLevelID()));
         }
     }
 }
