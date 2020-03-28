@@ -215,7 +215,7 @@ public class FileService {
         }
     }
 
-    @Path("/delete/{id}")
+    @Path("/{id}")
     @DELETE
     @Operation(summary = "deleteFile", description = "delete an existing file")
     @ApiResponses(value = {
