@@ -176,18 +176,22 @@ public class FileBusiness {
      * @param uuid id of requester
      */
     private void checkRequesterAccess(int fileID, String uuid) throws SQLException{
-        Person requester = this.personBusiness.getPersonByUUID(uuid);
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
 
-        //If internal user, they always have access
-        if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
+            //If internal user, they always have access
+            if (!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
 
-            int companyID = this.fileDB.getFileCompanyID(fileID);
-            List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                int companyID = this.fileDB.getFileCompanyID(fileID);
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
 
-            //If user is not part of the company which the file belongs to they do not have access
-            if (!companyIDList.contains(companyID)) {
-                throw new NotAuthorizedException("You do not have access to this file.");
+                //If user is not part of the company which the file belongs to they do not have access
+                if (!companyIDList.contains(companyID)) {
+                    throw new NotAuthorizedException("You do not have access to this file.");
+                }
             }
+        }catch(Exception e){
+            throw new InternalServerErrorException("Error in authorization function.");
         }
     }
 }
