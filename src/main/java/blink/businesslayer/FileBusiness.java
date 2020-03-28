@@ -49,6 +49,8 @@ public class FileBusiness {
         }
         catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
+        }catch(Exception e){
+            throw new InternalServerErrorException(uuid);
         }
     }
 
@@ -177,22 +179,18 @@ public class FileBusiness {
      */
     private void checkRequesterAccess(int fileID, String uuid) throws SQLException{
         Person requester = this.personBusiness.getPersonByUUID(uuid);
-        try {
 
-            //If internal user, they always have access
-            if (!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
+        //If internal user, they always have access
+        if (!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
 
-                int companyID = this.fileDB.getFileCompanyID(fileID);
-                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+            int companyID = this.fileDB.getFileCompanyID(fileID);
+            List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
 
-                //If user is not part of the company which the file belongs to they do not have access
-                //If companyID was 0 then file is a template and can be downloaded for filling out after completion
-                if (companyID == 0 || !companyIDList.contains(companyID)) {
-                    throw new NotAuthorizedException("You do not have access to this file.");
-                }
+            //If user is not part of the company which the file belongs to they do not have access
+            //If companyID was 0 then file is a template and can be downloaded for filling out after completion
+            if (companyID == 0 || !companyIDList.contains(companyID)) {
+                throw new NotAuthorizedException("You do not have access to this file.");
             }
-        }catch(Exception e){
-            throw new InternalServerErrorException(uuid);
         }
     }
 }
