@@ -164,7 +164,6 @@ public class FileDB {
                 }
             }
         }
-
         return companyID;
     }
 }

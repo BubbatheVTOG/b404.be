@@ -59,9 +59,11 @@ public class File {
      * @param byteFile the byte array to convert to a blob
      * @return blob
      */
-    private Blob convertFileToBlob(byte[] byteFile){
+    private Blob convertFileToBlob(byte[] byteFile) {
+        Blob blob = null;
         try {
-            return new SerialBlob(byteFile);
+            blob = new SerialBlob(byteFile);
+            return blob;
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
