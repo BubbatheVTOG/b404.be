@@ -222,7 +222,7 @@ public class FileService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteFile(@RequestBody(description = "id", required = true) @FormParam("id") String fileID,
+    public Response deleteFile(@Parameter(in = ParameterIn.PATH, required = true) @PathParam("id") String fileID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {

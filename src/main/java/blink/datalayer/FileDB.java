@@ -89,7 +89,7 @@ public class FileDB {
             preparedStatement.executeUpdate();
 
             try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                return resultSet.getInt(1);
+                return resultSet.getInt(0);
             }
         }
     }
@@ -114,10 +114,6 @@ public class FileDB {
             preparedStatement.setInt(4, fileID);
 
             preparedStatement.executeUpdate();
-
-            try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                return resultSet.getInt(1);
-            }
         }
     }
 
