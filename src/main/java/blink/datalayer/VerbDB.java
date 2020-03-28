@@ -34,8 +34,7 @@ public class VerbDB {
 
                 while (result.next()) {
                     verbList.add(new Verb(result.getInt("verbID"),
-                            result.getString("name"),
-                            result.getString("description")));
+                            result.getString("name")));
                 }
 
                 //Return verb

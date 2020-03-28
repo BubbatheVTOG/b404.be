@@ -1,5 +1,8 @@
 package blink.utility.objects;
 
+import com.google.gson.annotations.SerializedName;
+
+import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -8,47 +11,25 @@ import java.util.Base64;
 public class File {
     private int fileID;
     private String name;
-    private Blob blobFile;
+    private transient byte[] byteFile;
+    @SerializedName("file")
     private String base64File;
     private boolean confidential;
-    private int stepID;
 
-    public File(int fileID, String name, Blob blobFile, boolean confidential, int stepID) {
+    public File(int fileID, String name, byte[] byteFile, boolean confidential) {
         this.fileID = fileID;
         this.name = name;
-        this.blobFile = blobFile;
+        this.byteFile = byteFile == null ? new byte[]{} : byteFile;
+        this.base64File = this.convertFileToBase64(this.byteFile);
         this.confidential = confidential;
-        this.stepID = stepID;
     }
 
-    public File(int fileID, String name, String base64File, boolean confidential, int stepID) {
-        this.fileID = fileID;
+    public File(String name, byte[] byteFile, boolean confidential) {
         this.name = name;
-        this.base64File = base64File;
-        this.confidential = confidential;
-        this.stepID = stepID;
-    }
-
-    public File(int fileID, String name, Blob blobFile, boolean confidential) {
-        this.fileID = fileID;
-        this.name = name;
-        this.blobFile = blobFile;
+        this.byteFile = byteFile;
+        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
     }
-
-    public File(String name, Blob blobFile, boolean confidential, int stepID) {
-        this.name = name;
-        this.blobFile = blobFile;
-        this.confidential = confidential;
-        this.stepID = stepID;
-    }
-
-    public File(String name, Blob blobFile, boolean confidential) {
-        this.name = name;
-        this.blobFile = blobFile;
-        this.confidential = confidential;
-    }
-
 
     public File(String name) { this.name = name; }
 
@@ -60,34 +41,48 @@ public class File {
 
     public void setName(String name) { this.name = name; }
 
-    public Blob getBlobFile() { return blobFile; }
-
-    public void setBlobFile(Blob blobFile) { this.blobFile = blobFile; }
+    public Blob getBlobFile() {
+        return this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
+    }
 
     public String getBase64File() { return base64File; }
 
     public void setBase64File(String base64File) { this.base64File = base64File; }
 
+    public byte[] getByteFile() { return byteFile; }
+
+    public void setByteFile(byte[] byteFile) { this.byteFile = byteFile; }
+
     public boolean getConfidential() { return confidential; }
 
     public void setConfidential(boolean confidential) { this.confidential = confidential; }
 
-    public int getStepID() { return stepID; }
-
-    public void setStepID(int stepID) { this.stepID = stepID; }
-
     /**
-     * Converts blob into Base64 string
-     * @param blobFile
-     * @return base64 string
-     * @throws SQLException
+     * Converts byte[] File to blob
+     * @param byteFile the byte array to convert to a blob
+     * @return blob
      */
-    public String convertFileToBase64(Blob blobFile) throws SQLException {
+    private Blob convertFileToBlob(byte[] byteFile) {
+        Blob blob = null;
         try {
-            byte [] blobAsByteArray = blobFile.getBytes(1l, (int)blobFile.length());
-            return Base64.getEncoder().encodeToString(blobAsByteArray);
+            blob = new SerialBlob(byteFile);
+            return blob;
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Converts byte[] File into Base64 string
+     * @param byteFile byte array to convert to base64
+     * @return base64 string
+     */
+    private String convertFileToBase64(byte[] byteFile) {
+        try{
+            return Base64.getEncoder().encodeToString(byteFile);
+        }
+        catch(Exception e){
+            throw new InternalServerErrorException(Integer.toString(byteFile.length));
         }
     }
 }

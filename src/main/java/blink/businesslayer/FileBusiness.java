@@ -1,22 +1,57 @@
 package blink.businesslayer;
 
 import blink.datalayer.FileDB;
+import blink.utility.objects.Company;
 import blink.utility.objects.File;
-import com.fasterxml.jackson.databind.ser.Serializers;
+import blink.utility.objects.Person;
 import com.google.gson.JsonObject;
 
-import javax.sql.rowset.serial.SerialBlob;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
-import java.sql.Blob;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileBusiness {
     private FileDB fileDB;
+    private PersonBusiness personBusiness;
+    private MilestoneBusiness milestoneBusiness;
 
     public FileBusiness() {
         this.fileDB = new FileDB();
+        this.personBusiness = new PersonBusiness();
+        this.milestoneBusiness = new MilestoneBusiness();
+    }
+
+    /**
+     * Get file by fileID
+     * @param fileID to retrieve from the database
+     * @param uuid id of requester
+     * @return a file object
+     */
+    public File getFile(String fileID, String uuid) {
+        try {
+            int fileIDInteger = Integer.parseInt(fileID);
+
+            File file = fileDB.getFileByID(fileIDInteger);
+            if(file == null){
+                throw new NotFoundException("No file with that ID exists");
+            }
+
+            this.checkRequesterAccess(fileIDInteger, uuid);
+
+            return file;
+        }
+        //Error converting milestone to integer
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("File ID must be a valid integer");
+        }
+        catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
     }
 
     /**
@@ -24,9 +59,14 @@ public class FileBusiness {
      * @param fileID to retrieve from the database
      * @return a file object
      */
-    public File getFile(String fileID) {
+    private File getFile(String fileID) {
         try {
-            return fileDB.getFileByID(Integer.parseInt(fileID));
+            File file = fileDB.getFileByID(Integer.parseInt(fileID));
+            if(file == null){
+                throw new NotFoundException("No file with that ID exists");
+            }
+
+            return file;
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -35,23 +75,23 @@ public class FileBusiness {
     /**
      * Get all files by milestoneID
      * @param milestoneID to retrieve files by
+     * @param uuid id of requester
      * @return list of files
      */
-    public List<File> getAllFilesByMilestone(String milestoneID) {
+    public List<File> getAllFilesByMilestone(String milestoneID, String uuid) {
         try {
-            return fileDB.getAllFilesByMilestone(Integer.parseInt(milestoneID));
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
 
-    /**
-     * Return all files from the database
-     * @return List<File> containing all files in the database
-     */
-    public List<File> getAllFiles() {
-        try {
-            return fileDB.getAllFiles();
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID())){
+                    throw new NotAuthorizedException("You do not have access to this file.");
+                }
+            }
+
+            return fileDB.getAllFilesByMilestone(Integer.parseInt(milestoneID));
+
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -60,27 +100,19 @@ public class FileBusiness {
     /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
+     * @param uuid id of requester
      * @return generated fileID
      */
-    public int insertFile(JsonObject jsonObject) {
+    public File insertFile(JsonObject jsonObject, String uuid) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
-            return fileDB.insertFile(file.getName(), file.getBlobFile(), file.getConfidential());
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
 
-    /**
-     * Insert a new file with a stepID
-     * @param jsonObject that contains name, file and confidential
-     * @param stepID of the file
-     * @return generated fileID
-     */
-    public int insertFile(JsonObject jsonObject, String stepID) {
-        try {
-            File file = jsonObjectToFileObject(jsonObject, stepID);
-            return fileDB.insertFile(file.getName(), file.getBlobFile(), file.getConfidential(), file.getStepID());
+            //Check that file exists and user has access to file
+            this.getFile(Integer.toString(file.getFileID()), uuid);
+
+            int fileID = fileDB.insertFile(file);
+
+            return this.getFile(Integer.toString(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -89,29 +121,19 @@ public class FileBusiness {
     /**
      * Update an existing file
      * @param jsonObject contains all file elements except stepID
-     * @param fileID of the file to update
+     * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public int updateFile(JsonObject jsonObject, String fileID) {
+    public File updateFile(JsonObject jsonObject, String uuid) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
-            return fileDB.updateFile(file.getName(), file.getBlobFile(), file.getConfidential(), Integer.parseInt(fileID));
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
 
-    /**
-     * Updates a file using a json object, optional stepID and fileID
-     * @param jsonObject containing name, file and confidential
-     * @param stepID to insert into file
-     * @param fileID to update
-     * @return fileID of the updated file
-     */
-    public int updateFile(JsonObject jsonObject, String stepID, String fileID) {
-        try {
-            File file = jsonObjectToFileObject(jsonObject, stepID);
-            return fileDB.updateFile(file.getName(), file.getBlobFile(), file.getConfidential(), file.getStepID(), Integer.parseInt(fileID));
+            //Check that file exists and user has access to file
+            this.getFile(Integer.toString(file.getFileID()), uuid);
+
+            fileDB.updateFile(file);
+
+            return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -122,8 +144,11 @@ public class FileBusiness {
      * @param fileID to delete from database
      * @return successfully or unsuccessfully deletion string
      */
-    public int deleteFile(String fileID) {
+    public int deleteFile(String fileID, String uuid) {
         try {
+            //Check that file exists and user has access to file
+            this.getFile(fileID, uuid);
+
             return fileDB.deleteFileByFileID(Integer.parseInt(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
@@ -131,35 +156,51 @@ public class FileBusiness {
     }
 
     /**
-     * Converts json String to blob
-     * @param file is the string value of the file as base64
-     * @return blob format of base64 file
+     * Converts json file object into file object
+     * @param jsonObject to convert into file object
+     * @return file object
      */
-    public Blob convertFileToBlob(String file) {
-        byte [] blobAsByteArray = Base64.getMimeDecoder().decode(file);
+    private File jsonObjectToFileObject(JsonObject jsonObject) {
         try {
-            return new SerialBlob(blobAsByteArray);
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
+            if(!jsonObject.has("file")){
+                throw new BadRequestException("File data must be provided");
+            }
+            if(!jsonObject.has("name")){
+                throw new BadRequestException("File name must be provided");
+            }
+            boolean confidential = false;
+            if(jsonObject.has("confidential")){
+                confidential = jsonObject.get("confidential").getAsBoolean();
+            }
+
+            byte[] byteFile = Base64.getDecoder().decode(jsonObject.get("file").getAsString());
+            return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
+        }
+        catch(Exception e){
+            throw new InternalServerErrorException(jsonObject.toString());
+            //throw new BadRequestException("File json in incorrect format.");
         }
     }
 
     /**
-     * Converts json file object into file object
-     * @param jsonObject to convert into file object
-     * @return file object
+     * Checks that a user has access to a file
+     * @param fileID fileID to be modified
+     * @param uuid id of requester
      */
-    public File jsonObjectToFileObject(JsonObject jsonObject) {
-        return new File(jsonObject.get("name").getAsString(), convertFileToBlob(jsonObject.get("file").getAsString()), jsonObject.get("confidential").getAsBoolean());
-    }
+    private void checkRequesterAccess(int fileID, String uuid) throws SQLException{
+        Person requester = this.personBusiness.getPersonByUUID(uuid);
 
-    /**
-     * Converts json file object into file object
-     * @param jsonObject to convert into file object
-     * @param stepID of the file
-     * @return file object
-     */
-    public File jsonObjectToFileObject(JsonObject jsonObject, String stepID) {
-        return new File(jsonObject.get("name").getAsString(), convertFileToBlob(jsonObject.get("file").getAsString()), jsonObject.get("confidential").getAsBoolean(), Integer.parseInt(stepID));
+        //If internal user, they always have access
+        if (!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
+
+            int companyID = this.fileDB.getFileCompanyID(fileID);
+            List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+
+            //If user is not part of the company which the file belongs to they do not have access
+            //If companyID was 0 then file is a template and can be downloaded for filling out after completion
+            if (companyID == 0 || !companyIDList.contains(companyID)) {
+                throw new NotAuthorizedException("You do not have access to this file.");
+            }
+        }
     }
 }

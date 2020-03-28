@@ -300,7 +300,8 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -657,8 +658,8 @@ public class WorkflowService {
 
     /**
      * Mark an individual step as complete
-     * @param stepID ID of workflow to unarchive
-     * @return HTTP Response: 200 OK for workflow unarchived successfully
+     * @param stepID ID of step to mark complete
+     * @return HTTP Response: 200 OK for step marked complete successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -676,14 +677,16 @@ public class WorkflowService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response markStepComplete(@RequestBody(description = "id", required = true) @FormParam("id") String stepID,
+    public Response markStepComplete(@RequestBody(description = "id", required = true) @QueryParam("id") String stepID,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isLoggedIn(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
         catch(BadRequestException bre){
@@ -696,7 +699,8 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
