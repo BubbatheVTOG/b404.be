@@ -1,7 +1,7 @@
 # Grab the latest wildfly image
 FROM jboss/wildfly
 
-# Add our war file to the deployment
+# Add our war base64File to the deployment
 ADD ./target/blink.war /opt/jboss/wildfly/standalone/deployments/
 
 # Set a health check

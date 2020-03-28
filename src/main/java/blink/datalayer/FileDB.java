@@ -89,7 +89,8 @@ public class FileDB {
             preparedStatement.executeUpdate();
 
             try(ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                return resultSet.getInt(0);
+                resultSet.next();
+                return resultSet.getInt(1);
             }
         }
     }
