@@ -231,7 +231,7 @@ public class FileService {
             int numDeletedFiles = fileBusiness.deleteFile(fileID, JWTUtility.getUUIDFromToken(jwt));
 
             if(numDeletedFiles > 0) {
-                return ResponseBuilder.buildSuccessResponse(gson.toJson("Successfully deleted" + numDeletedFiles + " files."));
+                return ResponseBuilder.buildSuccessResponse(gson.toJson("Successfully deleted " + numDeletedFiles + " files."));
             } else {
                 return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, gson.toJson("Could not find any files for deletion."));
             }

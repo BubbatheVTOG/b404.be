@@ -103,7 +103,7 @@ public class FileDB {
      */
     public void updateFile(File file) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.filedID = ?;";
+        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
