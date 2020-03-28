@@ -35,7 +35,7 @@ public class FileDB {
                 while (result.next()) {
                     file = new File(result.getInt("fileID"),
                             result.getString("name"),
-                            result.getBytes("file") == null ?  new byte[]{} : result.getBytes("file"),
+                            result.getBytes("file"),
                             result.getBoolean("confidential"));
                 }
                 return file;
@@ -61,7 +61,7 @@ public class FileDB {
                 while(result.next()) {
                     files.add(new File(result.getInt("fileID"),
                                     result.getString("name"),
-                                    result.getBytes("file") == null ?  new byte[]{} : result.getBytes("file"),
+                                    result.getBytes("file"),
                                     result.getBoolean("confidential")));
                 }
                 return files;

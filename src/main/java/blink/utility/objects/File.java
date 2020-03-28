@@ -17,7 +17,7 @@ public class File {
     public File(int fileID, String name, byte[] byteFile, boolean confidential) {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = byteFile;
+        this.byteFile = byteFile == null ? new byte[]{} : byteFile;
         this.blobFile = this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
         this.file = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
         this.confidential = confidential;
