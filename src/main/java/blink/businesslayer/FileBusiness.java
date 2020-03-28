@@ -109,9 +109,9 @@ public class FileBusiness {
             //Check that file exists and user has access to file
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
-            fileDB.insertFile(file);
+            int fileID = fileDB.insertFile(file);
 
-            return this.getFile(Integer.toString(file.getFileID()));
+            return this.getFile(Integer.toString(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
