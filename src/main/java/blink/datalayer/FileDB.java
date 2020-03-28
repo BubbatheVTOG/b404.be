@@ -83,8 +83,7 @@ public class FileDB {
 
             //Set parameters and execute update
             preparedStatement.setString(1, file.getName());
-            preparedStatement.setBytes(2, file.getByteFile());
-            //preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBlob(2, file.getBlobFile());
             preparedStatement.setBoolean(3, file.getConfidential());
 
             preparedStatement.executeUpdate();
@@ -102,7 +101,7 @@ public class FileDB {
      * @param file existing file to update into the database
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateFile(File file, int fileID) throws SQLException {
+    public void updateFile(File file) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.filedID = ?;";
 
@@ -113,7 +112,7 @@ public class FileDB {
             preparedStatement.setString(1, file.getName());
             preparedStatement.setBlob(2, file.getBlobFile());
             preparedStatement.setBoolean(3, file.getConfidential());
-            preparedStatement.setInt(4, fileID);
+            preparedStatement.setInt(4, file.getFileID());
 
             preparedStatement.executeUpdate();
         }

@@ -130,7 +130,7 @@ public class FileBusiness {
             //Check that file exists and user has access to file
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
-            fileDB.updateFile(file, file.getFileID());
+            fileDB.updateFile(file);
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
