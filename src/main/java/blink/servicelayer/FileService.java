@@ -165,7 +165,7 @@ public class FileService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, json);
             //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
@@ -181,7 +181,7 @@ public class FileService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateFile(@RequestBody(description = "json object containing name, file, confidential", required = true) @FormParam("file") String json,
-                               @RequestBody(description = "stepID of te file")                   @FormParam("stepID") String stepID,
+                               @RequestBody(description = "stepID of the file")                   @FormParam("stepID") String stepID,
                                @RequestBody(description = "fileID of the file", required = true) @FormParam("fileID") String fileID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
