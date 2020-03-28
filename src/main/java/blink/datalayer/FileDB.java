@@ -142,8 +142,8 @@ public class FileDB {
     /**
      * Gets the company which the file belongs to
      * @param fileID id of file to search for
-     * @return
-     * @throws SQLException
+     * @return companyID of company to which file belongs
+     * @throws SQLException error connecting to database or executing query
      */
     public int getFileCompanyID(int fileID) throws SQLException {
         //Prepare sql statement
