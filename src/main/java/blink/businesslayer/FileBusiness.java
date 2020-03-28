@@ -170,7 +170,7 @@ public class FileBusiness {
             }
             boolean confidential = false;
             if(jsonObject.has("confidential")){
-                jsonObject.get("confidential").getAsBoolean();
+                confidential = jsonObject.get("confidential").getAsBoolean();
             }
 
             byte[] byteFile = Base64.getDecoder().decode(jsonObject.get("file").getAsString());
