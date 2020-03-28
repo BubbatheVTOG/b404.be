@@ -192,7 +192,7 @@ public class FileBusiness {
                 }
             }
         }catch(Exception e){
-            throw new InternalServerErrorException(Integer.toString(requester.getAccessLevelID()));
+            throw new InternalServerErrorException(uuid);
         }
     }
 }
