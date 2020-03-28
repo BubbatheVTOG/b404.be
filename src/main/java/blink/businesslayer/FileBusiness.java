@@ -11,6 +11,7 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -172,7 +173,7 @@ public class FileBusiness {
                 jsonObject.get("confidential").getAsBoolean();
             }
 
-            byte[] byteFile = jsonObject.get("file").getAsString().getBytes();
+            byte[] byteFile = Base64.getDecoder().decode(jsonObject.get("file").getAsString());
             return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
         catch(Exception e){
