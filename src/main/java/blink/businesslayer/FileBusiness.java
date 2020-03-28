@@ -163,11 +163,22 @@ public class FileBusiness {
      */
     private File jsonObjectToFileObject(JsonObject jsonObject) {
         try {
+            if(!jsonObject.has("file")){
+                throw new BadRequestException("File data must be provided");
+            }
+            if(!jsonObject.has("name")){
+                throw new BadRequestException("File name must be provided");
+            }
+            boolean confidential = false;
+            if(jsonObject.has("confidential")){
+                jsonObject.get("confidential").getAsBoolean();
+            }
+
             byte[] byteFile = jsonObject.get("file").getAsString().getBytes();
-            return new File(jsonObject.get("name").getAsString(), byteFile, jsonObject.get("confidential").getAsBoolean());
+            return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
         catch(Exception e){
-            throw new BadRequestException(e.getMessage());
+            throw new InternalServerErrorException(e.getMessage());
             //throw new BadRequestException("File json in incorrect format.");
         }
     }
