@@ -83,7 +83,8 @@ public class FileDB {
 
             //Set parameters and execute update
             preparedStatement.setString(1, file.getName());
-            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBytes(2, file.getByteFile());
+            //preparedStatement.setBlob(2, file.getBlobFile());
             preparedStatement.setBoolean(3, file.getConfidential());
 
             preparedStatement.executeUpdate();
