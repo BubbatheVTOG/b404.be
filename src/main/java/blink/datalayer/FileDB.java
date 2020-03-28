@@ -100,7 +100,7 @@ public class FileDB {
      * @param file existing file to update into the database
      * @throws SQLException Error connecting to database or executing update
      */
-    public int updateFile(File file, int fileID) throws SQLException {
+    public void updateFile(File file, int fileID) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.filedID = ?;";
 
