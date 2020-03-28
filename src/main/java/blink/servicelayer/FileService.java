@@ -139,7 +139,7 @@ public class FileService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) @FormParam("file") String json,
+    public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) String json,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
@@ -180,9 +180,7 @@ public class FileService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateFile(@RequestBody(description = "json object containing name, file, confidential", required = true) @FormParam("file") String json,
-                               @RequestBody(description = "stepID of the file")                   @FormParam("stepID") String stepID,
-                               @RequestBody(description = "fileID of the file", required = true) @FormParam("fileID") String fileID,
+    public Response updateFile(@RequestBody(description = "json object containing name, file, confidential", required = true) String json,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -190,9 +188,7 @@ public class FileService {
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-            File file = null;
-
-            file = fileBusiness.updateFile(jsonObject, fileID, JWTUtility.getUUIDFromToken(jwt));
+            File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));

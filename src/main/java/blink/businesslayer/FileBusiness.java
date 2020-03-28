@@ -120,18 +120,17 @@ public class FileBusiness {
     /**
      * Update an existing file
      * @param jsonObject contains all file elements except stepID
-     * @param fileID of the file to update
      * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public File updateFile(JsonObject jsonObject, String fileID, String uuid) {
+    public File updateFile(JsonObject jsonObject, String uuid) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
             //Check that file exists and user has access to file
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
-            fileDB.updateFile(file, Integer.parseInt(fileID));
+            fileDB.updateFile(file, file.getFileID());
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
