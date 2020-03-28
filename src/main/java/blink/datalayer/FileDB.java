@@ -138,4 +138,35 @@ public class FileDB {
             return preparedStatement.executeUpdate();
         }
     }
+
+    /**
+     * Gets the company which the file belongs to
+     * @param fileID id of file to search for
+     * @return
+     * @throws SQLException
+     */
+    public int getFileCompanyID(int fileID) throws SQLException {
+        //Prepare sql statement
+        int companyID = 0;
+        String query = "SELECT milestone.companyID FROM file " +
+                            "JOIN step ON (file.fileID = step.fileID) " +
+                            "JOIN workflow ON (workflow.workflowID = step.workflowID) " +
+                            "JOIN milestone ON (milestone.milestoneID = workflowID.milestoneID) " +
+                            "WHERE file.fileID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute query
+            preparedStatement.setInt(1, fileID);
+            try (ResultSet result = preparedStatement.executeQuery()) {
+
+                while (result.next()) {
+                    companyID = result.getInt("companyID");
+                }
+            }
+        }
+
+        return companyID;
+    }
 }

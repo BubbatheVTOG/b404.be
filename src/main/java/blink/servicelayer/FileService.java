@@ -6,6 +6,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
 import blink.utility.objects.File;
+import blink.utility.security.JWTUtility;
 import com.google.gson.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
@@ -53,7 +54,7 @@ public class FileService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            File file = fileBusiness.getFile(fileID);
+            File file = fileBusiness.getFile(fileID, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -98,7 +99,7 @@ public class FileService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<File> files = fileBusiness.getAllFilesByMilestone(milestoneID);
+            List<File> files = fileBusiness.getAllFilesByMilestone(milestoneID, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
@@ -146,7 +147,7 @@ public class FileService {
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-            File file = fileBusiness.getFile(Integer.toString(fileBusiness.insertFile(jsonObject)));
+            File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -191,7 +192,7 @@ public class FileService {
 
             File file = null;
 
-            file = fileBusiness.getFile(Integer.toString(fileBusiness.updateFile(jsonObject, fileID)));
+            file = fileBusiness.updateFile(jsonObject, fileID, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -231,7 +232,7 @@ public class FileService {
         try {
             Authorization.isLoggedIn(jwt);
 
-            int numDeletedFiles = fileBusiness.deleteFile(fileID);
+            int numDeletedFiles = fileBusiness.deleteFile(fileID, JWTUtility.getUUIDFromToken(jwt));
 
             if(numDeletedFiles > 0) {
                 return ResponseBuilder.buildSuccessResponse(gson.toJson("Successfully deleted" + numDeletedFiles + " files."));
