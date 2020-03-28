@@ -145,7 +145,6 @@ public class FileBusiness {
      */
     public int deleteFile(String fileID, String uuid) {
         try {
-
             //Check that file exists and user has access to file
             this.getFile(fileID, uuid);
 
