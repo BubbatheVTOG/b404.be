@@ -46,10 +46,11 @@ public class FileDB {
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT file.fileID, file.name, file.file, file.confidential FROM file join step on step.fileID = file.fileID " +
-                                          "join workflow on workflow.workflowID = step.workflowID " +
-                                          "join milestone on workflow.milestoneID = milestone.milestoneID " +
-                                          "WHERE milestone.milestoneID = ?;";
+        String query = "SELECT file.fileID, file.name, file.file, file.confidential FROM file " +
+                          "JOIN step on step.fileID = file.fileID " +
+                          "JOIN workflow on workflow.workflowID = step.workflowID " +
+                          "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
+                          "WHERE milestone.milestoneID = ?;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -59,9 +60,9 @@ public class FileDB {
             try(ResultSet result = preparedStatement.executeQuery()) {
                 while(result.next()) {
                     files.add(new File(result.getInt("fileID"),
-                            result.getString("name"),
-                            result.getBytes("file"),
-                            result.getBoolean("confidential")));
+                                    result.getString("name"),
+                                    result.getBytes("file") == null ?  new byte[]{} : result.getBytes("file"),
+                                    result.getBoolean("confidential")));
                 }
                 return files;
             }
