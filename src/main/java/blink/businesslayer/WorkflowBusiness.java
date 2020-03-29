@@ -506,7 +506,8 @@ public class WorkflowBusiness {
         //SQLException - If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException - If the password encryption process fails
         catch(Exception ex){
-            throw new InternalServerErrorException(ex.getMessage());
+            throw new InternalServerErrorException(uuid);
+            //throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
