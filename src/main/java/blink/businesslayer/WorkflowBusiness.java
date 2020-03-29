@@ -524,7 +524,7 @@ public class WorkflowBusiness {
             //If step is not already complete, asynchronous, first step or first incomplete step then it is pending
             if (!currStep.getCompleted() && (async || i == 0 || steps.get(i - 1).getCompleted())) {
                 //If leaf step assigned to requester, add to list
-                if ((currStep.getChildren() == null || currStep.getChildren().isEmpty()) && uuid.equals(currStep.getUUID())) {
+                if (!currStep.hasChildren() && uuid.equals(currStep.getUUID())) {
                     pendingSteps.add(currStep);
                 }
                 //If composite step, check children
