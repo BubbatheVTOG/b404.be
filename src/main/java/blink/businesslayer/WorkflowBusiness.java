@@ -593,7 +593,7 @@ public class WorkflowBusiness {
             if(step.hasChildren()){
                 throw new BadRequestException("This is a composite step and cannot be marked complete.");
             }
-            if(!step.getUUID().equals(requester.getUuid())){
+            if(!requester.getUuid().equals(step.getUUID())){
                 throw new NotAuthorizedException("This step is not assigned to you and cannot be marked as completed");
             }
 
