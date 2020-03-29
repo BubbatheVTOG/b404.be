@@ -490,14 +490,14 @@ public class WorkflowBusiness {
      */
     public List<Step> getPendingTasks(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
         try{
-            //Initial parameter validation; throws BadRequestException if there is an issue
-            if(uuid == null || uuid.isEmpty()){ throw new BadRequestException("A user ID must be provided"); }
+            //Validate requester
+            uuid = this.personBusiness.getPersonByUUID(uuid).getUuid();
 
             List<Workflow> userWorkflows = this.getActiveWorkflows(uuid);
 
             List<Step> pendingSteps = new ArrayList<>();
             for(Workflow workflow : userWorkflows){
-                pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid));
+                pendingSteps.addAll(this.findPendingSteps(workflow.getSteps(), uuid, false));
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
@@ -516,20 +516,20 @@ public class WorkflowBusiness {
      * @param uuid - user to identify tasks from
      * @return list of pending steps for this user in this workflow
      */
-    private List<Step> findPendingSteps(List<Step> steps, String uuid){
+    private List<Step> findPendingSteps(List<Step> steps, String uuid, boolean async){
         List<Step> pendingSteps = new ArrayList<>();
 
-        for(int i = 0; i < steps.size(); i++){
+        for (int i = 0; i < steps.size(); i++) {
             Step currStep = steps.get(i);
             //If step is not already complete, asynchronous, first step or first incomplete step then it is pending
-            if(!currStep.getCompleted() && (currStep.getAsynchronous() || currStep.getOrderNumber() == 1 || steps.get(i - 1).getCompleted())){
+            if (!currStep.getCompleted() && (async || i == 0 || steps.get(i - 1).getCompleted())) {
                 //If leaf step assigned to requester, add to list
-                if ((currStep.getChildren() == null || currStep.getChildren().isEmpty()) && currStep.getUUID().equals(uuid)) {
+                if (!currStep.hasChildren() && uuid.equals(currStep.getUUID())) {
                     pendingSteps.add(currStep);
                 }
                 //If composite step, check children
-                else{
-                    pendingSteps.addAll(this.findPendingSteps(currStep.getChildren(), uuid));
+                else {
+                    pendingSteps.addAll(this.findPendingSteps(currStep.getChildren(), uuid, currStep.getAsynchronous()));
                 }
             }
         }

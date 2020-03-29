@@ -300,8 +300,7 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            //return ResponseBuilder.buildInternalServerErrorResponse();
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -550,7 +549,8 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
