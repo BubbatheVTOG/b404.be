@@ -673,6 +673,7 @@ public class WorkflowService {
             @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: Step ID must be a valid integer for a step in a concrete workflow.}"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: This step is not assigned to you and cannot be marked as completed.}"),
             @ApiResponse(code = 404, message = "{error: No step with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
@@ -697,6 +698,9 @@ public class WorkflowService {
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(ForbiddenException fe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, fe.getMessage());
         }
         catch(Exception e){
             //return ResponseBuilder.buildInternalServerErrorResponse();

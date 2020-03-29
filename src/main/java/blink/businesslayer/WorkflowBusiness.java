@@ -2,18 +2,13 @@ package blink.businesslayer;
 
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
+import javax.ws.rs.*;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -594,7 +589,7 @@ public class WorkflowBusiness {
                 throw new BadRequestException("This is a composite step and cannot be marked complete.");
             }
             if(!requester.getUuid().equals(step.getUUID())){
-                throw new NotAuthorizedException("This step is not assigned to you and cannot be marked as completed");
+                throw new ForbiddenException("This step is not assigned to you and cannot be marked as completed");
             }
 
             workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
