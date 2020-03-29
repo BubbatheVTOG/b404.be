@@ -624,7 +624,8 @@ public class WorkflowBusiness {
             return "Step successfully completed.";
         }
         catch(SQLException sqle){
-            throw new InternalServerErrorException(sqle.getMessage());
+            throw new InternalServerErrorException(gson.toJson(workflow));
+            //throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 
