@@ -15,14 +15,13 @@ public class Person {
 	private String username;
 	private transient String passwordHash;
 	private transient String salt;
-	private Blob signature;
-	private String signatureFont;
 	private String fName;
 	private String lName;
 	private String email;
 	private String title;
 	private List<Company> companies;
 	private int accessLevelID;
+	private String signature;
 
 	//Fully parameterised constructor
 	public Person(String uuid, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
@@ -31,7 +30,6 @@ public class Person {
 		this.passwordHash = passwordHash;
 		this.salt = salt;
 		this.signature = null;
-		this.signatureFont = null;
 		this.fName = fName;
 		this.lName = lName;
 		this.email = email;
@@ -45,9 +43,7 @@ public class Person {
 
 	public String getSalt() { return this.salt; }
 
-	public Blob getSignature() { return signature; }
-
-	public String getSignatureFont() { return signatureFont; }
+	public String getSignature() { return signature; }
 
 	public String getFName() { return this.fName; }
 
@@ -69,20 +65,11 @@ public class Person {
 
 	public void setSalt(String salt) { this.salt = salt; }
 
-	public void setSignature(String fileString) {
-		byte [] blobAsByteArray = Base64.getMimeDecoder().decode(fileString);
-		try {
-			this.signature = new SerialBlob(blobAsByteArray);
-		} catch(NullPointerException sqle) {
-			this.signature = null;
-		} catch(SQLException sqle) {
-			throw new InternalServerErrorException(sqle.getMessage());
-		}
+	public void setSignature(byte[] fileBytes) {
+		this.signature = Base64.getEncoder().encodeToString(fileBytes);
 	}
 
-	public void setSignature(Blob signature) { this.signature = signature; }
-
-	public void setSignatureFont(String signatureFont) { this.signatureFont = signatureFont; }
+	public void setSignature(String signature) { this.signature = signature; }
 
 	public void setFName(String fName) { this.fName = fName; }
 
