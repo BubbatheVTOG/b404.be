@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import blink.datalayer.PersonDB;
 
+import javax.naming.InterruptedNamingException;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.*;
 
@@ -183,12 +184,12 @@ public class PersonBusiness {
                     signatureBlob = null;
                 }
                 else {
-                    byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                    signatureBlob = new SerialBlob(Base64.getDecoder().decode(signature));
                 }
             }
             catch(Exception e){
-                throw new BadRequestException("Invalid base64 syntax on signature.");
+                throw new InternalServerErrorException(e.getMessage());
+                //throw new BadRequestException("Invalid base64 syntax on signature.");
             }
 
             //Get new salt and hash password with new salt
@@ -265,8 +266,7 @@ public class PersonBusiness {
                     signatureBlob = null;
                 }
                 else {
-                    byte[] signatureBytes = Base64.getDecoder().decode(person.getSignature());
-                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                    signatureBlob = new SerialBlob(Base64.getDecoder().decode(person.getSignature()));
                 }
             }
             else{
@@ -275,12 +275,12 @@ public class PersonBusiness {
                         signatureBlob = null;
                     }
                     else {
-                        byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                        signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                        signatureBlob = new SerialBlob(Base64.getDecoder().decode(signature));
                     }
                 }
                 catch(Exception e){
-                    throw new BadRequestException("Invalid base64 syntax on signature.");
+                    throw new InternalServerErrorException(e.getMessage());
+                    //throw new BadRequestException("Invalid base64 syntax on signature.");
                 }
             }
 
