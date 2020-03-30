@@ -461,8 +461,7 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -549,9 +548,7 @@ public class WorkflowService {
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
-        catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+        catch(Exception e){return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -669,7 +666,7 @@ public class WorkflowService {
      */
     @Path("/step/complete")
     @PUT
-    @Operation(summary = "unarchiveWorkflow", description = "Unarchive an existing workflow")
+    @Operation(summary = "MarkStepComplete", description = "Mark a step as complete")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: Step ID must be a valid integer for a step in a concrete workflow.}"),
@@ -704,8 +701,7 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, fe.getMessage());
         }
         catch(Exception e){
-            //return ResponseBuilder.buildInternalServerErrorResponse();
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 }
