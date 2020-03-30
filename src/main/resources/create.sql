@@ -21,18 +21,9 @@ CREATE TABLE `person` (
   `email` varchar(30) DEFAULT NULL,
   `title` varchar(30) DEFAULT NULL,
   `accessLevelID` int(11) NOT NULL,
+  `signature` blob DEFAULT NULL,
   PRIMARY KEY (`UUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-DROP TABLE IF EXISTS `userPreferences`;
-CREATE TABLE `userPreferences` (
-  `UUID` char(36) NOT NULL,
-  `signaturePDF` blob DEFAULT NULL,
-  `signatureFont` varchar(20) NOT NULL,
-  PRIMARY KEY (`UUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 DROP TABLE IF EXISTS `company`;
 CREATE TABLE `company` (
@@ -146,10 +137,6 @@ FOREIGN KEY (`fileID`) REFERENCES `file`(`fileID`),
 ADD CONSTRAINT `fk_step_4`
 FOREIGN KEY (`workflowID`) REFERENCES `workflow`(`workflowID`) ON DELETE CASCADE;
 
-ALTER TABLE `userPreferences`
-ADD CONSTRAINT `fk_userPreferences_1`
-FOREIGN KEY (`UUID`) REFERENCES `person`(`UUID`) ON DELETE CASCADE;
-
 ALTER TABLE `file`
 ADD CONSTRAINT `fk_file_1`
 FOREIGN KEY (`stepID`) REFERENCES `step` (`stepID`);
@@ -224,7 +211,3 @@ INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UU
   (4, 1, "This is a third level step.",  3,    null, 2, 2, 1, 1, 0),
   (5, 2, "This is a third level step.",  3,    null, 2, 2, 1, 1, 0),
   (6, 2, "This is a second level step.", 2,    null, 2, 2, 1, 0, 0);
-
-INSERT INTO DB_DATABASE.userPreferences (UUID, signaturePDF, signatureFont) VALUES
-  ("164e2c50-c280-459e-800c-7168e75f4fe3", null, "Arial"),
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", null, "Calibri");

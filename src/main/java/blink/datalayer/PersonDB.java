@@ -6,7 +6,6 @@ import java.util.List;
 
 import blink.utility.objects.Company;
 import blink.utility.objects.Person;
-import blink.utility.objects.PersonSignature;
 
 public class PersonDB {
     private DBConn dbConn;
@@ -187,8 +186,7 @@ public class PersonDB {
      */
     public Person getPersonSignature(final Person person) throws SQLException {
         //Prepare sql statement
-        String getPersonSignatureQuery = "SELECT * FROM person " +
-                                            "JOIN userPreferences ON (person.UUID = userPreferences.UUID) " +
+        String getPersonSignatureQuery = "SELECT signature FROM person " +
                                             "WHERE person.UUID = ?;";
 
         try(Connection conn = this.dbConn.connect();
@@ -201,8 +199,7 @@ public class PersonDB {
                 while (result.next()) {
 
                     //Pull response content and map into a Person object
-                    person.setSignature(result.getBlob("signaturePDF"));
-                    person.setSignatureFont(result.getString("signatureFont"));
+                    person.setSignature(result.getBytes("signaturePDF"));
                 }
 
                 return person;
@@ -221,9 +218,9 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
+    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID, final Blob signature) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES (?,?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID, signature) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -238,6 +235,7 @@ public class PersonDB {
             preparedStatement.setString(7, email);
             preparedStatement.setString(8, title);
             preparedStatement.setInt(9, accessLevelID);
+            preparedStatement.setBlob(10, signature);
 
             preparedStatement.executeUpdate();
         }
@@ -253,9 +251,9 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
+    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID, final Blob signature) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
+        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ?, signature = ? WHERE UUID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -268,7 +266,8 @@ public class PersonDB {
             preparedStatement.setString(5, email);
             preparedStatement.setString(6, title);
             preparedStatement.setInt(7, accessLevelID);
-            preparedStatement.setString(8, UUID);
+            preparedStatement.setBlob(8, signature);
+            preparedStatement.setString(9, UUID);
 
             preparedStatement.executeUpdate();
         }

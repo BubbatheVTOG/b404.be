@@ -1,17 +1,19 @@
 package blink.businesslayer;
 
+import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
 import blink.datalayer.PersonDB;
 
+import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.*;
 
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
 import blink.utility.objects.Person;
-import blink.utility.objects.PersonSignature;
 import blink.utility.security.PasswordEncryption;
 
 /**
@@ -150,12 +152,13 @@ public class PersonBusiness {
      * @param email New person's email; can be null
      * @param title New person's title; can be null
      * @param accessLevelID New person's accessLevelID
+     * @param signature Base64 string of signature pdf
      * @return Person object containing inserted data
      * @throws NotFoundException Company name does not exist in the database
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person insertPerson(String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person insertPerson(String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
@@ -174,15 +177,24 @@ public class PersonBusiness {
             //Ensure that accessLevel exists in database; accessLevelBusiness will throw relevant custom exceptions
             AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
 
+            Blob signatureBlob;
+            try {
+                byte[] signatureBytes = Base64.getDecoder().decode(signature);
+                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+            }
+            catch(Exception e){
+                throw new BadRequestException("Invalid base64 syntax on signature.");
+            }
+
             //Get new salt and hash password with new salt
             String salt = PasswordEncryption.getSalt();
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
+            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID(), signatureBlob);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
+            return this.getPersonSignature(uuid);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -204,11 +216,11 @@ public class PersonBusiness {
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
-            Person person = personDB.getPersonByUUID(uuid);
+            Person person = personDB.getPersonSignature(this.getPersonByUUID(uuid));
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
             }
@@ -242,11 +254,26 @@ public class PersonBusiness {
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
+            Blob signatureBlob;
+            if(signature == null || signature.equals("")){
+                byte[] signatureBytes = Base64.getDecoder().decode(person.getSignature());
+                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+            }
+            else{
+                try {
+                    byte[] signatureBytes = Base64.getDecoder().decode(signature);
+                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                }
+                catch(Exception e){
+                    throw new BadRequestException("Invalid base64 syntax on signature.");
+                }
+            }
+
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signatureBlob);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
+            return this.getPersonSignature(uuid);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

@@ -149,7 +149,7 @@ public class FileDB {
         String query = "SELECT milestone.companyID FROM file " +
                             "JOIN step ON (file.fileID = step.fileID) " +
                             "JOIN workflow ON (workflow.workflowID = step.workflowID) " +
-                            "JOIN milestone ON (milestone.milestoneID = workflowID.milestoneID) " +
+                            "JOIN milestone ON (milestone.milestoneID = workflow.milestoneID) " +
                             "WHERE file.fileID = ?;";
 
         try(Connection conn = this.dbConn.connect();
