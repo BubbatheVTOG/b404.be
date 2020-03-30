@@ -609,7 +609,7 @@ public class WorkflowBusiness {
                     workflow.isArchived(),
                     workflow.getCompany(),
                     workflow.getMilestoneID(),
-                    findStepCompletions(workflow.getSteps(), step.getStepID()));
+                    this.stepBusiness.insertWorkflowID(findStepCompletions(workflow.getSteps(), step.getStepID()), workflow.getWorkflowID()));
 
             //Update changes in the step completion
             this.workflowDB.updateWorkflow(workflow.getWorkflowID(),
