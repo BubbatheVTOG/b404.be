@@ -186,8 +186,7 @@ public class PersonDB {
      */
     public Person getPersonSignature(final Person person) throws SQLException {
         //Prepare sql statement
-        String getPersonSignatureQuery = "SELECT * FROM person " +
-                                            "JOIN userPreferences ON (person.UUID = userPreferences.UUID) " +
+        String getPersonSignatureQuery = "SELECT signature FROM person " +
                                             "WHERE person.UUID = ?;";
 
         try(Connection conn = this.dbConn.connect();
