@@ -179,8 +179,13 @@ public class PersonBusiness {
 
             Blob signatureBlob;
             try {
-                byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                if(signature == null || signature.isEmpty()){
+                    signatureBlob = null;
+                }
+                else {
+                    byte[] signatureBytes = Base64.getDecoder().decode(signature);
+                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                }
             }
             catch(Exception e){
                 throw new BadRequestException("Invalid base64 syntax on signature.");
@@ -256,13 +261,23 @@ public class PersonBusiness {
 
             Blob signatureBlob;
             if(signature == null || signature.equals("")){
-                byte[] signatureBytes = Base64.getDecoder().decode(person.getSignature());
-                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                if(person.getSignature() == null || person.getSignature().isEmpty()){
+                    signatureBlob = null;
+                }
+                else {
+                    byte[] signatureBytes = Base64.getDecoder().decode(person.getSignature());
+                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                }
             }
             else{
                 try {
-                    byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                    if(signature == null || signature.isEmpty()){
+                        signatureBlob = null;
+                    }
+                    else {
+                        byte[] signatureBytes = Base64.getDecoder().decode(signature);
+                        signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                    }
                 }
                 catch(Exception e){
                     throw new BadRequestException("Invalid base64 syntax on signature.");
