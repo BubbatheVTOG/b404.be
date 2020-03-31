@@ -2,7 +2,6 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +45,12 @@ public class FileDB {
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT file.fileID, file.name, file.file, file.confidential FROM file " +
+        String query = "SELECT UNIQUE file.fileID, file.name, file.file, file.confidential FROM file " +
                           "JOIN step on step.fileID = file.fileID " +
                           "JOIN workflow on workflow.workflowID = step.workflowID " +
                           "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
-                          "WHERE milestone.milestoneID = ?;";
+                          "WHERE milestone.milestoneID = ? " +
+                          "AND file.fileID > 0;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -63,6 +63,33 @@ public class FileDB {
                                     result.getString("name"),
                                     result.getBytes("file"),
                                     result.getBoolean("confidential")));
+                }
+                return files;
+            }
+        }
+    }
+
+    public List<File> getAllFilesByCompany(int companyID) throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT UNIQUE file.fileID, file.name, file.file, file.confidential FROM file " +
+                "JOIN step on step.fileID = file.fileID " +
+                "JOIN workflow on workflow.workflowID = step.workflowID " +
+                "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
+                "JOIN company on company.companyID = milestone.companyID " +
+                "WHERE company.companyID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, companyID);
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    files.add(new File(result.getInt("fileID"),
+                            result.getString("name"),
+                            result.getBytes("file"),
+                            result.getBoolean("confidential")));
                 }
                 return files;
             }

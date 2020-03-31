@@ -173,10 +173,10 @@ public class FileBusiness {
                 confidential = jsonObject.get("confidential").getAsBoolean();
             }
 
-            byte[] byteFile = Base64.getDecoder().decode(jsonObject.get("file").getAsString());
+            byte[] byteFile = Base64.getMimeDecoder().decode(jsonObject.get("file").getAsString());
             return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
-        catch(Exception e){
+        catch(Exception e) {
             throw new BadRequestException("File json in incorrect format.");
         }
     }

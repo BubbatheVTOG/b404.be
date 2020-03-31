@@ -15,6 +15,7 @@ public class File {
     @SerializedName("file")
     private String base64File;
     private boolean confidential;
+    private String mimeType;
 
     public File(int fileID, String name, byte[] byteFile, boolean confidential) {
         this.fileID = fileID;
@@ -79,7 +80,7 @@ public class File {
      */
     private String convertFileToBase64(byte[] byteFile) {
         try{
-            return Base64.getEncoder().encodeToString(byteFile);
+            return Base64.getMimeEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
             throw new InternalServerErrorException(Integer.toString(byteFile.length));
