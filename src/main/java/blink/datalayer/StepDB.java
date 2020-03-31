@@ -178,9 +178,13 @@ public class StepDB {
 
                 //Copy template file if linked to step
                 if(step.getFileID() != 0){
-                    File newFile = this.fileDB.getFileByID(step.getFileID());
-                    int newFileID = this.fileDB.insertFile(newFile);
-                    step.setFileID(newFileID);
+                    File oldFile = this.fileDB.getFileByID(step.getFileID());
+                    //TODO replace this if statement once worklow is added to the file object
+                    //if(oldFile.getWorkflow() == 0){
+                        File newFile = this.fileDB.getFileByID(step.getFileID());
+                        int newFileID = this.fileDB.insertFile(newFile);
+                        step.setFileID(newFileID);
+                    //}
                 }
 
                 preparedStatement.setInt(1, counter);
@@ -221,9 +225,13 @@ public class StepDB {
 
             //Copy template file if linked to step
             if(step.getFileID() != 0){
-                File newFile = this.fileDB.getFileByID(step.getFileID());
-                int newFileID = this.fileDB.insertFile(newFile);
-                step.setFileID(newFileID);
+                File oldFile = this.fileDB.getFileByID(step.getFileID());
+                //TODO replace this if statement once worklow is added to the file object
+                //if(oldFile.getWorkflow() == 0){
+                    File newFile = this.fileDB.getFileByID(step.getFileID());
+                    int newFileID = this.fileDB.insertFile(newFile);
+                    step.setFileID(newFileID);
+                //}
             }
 
             preparedStatement.setInt(1, counter);
