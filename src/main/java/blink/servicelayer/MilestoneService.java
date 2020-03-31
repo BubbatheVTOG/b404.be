@@ -28,7 +28,7 @@ import java.util.List;
 @Api(value = "/milestone")
 public class MilestoneService {
     private MilestoneBusiness milestoneBusiness = new MilestoneBusiness();
-    private static Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all milestones

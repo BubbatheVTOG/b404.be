@@ -30,7 +30,7 @@ import java.util.List;
 @Api(value = "/file")
 public class FileService {
     private FileBusiness fileBusiness = new FileBusiness();
-    private Gson gson = new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get file from the database

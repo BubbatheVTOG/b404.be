@@ -24,7 +24,7 @@ import java.util.List;
 @Api(value = "/verb")
 public class VerbService {
     private VerbBusiness verbBusiness = new VerbBusiness();
-    private Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all verbs from database

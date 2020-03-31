@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Api(value = "/login")
 public class LoginService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Checks that a persons username and password match values stored in database

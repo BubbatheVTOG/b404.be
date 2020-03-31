@@ -25,7 +25,7 @@ import java.util.List;
 @Api(value = "/company")
 public class CompanyService {
     private CompanyBusiness companyBusiness = new CompanyBusiness();
-    private Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all companies from database

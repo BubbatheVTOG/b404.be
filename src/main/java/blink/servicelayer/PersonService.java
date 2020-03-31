@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all people from database
