@@ -173,7 +173,7 @@ public class FileBusiness {
                 confidential = jsonObject.get("confidential").getAsBoolean();
             }
 
-            byte[] byteFile = Base64.getMimeDecoder().decode(jsonObject.get("file").getAsString());
+            byte[] byteFile = Base64.getUrlDecoder().decode(jsonObject.get("file").getAsString());
             return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
         catch(Exception e) {
