@@ -1,11 +1,12 @@
 package blink.businesslayer;
 
+import blink.datalayer.FileDB;
 import blink.datalayer.StepDB;
+import blink.utility.objects.File;
 import blink.utility.objects.Step;
 import com.google.gson.*;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
 import java.sql.Connection;
@@ -22,7 +23,17 @@ public class StepBusiness {
     private static final String STEPID_ERROR = "stepID must be a valid integer.";
     private static final String WORKFLOWID_ERROR = "workflowID must be a valid integer.";
 
-    private StepDB stepDB = new StepDB();
+    private StepDB stepDB;
+    private FileDB fileDB;
+    private PersonBusiness personBusiness;
+    private VerbBusiness verbBusiness;
+
+    public StepBusiness(){
+        this.stepDB = new StepDB();
+        this.fileDB = new FileDB();
+        this.personBusiness = new PersonBusiness();
+        this.verbBusiness = new VerbBusiness();
+    }
 
     /**
      * Gets higher level steps from the database
@@ -99,6 +110,8 @@ public class StepBusiness {
         try {
             List<Step> stepList = this.jsonToStepList(steps, workflowID);
 
+            this.validateSteps(stepList);
+
             numInsertedSteps = this.stepDB.insertSteps(stepList, conn);
         } catch(SQLException ex) {
             throw new InternalServerErrorException(ex.getMessage());
@@ -115,6 +128,8 @@ public class StepBusiness {
         int numUpdatedSteps;
         try {
             numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
+
+            this.validateSteps(stepList);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
@@ -176,5 +191,37 @@ public class StepBusiness {
             }
         }
         return steps;
+    }
+
+    private void validateSteps(List<Step> steps) throws SQLException{
+        for(Step step : steps){
+
+
+            //Validate template file exists and copy template file to link to step
+            if(step.getFileID() != 0){
+                //TODO add this check once file has workflowID added
+                //File oldFile = this.fileDB.getFileByID(step.getFileID());
+                //if(oldFile.getWorkflow() != 0) {
+                    File newFile = this.fileDB.getFileByID(step.getFileID());
+                    int newFileID = this.fileDB.insertFile(newFile);
+                    step.setFileID(newFileID);
+                //}
+            }
+
+            //validate that person exists
+            if(step.getUUID() != null){
+                this.personBusiness.getPersonByUUID(step.getUUID());
+            }
+
+            if(step.getVerbID() != 0){
+                this.verbBusiness.getVerb(step.getVerbID());
+            }
+
+            if(step.hasChildren()) {
+                this.validateSteps(step.getChildren());
+            }
+
+
+        }
     }
 }

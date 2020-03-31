@@ -42,4 +42,33 @@ public class VerbDB {
             }
         }
     }
+
+    /**
+     * Get all verbs
+     * @return list of all verb objects
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public Verb getVerb(int verbID) throws SQLException {
+        Verb verb = null;
+
+        //Prepare sql statement
+        String query = "SELECT * FROM verb " +
+                            "WHERE verbID = ?;";
+
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, verbID);
+            try (ResultSet result = preparedStatement.executeQuery()) {
+
+                while (result.next()) {
+                    verb = new Verb(result.getInt("verbID"),
+                            result.getString("name"));
+                }
+            }
+        }
+
+        //Return verb
+        return verb;
+    }
 }
