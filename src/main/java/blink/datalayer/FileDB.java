@@ -45,7 +45,7 @@ public class FileDB {
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT UNIQUE file.fileID, file.name, file.file, file.confidential FROM file " +
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file " +
                           "JOIN step on step.fileID = file.fileID " +
                           "JOIN workflow on workflow.workflowID = step.workflowID " +
                           "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
@@ -72,7 +72,7 @@ public class FileDB {
     public List<File> getAllFilesByCompany(int companyID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT UNIQUE file.fileID, file.name, file.file, file.confidential FROM file " +
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file " +
                 "JOIN step on step.fileID = file.fileID " +
                 "JOIN workflow on workflow.workflowID = step.workflowID " +
                 "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
