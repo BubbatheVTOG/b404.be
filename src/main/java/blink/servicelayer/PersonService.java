@@ -193,7 +193,7 @@ public class PersonService {
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID", required = true) @FormParam("accessLevelID") String accessLevelID,
                                  @RequestBody(description = "signature")                      @FormParam("accessLevelID") String signature,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
@@ -221,7 +221,8 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -299,7 +300,8 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 

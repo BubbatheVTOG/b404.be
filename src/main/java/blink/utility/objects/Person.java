@@ -1,9 +1,4 @@
 package blink.utility.objects;
-import javax.sql.rowset.serial.SerialBlob;
-import javax.ws.rs.InternalServerErrorException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.Base64;
 import java.util.List;
 
 /**
@@ -66,10 +61,8 @@ public class Person {
 	public void setSalt(String salt) { this.salt = salt; }
 
 	public void setSignature(byte[] fileBytes) {
-		this.signature = Base64.getEncoder().encodeToString(fileBytes);
+		this.signature = File.encodeBase64(fileBytes);
 	}
-
-	public void setSignature(String signature) { this.signature = signature; }
 
 	public void setFName(String fName) { this.fName = fName; }
 
