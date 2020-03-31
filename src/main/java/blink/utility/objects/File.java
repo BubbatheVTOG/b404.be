@@ -91,7 +91,7 @@ public class File {
             return byteFile.length == 0 ? null : Base64.getUrlEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
-            throw new InternalServerErrorException(Integer.toString(byteFile.length));
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 }
