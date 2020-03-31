@@ -161,6 +161,7 @@ public class FileBusiness {
      * @return file object
      */
     private File jsonObjectToFileObject(JsonObject jsonObject) {
+        String urlBase64 = "";
         try {
             if(!jsonObject.has("file")){
                 throw new BadRequestException("File data must be provided");
@@ -173,11 +174,13 @@ public class FileBusiness {
                 confidential = jsonObject.get("confidential").getAsBoolean();
             }
 
+            urlBase64 = jsonObject.get("file").getAsString();
             byte[] byteFile = Base64.getUrlDecoder().decode(jsonObject.get("file").getAsString());
             return new File(jsonObject.get("name").getAsString(), byteFile, confidential);
         }
         catch(Exception e) {
-            throw new BadRequestException("File json in incorrect format.");
+            throw new BadRequestException(urlBase64);
+            //throw new BadRequestException("File json in incorrect format.");
         }
     }
 
