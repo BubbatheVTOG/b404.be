@@ -32,6 +32,14 @@ public class File {
         this.confidential = confidential;
     }
 
+    public File(int fileID, String name, String base64String, boolean confidential) {
+        this.fileID = fileID;
+        this.name = name;
+        this.byteFile = File.decodeBase64(base64String);
+        this.base64File = File.encodeBase64(byteFile);
+        this.confidential = confidential;
+    }
+
     public File(String name) { this.name = name; }
 
     public int getFileID() { return fileID; }
