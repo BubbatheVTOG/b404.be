@@ -3,7 +3,6 @@ package blink.datalayer;
 import blink.utility.objects.Step;
 
 import javax.ws.rs.InternalServerErrorException;
-import blink.utility.objects.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +21,9 @@ public class StepDB {
     private static final String COMPLETED = "completed";
 
     private DBConn dbConn;
-    private FileDB fileDB;
 
     public StepDB(){
         this.dbConn = new DBConn();
-        this.fileDB = new FileDB();
     }
 
     /**
@@ -176,17 +173,6 @@ public class StepDB {
             int counter = 1;
             for (Step step : steps) {
 
-                //Copy template file if linked to step
-                if(step.getFileID() != 0){
-                    File oldFile = this.fileDB.getFileByID(step.getFileID());
-                    //TODO replace this if statement once worklow is added to the file object
-                    //if(oldFile.getWorkflow() == 0){
-                        File newFile = this.fileDB.getFileByID(step.getFileID());
-                        int newFileID = this.fileDB.insertFile(newFile);
-                        step.setFileID(newFileID);
-                    //}
-                }
-
                 preparedStatement.setInt(1, counter);
                 preparedStatement.setString(2, step.getDescription());
                 preparedStatement.setNull(3, Types.INTEGER);
@@ -222,17 +208,6 @@ public class StepDB {
 
         int counter = 1;
         for (Step step : steps) {
-
-            //Copy template file if linked to step
-            if(step.getFileID() != 0){
-                File oldFile = this.fileDB.getFileByID(step.getFileID());
-                //TODO replace this if statement once worklow is added to the file object
-                //if(oldFile.getWorkflow() == 0){
-                    File newFile = this.fileDB.getFileByID(step.getFileID());
-                    int newFileID = this.fileDB.insertFile(newFile);
-                    step.setFileID(newFileID);
-                //}
-            }
 
             preparedStatement.setInt(1, counter);
             preparedStatement.setString(2, step.getDescription());

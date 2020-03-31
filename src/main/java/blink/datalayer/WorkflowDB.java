@@ -309,7 +309,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -362,7 +362,7 @@ public class WorkflowDB {
                 catch (Exception e) {
                     conn.rollback();
                     conn.close();
-                    throw new SQLException(e.getMessage());
+                    throw e;
                 }
                 finally {
                     conn.commit();
@@ -407,7 +407,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -456,7 +456,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -494,7 +494,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
