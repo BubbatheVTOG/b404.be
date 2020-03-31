@@ -194,34 +194,36 @@ public class StepBusiness {
     }
 
     private void validateSteps(List<Step> steps) throws SQLException{
-        for(Step step : steps){
+        try {
+            for (Step step : steps) {
 
-
-            //Validate template file exists and copy template file to link to step
-            if(step.getFileID() != 0){
-                //TODO add this check once file has workflowID added
-                //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                //if(oldFile.getWorkflow() != 0) {
+                //Validate template file exists and copy template file to link to step
+                if (step.getFileID() != 0) {
+                    //TODO add this check once file has workflowID added
+                    //File oldFile = this.fileDB.getFileByID(step.getFileID());
+                    //if(oldFile.getWorkflow() != 0) {
                     File newFile = this.fileDB.getFileByID(step.getFileID());
                     int newFileID = this.fileDB.insertFile(newFile);
                     step.setFileID(newFileID);
-                //}
+                    //}
+                }
+
+                //validate that person exists
+                if (step.getUUID() != null) {
+                    this.personBusiness.getPersonByUUID(step.getUUID());
+                }
+
+                if (step.getVerbID() != 0) {
+                    this.verbBusiness.getVerb(step.getVerbID());
+                }
+
+                if (step.hasChildren()) {
+                    this.validateSteps(step.getChildren());
+                }
             }
-
-            //validate that person exists
-            if(step.getUUID() != null){
-                this.personBusiness.getPersonByUUID(step.getUUID());
-            }
-
-            if(step.getVerbID() != 0){
-                this.verbBusiness.getVerb(step.getVerbID());
-            }
-
-            if(step.hasChildren()) {
-                this.validateSteps(step.getChildren());
-            }
-
-
+        }
+        catch(SQLException sqle){
+            throw new InternalServerErrorException(sqle.getMessage());
         }
     }
 }
