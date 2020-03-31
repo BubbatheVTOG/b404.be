@@ -16,18 +16,26 @@ public class File {
     private String base64File;
     private boolean confidential;
 
-    public File(int fileID, String name, byte[] byteFile, boolean confidential) {
+    public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = byteFile == null ? new byte[]{} : byteFile;
-        this.base64File = this.convertFileToBase64(this.byteFile);
+        this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
+        this.base64File = File.encodeBase64(this.byteFile);
         this.confidential = confidential;
     }
 
-    public File(String name, byte[] byteFile, boolean confidential) {
+    public File(String name, String base64String, boolean confidential) {
         this.name = name;
-        this.byteFile = byteFile;
-        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
+        this.byteFile = File.decodeBase64(base64String);
+        this.base64File = File.encodeBase64(byteFile);
+        this.confidential = confidential;
+    }
+
+    public File(int fileID, String name, String base64String, boolean confidential) {
+        this.fileID = fileID;
+        this.name = name;
+        this.byteFile = File.decodeBase64(base64String);
+        this.base64File = File.encodeBase64(byteFile);
         this.confidential = confidential;
     }
 
@@ -63,13 +71,19 @@ public class File {
      * @return blob
      */
     private Blob convertFileToBlob(byte[] byteFile) {
-        Blob blob = null;
         try {
-            blob = new SerialBlob(byteFile);
-            return blob;
+            return new SerialBlob(byteFile);
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
+    }
+    /**
+     * Converts base 64 String to byte array
+     * @param base64String base64 string representation of a file
+     * @return base64 string
+     */
+    public static byte[] decodeBase64(String base64String) {
+        return Base64.getMimeDecoder().decode(base64String);
     }
 
     /**
@@ -77,12 +91,12 @@ public class File {
      * @param byteFile byte array to convert to base64
      * @return base64 string
      */
-    private String convertFileToBase64(byte[] byteFile) {
+    public static String encodeBase64(byte[] byteFile) {
         try{
-            return Base64.getEncoder().encodeToString(byteFile);
+            return byteFile.length == 0 ? null : Base64.getUrlEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
-            throw new InternalServerErrorException(Integer.toString(byteFile.length));
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 }
