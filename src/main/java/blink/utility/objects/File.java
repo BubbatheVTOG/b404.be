@@ -15,7 +15,6 @@ public class File {
     @SerializedName("file")
     private String base64File;
     private boolean confidential;
-    private String mimeType;
 
     public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
@@ -72,10 +71,8 @@ public class File {
      * @return blob
      */
     private Blob convertFileToBlob(byte[] byteFile) {
-        Blob blob = null;
         try {
-            blob = new SerialBlob(byteFile);
-            return blob;
+            return new SerialBlob(byteFile);
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
