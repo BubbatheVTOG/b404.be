@@ -21,14 +21,14 @@ public class File {
         this.fileID = fileID;
         this.name = name;
         this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
-        this.base64File = this.convertFileToBase64(this.byteFile);
+        this.base64File = File.encodeBase64(this.byteFile);
         this.confidential = confidential;
     }
 
-    public File(String name, byte[] byteFile, boolean confidential) {
+    public File(String name, String base64String, boolean confidential) {
         this.name = name;
-        this.byteFile = byteFile;
-        this.base64File = this.convertFileToBase64(byteFile);
+        this.byteFile = File.decodeBase64(base64String);
+        this.base64File = File.encodeBase64(byteFile);
         this.confidential = confidential;
     }
 
@@ -72,13 +72,21 @@ public class File {
             throw new InternalServerErrorException(sqle.getMessage());
         }
     }
+    /**
+     * Converts base 64 String to byte array
+     * @param base64String base64 string representation of a file
+     * @return base64 string
+     */
+    public static byte[] decodeBase64(String base64String) {
+        return Base64.getMimeDecoder().decode(base64String);
+    }
 
     /**
      * Converts byte[] File into Base64 string
      * @param byteFile byte array to convert to base64
      * @return base64 string
      */
-    private String convertFileToBase64(byte[] byteFile) {
+    public static String encodeBase64(byte[] byteFile) {
         try{
             return byteFile.length == 0 ? null : Base64.getUrlEncoder().encodeToString(byteFile);
         }
