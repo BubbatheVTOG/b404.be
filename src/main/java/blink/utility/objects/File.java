@@ -17,10 +17,10 @@ public class File {
     private boolean confidential;
     private String mimeType;
 
-    public File(int fileID, String name, byte[] byteFile, boolean confidential) {
+    public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = byteFile == null ? new byte[]{} : byteFile;
+        this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
         this.base64File = this.convertFileToBase64(this.byteFile);
         this.confidential = confidential;
     }
@@ -28,7 +28,7 @@ public class File {
     public File(String name, byte[] byteFile, boolean confidential) {
         this.name = name;
         this.byteFile = byteFile;
-        this.base64File = this.byteFile.length == 0 ? null : this.convertFileToBase64(byteFile);
+        this.base64File = this.convertFileToBase64(byteFile);
         this.confidential = confidential;
     }
 
@@ -80,7 +80,7 @@ public class File {
      */
     private String convertFileToBase64(byte[] byteFile) {
         try{
-            return Base64.getMimeEncoder().encodeToString(byteFile);
+            return byteFile.length == 0 ? null : Base64.getMimeEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
             throw new InternalServerErrorException(Integer.toString(byteFile.length));
