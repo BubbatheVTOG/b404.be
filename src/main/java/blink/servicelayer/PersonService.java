@@ -112,6 +112,50 @@ public class PersonService {
     }
 
     /**
+     * Gets a Person by UUID including signature pdf
+     * @param uuid username from POST request body
+     * @return HTTP Response: 200 OK for person found and returned
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         404 NOT FOUND if no user with that UUID exists
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/signature/id/{id}")
+    @GET
+    @Operation(summary = "getPersonSignature", description = "Gets a user's information by UUID including their signature pdf")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID, signature)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPersonSignatureByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
+                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            Person person = personBusiness.getPersonSignature(uuid);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Insert a person into the database
      * @param username New person's username
      * @param password New person's password
@@ -148,13 +192,14 @@ public class PersonService {
                                  @RequestBody(description = "email")                          @FormParam("email") String email,
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID", required = true) @FormParam("accessLevelID") String accessLevelID,
+                                 @RequestBody(description = "signature")                      @FormParam("accessLevelID") String signature,
                                       @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID);
+            Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID, signature);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
@@ -219,6 +264,7 @@ public class PersonService {
                                  @RequestBody(description = "email")         @FormParam("email") String email,
                                  @RequestBody(description = "title")         @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
+                                 @RequestBody(description = "signature") @FormParam("accessLevelID") String signature,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -231,7 +277,7 @@ public class PersonService {
             }
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID);
+            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID, signature);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
