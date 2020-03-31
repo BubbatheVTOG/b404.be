@@ -3,6 +3,7 @@ package blink.utility.objects;
 import com.google.gson.annotations.SerializedName;
 
 import javax.sql.rowset.serial.SerialBlob;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.Blob;
 import java.sql.SQLException;
@@ -72,7 +73,7 @@ public class File {
      */
     private Blob convertFileToBlob(byte[] byteFile) {
         try {
-            return new SerialBlob(byteFile);
+            return byteFile.length == 0 ? null : new SerialBlob(byteFile);
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
         }
@@ -83,7 +84,7 @@ public class File {
      * @return base64 string
      */
     public static byte[] decodeBase64(String base64String) {
-        return Base64.getMimeDecoder().decode(base64String);
+        return base64String == null ? null : Base64.getMimeDecoder().decode(base64String);
     }
 
     /**
@@ -96,7 +97,7 @@ public class File {
             return byteFile.length == 0 ? null : Base64.getUrlEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
-            throw new InternalServerErrorException(e.getMessage());
+            throw new BadRequestException("File is invalid format.");
         }
     }
 }

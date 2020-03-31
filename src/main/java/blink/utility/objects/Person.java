@@ -66,7 +66,7 @@ public class Person {
 	public void setSalt(String salt) { this.salt = salt; }
 
 	public void setSignature(byte[] fileBytes) {
-		this.signature = Base64.getEncoder().encodeToString(fileBytes);
+		this.signature = File.encodeBase64(fileBytes);
 	}
 
 	public void setSignature(String signature) { this.signature = signature; }
