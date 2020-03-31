@@ -461,7 +461,7 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_GATEWAY, e.getMessage());
             //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
