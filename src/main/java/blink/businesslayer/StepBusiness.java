@@ -127,9 +127,9 @@ public class StepBusiness {
     public int updateSteps(List<Step> stepList, Connection conn) {
         int numUpdatedSteps;
         try {
-            numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
-
             this.validateSteps(stepList);
+
+            numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
 
             if(numUpdatedSteps <= 0) {
                 throw new NotFoundException("No records with that workflowID exist.");
