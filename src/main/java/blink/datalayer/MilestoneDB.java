@@ -287,10 +287,10 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-            preparedStatement.setDate(4, new java.sql.Date(createdDate.getTime()));
-            preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
-            preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
+            preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+            preparedStatement.setTimestamp(4, new java.sql.Timestamp(createdDate.getTime()));
+            preparedStatement.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+            preparedStatement.setTimestamp(6, new java.sql.Timestamp(deliveryDate.getTime()));
             preparedStatement.setInt(7, companyID);
 
             preparedStatement.executeUpdate();
