@@ -13,6 +13,7 @@ import javax.ws.rs.*;
 
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
+import blink.utility.objects.File;
 import blink.utility.objects.Person;
 import blink.utility.security.PasswordEncryption;
 
@@ -179,8 +180,8 @@ public class PersonBusiness {
 
             Blob signatureBlob;
             try {
-                byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+                byte[] signatureBytes = File.decodeBase64(signature);
+                signatureBlob = signatureBytes == null || signature.length() == 0 ? null : new SerialBlob(signatureBytes);
             }
             catch(Exception e){
                 throw new BadRequestException("Invalid base64 syntax on signature.");
@@ -255,18 +256,18 @@ public class PersonBusiness {
             }
 
             Blob signatureBlob;
-            if(signature == null || signature.equals("")){
-                byte[] signatureBytes = Base64.getDecoder().decode(person.getSignature());
-                signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+            try {
+                byte[] signatureBytes;
+                if(signature == null || signature.equals("")){
+                    signatureBytes = File.decodeBase64(person.getSignature());
+                }
+                else{
+                    signatureBytes = File.decodeBase64(signature);
+                }
+                signatureBlob = signatureBytes == null || signature.length() == 0 ? null : new SerialBlob(signatureBytes);
             }
-            else{
-                try {
-                    byte[] signatureBytes = Base64.getDecoder().decode(signature);
-                    signatureBlob = signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
-                }
-                catch(Exception e){
-                    throw new BadRequestException("Invalid base64 syntax on signature.");
-                }
+            catch(Exception e){
+                throw new BadRequestException("Invalid base64 syntax on signature.");
             }
 
             //Retrieve the person from the database by UUID
