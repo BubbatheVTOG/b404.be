@@ -267,7 +267,8 @@ public class PersonBusiness {
                 signatureBlob = signatureBytes == null || signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
             }
             catch(Exception e){
-                throw new BadRequestException("Invalid base64 syntax on signature.");
+                throw new BadRequestException(e.getMessage());
+                //throw new BadRequestException("Invalid base64 syntax on signature.");
             }
 
             //Retrieve the person from the database by UUID
