@@ -151,8 +151,7 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -294,7 +293,8 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
