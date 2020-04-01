@@ -38,7 +38,7 @@ public class Person {
 
 	public String getSalt() { return this.salt; }
 
-	public String getSignature() { return signature; }
+	public String getSignature() { return this.signature; }
 
 	public String getFName() { return this.fName; }
 
@@ -60,9 +60,7 @@ public class Person {
 
 	public void setSalt(String salt) { this.salt = salt; }
 
-	public void setSignature(byte[] fileBytes) {
-		this.signature = File.encodeBase64(fileBytes);
-	}
+	public void setSignature(String signature) { this.signature = signature; }
 
 	public void setFName(String fName) { this.fName = fName; }
 

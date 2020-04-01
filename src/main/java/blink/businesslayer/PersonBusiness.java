@@ -179,10 +179,13 @@ public class PersonBusiness {
             //Ensure that accessLevel exists in database; accessLevelBusiness will throw relevant custom exceptions
             AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
 
-            //Convert signature base64 signature to blob
-            Blob signatureBlob = null;
-            if(signature != null) {
-                signatureBlob = new SerialBlob(File.decodeBase64(signature));
+            Blob signatureBlob;
+            try {
+                byte[] signatureBytes = File.decodeBase64(signature);
+                signatureBlob = signatureBytes == null || signature.length() == 0 ? null : new SerialBlob(signatureBytes);
+            }
+            catch(Exception e){
+                throw new BadRequestException("Invalid base64 syntax on signature.");
             }
 
             //Get new salt and hash password with new salt
@@ -219,7 +222,7 @@ public class PersonBusiness {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
-            Person person = personDB.getPersonSignature(this.getPersonByUUID(uuid));
+            Person person = this.getPersonSignature(uuid);
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
             }
@@ -254,16 +257,18 @@ public class PersonBusiness {
             }
 
             Blob signatureBlob;
-            if(signature == null || signature.equals("")){
-                if(person.getSignature() == null || person.getSignature().isEmpty()){
-                    signatureBlob = null;
+            try {
+                byte[] signatureBytes;
+                if(signature == null || signature.isEmpty()){
+                    signatureBytes = File.decodeBase64(person.getSignature());
                 }
-                else {
-                    signatureBlob = new SerialBlob(Base64.getDecoder().decode(person.getSignature()));
+                else{
+                    signatureBytes = File.decodeBase64(signature);
                 }
+                signatureBlob = signatureBytes == null || signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
             }
-            else{
-                signatureBlob = new SerialBlob(File.decodeBase64(signature));
+            catch(Exception e){
+                throw new BadRequestException("Invalid base64 syntax on signature.");
             }
 
             //Retrieve the person from the database by UUID

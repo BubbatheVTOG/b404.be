@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import blink.utility.objects.Company;
+import blink.utility.objects.File;
 import blink.utility.objects.Person;
 
 public class PersonDB {
@@ -199,7 +200,7 @@ public class PersonDB {
                 while (result.next()) {
 
                     //Pull response content and map into a Person object
-                    person.setSignature(result.getBytes("signaturePDF"));
+                    person.setSignature(File.encodeBase64(result.getBytes("signature")));
                 }
 
                 return person;

@@ -192,8 +192,8 @@ public class PersonService {
                                  @RequestBody(description = "email")                          @FormParam("email") String email,
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID", required = true) @FormParam("accessLevelID") String accessLevelID,
-                                 @RequestBody(description = "signature")                      @FormParam("accessLevelID") String signature,
-                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+                                 @RequestBody(description = "signature")                      @FormParam("signature") String signature,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
@@ -221,8 +221,7 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -265,17 +264,11 @@ public class PersonService {
                                  @RequestBody(description = "email")         @FormParam("email") String email,
                                  @RequestBody(description = "title")         @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
-                                 @RequestBody(description = "signature") @FormParam("accessLevelID") String signature,
+                                 @RequestBody(description = "signature") @FormParam("signature") String signature,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdminOrSelf(jwt, uuid);
-
-            //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
-            if(requester.getAccessLevelID() > 1){
-                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
-            }
 
             //Send parameters to business layer and store response
             Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID, signature);
@@ -300,8 +293,7 @@ public class PersonService {
             return ResponseBuilder.buildErrorResponse(Response.Status.CONFLICT, ce.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
