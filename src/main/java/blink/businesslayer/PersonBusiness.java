@@ -264,7 +264,7 @@ public class PersonBusiness {
                 else{
                     signatureBytes = File.decodeBase64(signature);
                 }
-                signatureBlob = signatureBytes == null || signature.length() == 0 ? null : new SerialBlob(signatureBytes);
+                signatureBlob = signatureBytes == null || signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
             }
             catch(Exception e){
                 throw new BadRequestException("Invalid base64 syntax on signature.");
