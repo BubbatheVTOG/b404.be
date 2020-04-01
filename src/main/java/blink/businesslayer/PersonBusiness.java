@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import blink.datalayer.PersonDB;
 
+import javax.naming.InterruptedNamingException;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.*;
 
@@ -51,7 +52,7 @@ public class PersonBusiness {
             if(person == null){
                 throw new NotAuthorizedException("Invalid login credentials.");
             }
-          
+
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
             String encryptedPassword = PasswordEncryption.hash(password, person.getSalt());
@@ -269,6 +270,9 @@ public class PersonBusiness {
             catch(Exception e){
                 throw new BadRequestException(signature);
                 //throw new BadRequestException("Invalid base64 syntax on signature.");
+            }
+            else{
+                signatureBlob = new SerialBlob(File.decodeBase64(signature));
             }
 
             //Retrieve the person from the database by UUID
