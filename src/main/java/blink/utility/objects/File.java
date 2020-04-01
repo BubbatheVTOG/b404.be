@@ -94,7 +94,7 @@ public class File {
      */
     public static String encodeBase64(byte[] byteFile) {
         try{
-            return byteFile.length == 0 ? null : Base64.getUrlEncoder().encodeToString(byteFile);
+            return byteFile == null || byteFile.length == 0  ? null : Base64.getUrlEncoder().encodeToString(byteFile);
         }
         catch(Exception e){
             throw new BadRequestException("File is invalid format.");
