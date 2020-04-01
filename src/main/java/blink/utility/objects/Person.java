@@ -38,7 +38,7 @@ public class Person {
 
 	public String getSalt() { return this.salt; }
 
-	public String getSignature() { return signature; }
+	public String getSignature() { return this.signature; }
 
 	public String getFName() { return this.fName; }
 
