@@ -200,7 +200,7 @@ public class PersonDB {
                 while (result.next()) {
 
                     //Pull response content and map into a Person object
-                    person.setSignature(File.encodeBase64(result.getBytes("signaturePDF")));
+                    person.setSignature(File.encodeBase64(result.getBytes("signature")));
                 }
 
                 return person;
