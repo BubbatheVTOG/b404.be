@@ -5,6 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -16,6 +20,7 @@ public class File {
     @SerializedName("file")
     private String base64File;
     private boolean confidential;
+    private String fileType;
 
     public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
@@ -23,6 +28,7 @@ public class File {
         this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
         this.base64File = File.encodeBase64(this.byteFile);
         this.confidential = confidential;
+        this.fileType = getMimeType(this.byteFile);
     }
 
     public File(String name, String base64String, boolean confidential) {
@@ -30,6 +36,7 @@ public class File {
         this.byteFile = File.decodeBase64(base64String);
         this.base64File = File.encodeBase64(byteFile);
         this.confidential = confidential;
+        this.fileType = getMimeType(this.byteFile);
     }
 
     public File(int fileID, String name, String base64String, boolean confidential) {
@@ -38,6 +45,7 @@ public class File {
         this.byteFile = File.decodeBase64(base64String);
         this.base64File = File.encodeBase64(byteFile);
         this.confidential = confidential;
+        this.fileType = getMimeType(this.byteFile);
     }
 
     public File(String name) { this.name = name; }
@@ -98,6 +106,18 @@ public class File {
         }
         catch(Exception e){
             throw new BadRequestException("File is invalid format.");
+        }
+    }
+
+    public static String getMimeType(byte [] byteFile) {
+        try {
+            InputStream inputStream = new ByteArrayInputStream(byteFile);
+            String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
+            String [] tokens = mimeType.split("[/]");
+            String fileType = tokens[0];
+            return tokens[0];
+        } catch(IOException io) {
+            throw new BadRequestException("You've submitted an unsupported file type.");
         }
     }
 }
