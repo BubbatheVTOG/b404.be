@@ -290,8 +290,8 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(lastUpdatedDate.getTime()));
 
                 preparedStatement.executeUpdate();
 
@@ -341,10 +341,10 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
-                preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
-                preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+                preparedStatement.setTimestamp(6, new java.sql.Timestamp(deliveryDate.getTime()));
                 preparedStatement.setInt(7, milestoneID);
 
                 preparedStatement.executeUpdate();
@@ -397,7 +397,7 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(lastUpdatedDate.getTime()));
                 preparedStatement.setInt(4, workflowID);
 
                 preparedStatement.executeUpdate();
@@ -443,10 +443,10 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
-                preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
-                preparedStatement.setDate(6, completedDate == null ? null : new java.sql.Date(completedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(startDate.getTime()));
+                preparedStatement.setTimestamp(5, new java.sql.Timestamp(deliveryDate.getTime()));
+                preparedStatement.setTimestamp(6, completedDate == null ? null : new java.sql.Timestamp(completedDate.getTime()));
                 preparedStatement.setInt(7, workflowID);
 
                 preparedStatement.executeUpdate();

@@ -26,7 +26,7 @@ public class WorkflowBusiness {
         this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
         this.stepBusiness = new StepBusiness();
-        this.gson = new GsonBuilder().serializeNulls().create();
+        this.gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     }
 

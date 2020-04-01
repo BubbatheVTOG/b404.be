@@ -167,7 +167,7 @@ public class StepBusiness {
      */
     public List<Step> jsonToStepList(JsonArray steps, int workflowID) {
         try {
-            Gson gson = new GsonBuilder().serializeNulls().create();
+            Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
             List<Step> stepList = Arrays.asList(gson.fromJson(steps, Step[].class));
 
             return insertWorkflowID(stepList, workflowID);

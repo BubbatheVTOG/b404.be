@@ -25,7 +25,7 @@ import java.util.List;
 @Api(value = "/workflow")
 public class WorkflowService {
     private WorkflowBusiness workflowBusiness = new WorkflowBusiness();
-    private static Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all workflows
