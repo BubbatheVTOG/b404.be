@@ -221,7 +221,7 @@ public class PersonBusiness {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
-            Person person = personDB.getPersonSignature(this.getPersonByUUID(uuid));
+            Person person = this.getPersonSignature(uuid);
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
             }
