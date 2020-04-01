@@ -83,7 +83,7 @@ public class File {
      * @return base64 string
      */
     public static byte[] decodeBase64(String base64String) {
-        return Base64.getMimeDecoder().decode(base64String);
+        return base64String == null ? null : Base64.getMimeDecoder().decode(base64String);
     }
 
     /**
