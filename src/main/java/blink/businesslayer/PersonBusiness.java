@@ -258,7 +258,7 @@ public class PersonBusiness {
             Blob signatureBlob;
             try {
                 byte[] signatureBytes;
-                if(signature == null || signature.equals("")){
+                if(signature == null || signature.isEmpty()){
                     signatureBytes = File.decodeBase64(person.getSignature());
                 }
                 else{
