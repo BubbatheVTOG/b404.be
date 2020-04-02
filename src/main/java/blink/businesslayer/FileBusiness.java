@@ -126,6 +126,10 @@ public class FileBusiness {
      */
     public File updateFile(JsonObject jsonObject, String uuid) {
         try {
+            if(!jsonObject.has("fileID")){
+                throw new BadRequestException("A file ID must be provided.");
+            }
+
             File file = jsonObjectToFileObject(jsonObject);
 
             //Check that file exists and user has access to file
