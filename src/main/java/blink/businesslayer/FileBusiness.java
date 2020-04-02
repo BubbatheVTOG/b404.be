@@ -168,11 +168,7 @@ public class FileBusiness {
             File file = jsonObjectToFileObject(jsonObject);
 
             //Check that file exists and user has access to file
-            try {
-                    this.getFile(Integer.toString(file.getFileID()), uuid);
-            }catch(Exception e){
-                throw new BadRequestException("getFileNotWorking");
-            }
+            this.getFile(Integer.toString(file.getFileID()), uuid);
 
             fileDB.updateFile(file);
 

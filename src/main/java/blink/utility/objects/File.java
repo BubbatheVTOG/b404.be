@@ -131,5 +131,8 @@ public class File {
         } catch(IOException io) {
             throw new BadRequestException("You've submitted an unsupported file type.");
         }
+        catch(Exception e){
+            throw new BadRequestException("Mime type failing");
+        }
     }
 }
