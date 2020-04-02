@@ -211,20 +211,21 @@ public class StepBusiness {
 
             //Validate template file exists and copy template file to link to step
             if (step.getFileID() != 0) { //&& !this.fileDB.getTemplateFiles.contains(oldFile)) {
+                File newFile = null;
                 try {
                     //TODO add this check once file has workflowID added
                     //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                    File newFile = this.fileDB.getFileByID(step.getFileID());
-                    if(newFile == null){
-                        throw new NotFoundException("The file you assigned does not exist.");
-                    }
-
-                    int newFileID = this.fileDB.insertFile(newFile);
-                    step.setFileID(newFileID);
+                    newFile = this.fileDB.getFileByID(step.getFileID());
                 }
                 catch(NullPointerException npe){
                     throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(steps));
                 }
+                if(newFile == null){
+                    throw new NotFoundException("The file you assigned does not exist.");
+                }
+
+                int newFileID = this.fileDB.insertFile(newFile);
+                step.setFileID(newFileID);
             }
 
             //validate that person exists
