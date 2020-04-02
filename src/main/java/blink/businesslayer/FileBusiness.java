@@ -208,6 +208,7 @@ public class FileBusiness {
             if(!jsonObject.has("name")){
                 throw new BadRequestException("File name must be provided");
             }
+
             boolean confidential = false;
             if(jsonObject.has("confidential")){
                 confidential = jsonObject.get("confidential").getAsBoolean();
@@ -222,11 +223,16 @@ public class FileBusiness {
             }
 
             if(jsonObject.has("fileID")){
+                Integer.parseInt(jsonObject.get("fileID").getAsString());
+
                 return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
             }
             else {
                 return new File(jsonObject.get("name").getAsString(), base64String, confidential);
             }
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("fileID must be a valid Integer");
         }
         catch(Exception e) {
             throw new BadRequestException("File json in incorrect format.");

@@ -132,24 +132,19 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing update
      */
     public void updateFile(File file) throws SQLException {
-        try {
-            //Prepare sql statement
-            String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
+        //Prepare sql statement
+        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
 
-            try (Connection conn = this.dbConn.connect();
-                 PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-                //Set parameters and execute update
-                preparedStatement.setString(1, file.getName());
-                preparedStatement.setBlob(2, file.getBlobFile());
-                preparedStatement.setBoolean(3, file.getConfidential());
-                preparedStatement.setInt(4, file.getFileID());
+            //Set parameters and execute update
+            preparedStatement.setString(1, file.getName());
+            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBoolean(3, file.getConfidential());
+            preparedStatement.setInt(4, file.getFileID());
 
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Error in file data layer");
+            preparedStatement.executeUpdate();
         }
     }
 
