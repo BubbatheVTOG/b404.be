@@ -2,6 +2,8 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
+import javax.validation.constraints.Null;
+import javax.ws.rs.BadRequestException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,25 +22,29 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public File getFileByID(int fileID) throws SQLException {
-        //Prepare sql statement
-        String query = "SELECT * FROM file WHERE file.fileID = ?;";
+        try {
+            //Prepare sql statement
+            String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            try (Connection conn = this.dbConn.connect();
+                 PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-            //Set parameters and execute query
-            preparedStatement.setInt(1, fileID);
-            try (ResultSet result = preparedStatement.executeQuery()) {
+                //Set parameters and execute query
+                preparedStatement.setInt(1, fileID);
+                try (ResultSet result = preparedStatement.executeQuery()) {
 
-                File file = null;
-                while (result.next()) {
-                    file = new File(result.getInt("fileID"),
-                            result.getString("name"),
-                            result.getBlob("file"),
-                            result.getBoolean("confidential"));
+                    File file = null;
+                    while (result.next()) {
+                        file = new File(result.getInt("fileID"),
+                                result.getString("name"),
+                                result.getBlob("file"),
+                                result.getBoolean("confidential"));
+                    }
+                    return file;
                 }
-                return file;
             }
+        }catch(NullPointerException npe){
+            throw new BadRequestException("Error in data layer");
         }
     }
 
