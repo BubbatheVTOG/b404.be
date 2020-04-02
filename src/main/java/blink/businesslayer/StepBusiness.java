@@ -207,14 +207,13 @@ public class StepBusiness {
     }
 
     private List<Step> validateSteps(List<Step> steps) throws SQLException{
-        try {
-            for (Step step : steps) {
+        for (Step step : steps) {
 
-                //Validate template file exists and copy template file to link to step
-                if (step.getFileID() != 0) {
+            //Validate template file exists and copy template file to link to step
+            if (step.getFileID() != 0) { //&& !this.fileDB.getTemplateFiles.contains(oldFile)) {
+                try {
                     //TODO add this check once file has workflowID added
                     //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                    //if(!this.fileDB.getTemplateFiles.contains(oldFile)) {
                     File newFile = this.fileDB.getFileByID(step.getFileID());
                     if(newFile == null){
                         throw new NotFoundException("The file you assigned does not exist.");
@@ -222,27 +221,26 @@ public class StepBusiness {
 
                     int newFileID = this.fileDB.insertFile(newFile);
                     step.setFileID(newFileID);
-                    //}
                 }
-
-                //validate that person exists
-                if (step.getUUID() != null) {
-                    this.personBusiness.getPersonByUUID(step.getUUID());
-                }
-
-                if (step.getVerbID() != 0) {
-                    this.verbBusiness.getVerb(step.getVerbID());
-                }
-
-                if (step.hasChildren()) {
-                    step.setChildren(this.validateSteps(step.getChildren()));
+                catch(NullPointerException npe){
+                    throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(steps));
                 }
             }
 
-            return steps;
+            //validate that person exists
+            if (step.getUUID() != null) {
+                this.personBusiness.getPersonByUUID(step.getUUID());
+            }
+
+            if (step.getVerbID() != 0) {
+                this.verbBusiness.getVerb(step.getVerbID());
+            }
+
+            if (step.hasChildren()) {
+                step.setChildren(this.validateSteps(step.getChildren()));
+            }
         }
-        catch(NullPointerException npe){
-            throw new BadRequestException(new Gson().toJson(steps));
-        }
+
+        return steps;
     }
 }
