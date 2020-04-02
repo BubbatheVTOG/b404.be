@@ -223,8 +223,6 @@ public class FileBusiness {
             }
 
             if(jsonObject.has("fileID")){
-                Integer.parseInt(jsonObject.get("fileID").getAsString());
-
                 return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
             }
             else {
