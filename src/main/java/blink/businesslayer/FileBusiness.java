@@ -140,8 +140,7 @@ public class FileBusiness {
             int fileID = fileDB.insertFile(file);
 
             if(jsonObject.has("stepID")){
-                String stepID = jsonObject.get("stepID").getAsString();
-                Step step = stepBusiness.getStep(stepID);
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
                 step.setFileID(fileID);
                 stepBusiness.updateStep(step);
             }
@@ -168,10 +167,12 @@ public class FileBusiness {
             fileDB.updateFile(file);
 
             if(jsonObject.has("stepID")){
-                String stepID = jsonObject.get("stepID").getAsString();
-                Step step = stepBusiness.getStep(stepID);
-                step.setFileID(file.getFileID());
-                stepBusiness.updateStep(step);
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
+
+                if(step.getFileID() != file.getFileID()) {
+                    step.setFileID(file.getFileID());
+                    stepBusiness.updateStep(step);
+                }
             }
 
             return this.getFile(Integer.toString(file.getFileID()));
