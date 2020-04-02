@@ -92,7 +92,12 @@ public class File {
      * @return base64 string
      */
     public static byte[] decodeBase64(String base64String) {
-        return base64String == null || base64String.isEmpty() ? null : Base64.getMimeDecoder().decode(base64String);
+        try {
+            return base64String == null || base64String.isEmpty() ? null : Base64.getMimeDecoder().decode(base64String);
+        }
+        catch(Exception e){
+            throw new BadRequestException("Base 64 file in incorrect format");
+        }
     }
 
     /**
