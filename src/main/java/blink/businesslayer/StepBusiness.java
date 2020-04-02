@@ -242,7 +242,7 @@ public class StepBusiness {
             return steps;
         }
         catch(NullPointerException npe){
-            throw new BadRequestException("error validating steps");
+            throw new BadRequestException(new Gson().toJson(steps));
         }
     }
 }
