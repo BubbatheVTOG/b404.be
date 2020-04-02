@@ -155,9 +155,9 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public File updateFile(JsonObject jsonObject, String stepID, String uuid) {
+    public File updateFile(JsonObject jsonObject, String uuid) {
         try {
-            if(jsonObject == null || stepID == null){
+            if(jsonObject == null){
                 throw new BadRequestException("Json object or stepID are null");
             }
 
@@ -172,8 +172,8 @@ public class FileBusiness {
 
             fileDB.updateFile(file);
 
-            if(!(stepID == null || stepID.isEmpty())){
-                Step step = stepBusiness.getStep(stepID);
+            if(jsonObject.has("stepID")){
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
 
                 if(step.getFileID() != file.getFileID()) {
                     step.setFileID(file.getFileID());

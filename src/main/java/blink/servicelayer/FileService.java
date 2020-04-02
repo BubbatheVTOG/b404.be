@@ -229,7 +229,6 @@ public class FileService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateFile(@RequestBody(description = "json object containing name, file, stepID(optional), confidential", required = true) String json,
-                               @Parameter(in=ParameterIn.QUERY, name="stepID")             @QueryParam("stepID") String stepID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -237,7 +236,7 @@ public class FileService {
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-            File file = fileBusiness.updateFile(jsonObject, stepID, JWTUtility.getUUIDFromToken(jwt));
+            File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
