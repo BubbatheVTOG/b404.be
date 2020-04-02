@@ -4,6 +4,7 @@ import blink.datalayer.FileDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.File;
 import blink.utility.objects.Person;
+import blink.utility.objects.Step;
 import com.google.gson.JsonObject;
 
 import javax.ws.rs.BadRequestException;
@@ -11,7 +12,6 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,11 +19,13 @@ public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
+    private StepBusiness stepBusiness = new StepBusiness();
 
     public FileBusiness() {
         this.fileDB = new FileDB();
         this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
+        this.stepBusiness = new StepBusiness();
     }
 
     /**
@@ -98,19 +100,47 @@ public class FileBusiness {
     }
 
     /**
+     * Get all files by companyID
+     * @param companyID to retrieve files by
+     * @param uuid id of requester
+     * @return list of files
+     */
+    public List<File> getAllFilesByCompany(String companyID, String uuid) {
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(companyID).getMileStoneID())){
+                    throw new NotAuthorizedException("You do not have access to this file.");
+                }
+            }
+
+            return fileDB.getAllFilesByCompany(Integer.parseInt(companyID));
+
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
      * @param uuid id of requester
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject, String uuid) {
+    public File insertFile(JsonObject jsonObject, String stepID) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
-            //Check that file exists and user has access to file
-            this.getFile(Integer.toString(file.getFileID()), uuid);
-
             int fileID = fileDB.insertFile(file);
+
+            if(!(stepID == null || stepID.isEmpty())){
+                Step step = stepBusiness.getStep(stepID);
+                step.setFileID(fileID);
+                stepBusiness.updateStep(step);
+            }
 
             return this.getFile(Integer.toString(fileID));
         } catch(SQLException sqle) {
@@ -124,7 +154,7 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public File updateFile(JsonObject jsonObject, String uuid) {
+    public File updateFile(JsonObject jsonObject, String stepID, String uuid) {
         try {
             if(!jsonObject.has("fileID")){
                 throw new BadRequestException("A file ID must be provided.");
@@ -136,6 +166,15 @@ public class FileBusiness {
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
             fileDB.updateFile(file);
+
+            if(!(stepID == null || stepID.isEmpty())){
+                Step step = stepBusiness.getStep(stepID);
+
+                if(step.getFileID() != file.getFileID()) {
+                    step.setFileID(file.getFileID());
+                    stepBusiness.updateStep(step);
+                }
+            }
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
@@ -183,7 +222,7 @@ public class FileBusiness {
             }
 
             if(jsonObject.has("fileID")){
-                return new File(jsonObject.get("fileID").getAsInt(),jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
             }
             else {
                 return new File(jsonObject.get("name").getAsString(), base64String, confidential);
