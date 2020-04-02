@@ -193,7 +193,7 @@ public class FileService {
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-            File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
+            File file = fileBusiness.insertFile(jsonObject);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));

@@ -130,7 +130,7 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject, String uuid) {
+    public File insertFile(JsonObject jsonObject) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
