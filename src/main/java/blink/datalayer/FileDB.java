@@ -4,6 +4,7 @@ import blink.utility.objects.File;
 
 import javax.validation.constraints.Null;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,19 +132,24 @@ public class FileDB {
      * @throws SQLException Error connecting to database or executing update
      */
     public void updateFile(File file) throws SQLException {
-        //Prepare sql statement
-        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
+        try {
+            //Prepare sql statement
+            String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
 
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            try (Connection conn = this.dbConn.connect();
+                 PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-            //Set parameters and execute update
-            preparedStatement.setString(1, file.getName());
-            preparedStatement.setBlob(2, file.getBlobFile());
-            preparedStatement.setBoolean(3, file.getConfidential());
-            preparedStatement.setInt(4, file.getFileID());
+                //Set parameters and execute update
+                preparedStatement.setString(1, file.getName());
+                preparedStatement.setBlob(2, file.getBlobFile());
+                preparedStatement.setBoolean(3, file.getConfidential());
+                preparedStatement.setInt(4, file.getFileID());
 
-            preparedStatement.executeUpdate();
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Error in file data layer");
         }
     }
 
