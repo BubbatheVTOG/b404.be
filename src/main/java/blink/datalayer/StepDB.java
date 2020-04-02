@@ -236,7 +236,7 @@ public class StepDB {
      * @param step step to update in the database
      * @throws SQLException Error connecting to the database or executing update
      */
-    public void updateStep(Step step) {
+    public void updateStep(Step step) throws SQLException {
         try(Connection conn = this.dbConn.connect()) {
             String query = "UPDATE step " +
                     "SET orderNumber = ?, description = ?, parentStepID = ?, UUID = ?, verbID = ?, fileID = ?, workflowID = ?, asynchronous = ?, completed = ? " +
@@ -257,9 +257,6 @@ public class StepDB {
 
                 preparedStatement.execute();
             }
-        }
-        catch(SQLException sqle){
-            throw new InternalServerErrorException("Error connecting to the database");
         }
     }
 

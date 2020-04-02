@@ -109,6 +109,11 @@ public class File {
         }
     }
 
+    /**
+     * Obtains fileType from the mimeType of the file
+     * @param byteFile byte array to extract mimeType
+     * @return fileType String
+     */
     public static String getMimeType(byte [] byteFile) {
         try {
             InputStream inputStream = new ByteArrayInputStream(byteFile);

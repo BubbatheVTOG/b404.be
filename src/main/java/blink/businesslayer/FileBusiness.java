@@ -97,6 +97,31 @@ public class FileBusiness {
     }
 
     /**
+     * Get all files by companyID
+     * @param companyID to retrieve files by
+     * @param uuid id of requester
+     * @return list of files
+     */
+    public List<File> getAllFilesByCompany(String companyID, String uuid) {
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(companyID).getMileStoneID())){
+                    throw new NotAuthorizedException("You do not have access to this file.");
+                }
+            }
+
+            return fileDB.getAllFilesByCompany(Integer.parseInt(companyID));
+
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
      * @param uuid id of requester
