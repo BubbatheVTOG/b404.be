@@ -6,6 +6,7 @@ import blink.utility.objects.File;
 import blink.utility.objects.Step;
 import com.google.gson.*;
 
+import javax.validation.constraints.Null;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
@@ -206,31 +207,36 @@ public class StepBusiness {
     }
 
     private void validateSteps(List<Step> steps) throws SQLException{
-        for (Step step : steps) {
+        try {
+            for (Step step : steps) {
 
-            //Validate template file exists and copy template file to link to step
-            if (step.getFileID() != 0) {
-                //TODO add this check once file has workflowID added
-                //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                //if(oldFile.getWorkflow() != 0) {
-                File newFile = this.fileDB.getFileByID(step.getFileID());
-                int newFileID = this.fileDB.insertFile(newFile);
-                step.setFileID(newFileID);
-                //}
-            }
+                //Validate template file exists and copy template file to link to step
+                if (step.getFileID() != 0) {
+                    //TODO add this check once file has workflowID added
+                    //File oldFile = this.fileDB.getFileByID(step.getFileID());
+                    //if(!this.fileDB.getTemplateFiles.contains(oldFile)) {
+                    File newFile = this.fileDB.getFileByID(step.getFileID());
+                    int newFileID = this.fileDB.insertFile(newFile);
+                    step.setFileID(newFileID);
+                    //}
+                }
 
-            //validate that person exists
-            if (step.getUUID() != null) {
-                this.personBusiness.getPersonByUUID(step.getUUID());
-            }
+                //validate that person exists
+                if (step.getUUID() != null) {
+                    this.personBusiness.getPersonByUUID(step.getUUID());
+                }
 
-            if (step.getVerbID() != 0) {
-                this.verbBusiness.getVerb(step.getVerbID());
-            }
+                if (step.getVerbID() != 0) {
+                    this.verbBusiness.getVerb(step.getVerbID());
+                }
 
-            if (step.hasChildren()) {
-                this.validateSteps(step.getChildren());
+                if (step.hasChildren()) {
+                    this.validateSteps(step.getChildren());
+                }
             }
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("error validating steps");
         }
     }
 }
