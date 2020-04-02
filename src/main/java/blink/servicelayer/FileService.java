@@ -197,7 +197,7 @@ public class FileService {
 
             File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
 
-            if(!stepID.isBlank()) {
+            if(!(stepID == null) || !(stepID.isEmpty())) {
                 Step step = stepBusiness.getStep(stepID);
                 step.setFileID(file.getFileID());
                 stepBusiness.updateStep(step);
@@ -245,7 +245,7 @@ public class FileService {
 
             File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
 
-            if(!stepID.isBlank()) {
+            if(!(stepID == null) || !(stepID.isEmpty())) {
                 Step step = stepBusiness.getStep(stepID);
                 if(step.getFileID() != file.getFileID()) {
                     step.setFileID(file.getFileID());
