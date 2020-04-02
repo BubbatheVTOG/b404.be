@@ -32,7 +32,6 @@ import java.util.List;
 @Api(value = "/file")
 public class FileService {
     private FileBusiness fileBusiness = new FileBusiness();
-    private StepBusiness stepBusiness = new StepBusiness();
     private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
@@ -187,21 +186,14 @@ public class FileService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) String json,
-                               @RequestBody(description = "optional stepID that file is associated with", required = false) String stepID,
+    public Response insertFile(@RequestBody(description = "json object containing name, file, stepID(optional), confidential", required = true) String json,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-            File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
-
-            if(!stepID.isBlank()) {
-                Step step = stepBusiness.getStep(stepID);
-                step.setFileID(file.getFileID());
-                stepBusiness.updateStep(step);
-            }
+            File file = fileBusiness.insertFile(jsonObject);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -234,8 +226,7 @@ public class FileService {
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
     })
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateFile(@RequestBody(description = "json object containing fileID, name, file, confidential", required = true) String json,
-                               @RequestBody(description = "optional stepID that file is associated with", required = false) String stepID,
+    public Response updateFile(@RequestBody(description = "json object containing name, file, stepID(optional), confidential", required = true) String json,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -244,14 +235,6 @@ public class FileService {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
-
-            if(!stepID.isBlank()) {
-                Step step = stepBusiness.getStep(stepID);
-                if(step.getFileID() != file.getFileID()) {
-                    step.setFileID(file.getFileID());
-                    stepBusiness.updateStep(step);
-                }
-            }
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));

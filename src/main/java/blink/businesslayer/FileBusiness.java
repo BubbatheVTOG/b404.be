@@ -4,6 +4,7 @@ import blink.datalayer.FileDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.File;
 import blink.utility.objects.Person;
+import blink.utility.objects.Step;
 import com.google.gson.JsonObject;
 
 import javax.ws.rs.BadRequestException;
@@ -18,11 +19,13 @@ public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
+    private StepBusiness stepBusiness = new StepBusiness();
 
     public FileBusiness() {
         this.fileDB = new FileDB();
         this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
+        this.stepBusiness = new StepBusiness();
     }
 
     /**
@@ -127,14 +130,17 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject, String uuid) {
+    public File insertFile(JsonObject jsonObject) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
-            //Check that file exists and user has access to file
-            this.getFile(Integer.toString(file.getFileID()), uuid);
-
             int fileID = fileDB.insertFile(file);
+
+            if(jsonObject.has("stepID")){
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
+                step.setFileID(fileID);
+                stepBusiness.updateStep(step);
+            }
 
             return this.getFile(Integer.toString(fileID));
         } catch(SQLException sqle) {
@@ -156,6 +162,15 @@ public class FileBusiness {
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
             fileDB.updateFile(file);
+
+            if(jsonObject.has("stepID")){
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
+
+                if(step.getFileID() != file.getFileID()) {
+                    step.setFileID(file.getFileID());
+                    stepBusiness.updateStep(step);
+                }
+            }
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
