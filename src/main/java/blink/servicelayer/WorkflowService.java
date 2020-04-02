@@ -353,7 +353,8 @@ public class WorkflowService {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
         catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            //return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -425,7 +426,7 @@ public class WorkflowService {
     @Path("/concrete")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "updateConc/reteWorkflow", description = "Update an existing concrete workflow")
+    @Operation(summary = "updateConcreteWorkflow", description = "Update an existing concrete workflow")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),
