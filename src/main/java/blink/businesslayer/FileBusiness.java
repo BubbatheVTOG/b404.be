@@ -129,7 +129,6 @@ public class FileBusiness {
     /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
-     * @param uuid id of requester
      * @return generated fileID
      */
     public File insertFile(JsonObject jsonObject, String stepID) {
@@ -158,6 +157,10 @@ public class FileBusiness {
      */
     public File updateFile(JsonObject jsonObject, String stepID, String uuid) {
         try {
+            if(jsonObject == null || stepID == null){
+                throw new BadRequestException("Json object or stepID are null");
+            }
+
             if(!jsonObject.has("fileID")){
                 throw new BadRequestException("A file ID must be provided.");
             }
