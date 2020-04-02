@@ -216,6 +216,10 @@ public class StepBusiness {
                     //File oldFile = this.fileDB.getFileByID(step.getFileID());
                     //if(!this.fileDB.getTemplateFiles.contains(oldFile)) {
                     File newFile = this.fileDB.getFileByID(step.getFileID());
+                    if(newFile == null){
+                        throw new NotFoundException("The file you assigned does not exist.");
+                    }
+
                     int newFileID = this.fileDB.insertFile(newFile);
                     step.setFileID(newFileID);
                     //}
