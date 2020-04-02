@@ -218,7 +218,7 @@ public class StepBusiness {
                     newFile = this.fileDB.getFileByID(step.getFileID());
                 }
                 catch(NullPointerException npe){
-                    throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(steps));
+                    throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(step));
                 }
                 if(newFile == null){
                     throw new NotFoundException("The file you assigned does not exist.");
