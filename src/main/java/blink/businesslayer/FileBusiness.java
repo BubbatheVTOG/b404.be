@@ -5,6 +5,7 @@ import blink.utility.objects.Company;
 import blink.utility.objects.File;
 import blink.utility.objects.Person;
 import blink.utility.objects.Step;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import javax.ws.rs.BadRequestException;
@@ -13,6 +14,7 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class FileBusiness {
@@ -233,7 +235,8 @@ public class FileBusiness {
             throw new BadRequestException("fileID must be a valid Integer");
         }
         catch(Exception e) {
-            throw new BadRequestException("File json in incorrect format.");
+            throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(jsonObject));
+            //throw new BadRequestException("File json in incorrect format.");
         }
     }
 
