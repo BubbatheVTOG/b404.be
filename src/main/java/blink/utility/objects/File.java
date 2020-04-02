@@ -25,7 +25,7 @@ public class File {
     public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
+        this.byteFile = blobFile == null ? null : blobFile.getBytes(1, (int) blobFile.length());
         this.base64File = File.encodeBase64(this.byteFile);
         this.confidential = confidential;
         this.fileType = getMimeType(this.byteFile);
