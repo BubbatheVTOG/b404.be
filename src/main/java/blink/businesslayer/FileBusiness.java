@@ -130,14 +130,14 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject) {
+    public File insertFile(JsonObject jsonObject, String stepID) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
             int fileID = fileDB.insertFile(file);
 
-            if(jsonObject.has("stepID")){
-                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
+            if(!(stepID == null || stepID.isEmpty())){
+                Step step = stepBusiness.getStep(stepID);
                 step.setFileID(fileID);
                 stepBusiness.updateStep(step);
             }
@@ -154,7 +154,7 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public File updateFile(JsonObject jsonObject, String uuid) {
+    public File updateFile(JsonObject jsonObject, String stepID, String uuid) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
@@ -163,8 +163,8 @@ public class FileBusiness {
 
             fileDB.updateFile(file);
 
-            if(jsonObject.has("stepID")){
-                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
+            if(!(stepID == null || stepID.isEmpty())){
+                Step step = stepBusiness.getStep(stepID);
 
                 if(step.getFileID() != file.getFileID()) {
                     step.setFileID(file.getFileID());
