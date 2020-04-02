@@ -124,14 +124,15 @@ public class File {
             if(byteFile == null || byteFile.length == 0){
                 return null;
             }
+
             InputStream inputStream = new ByteArrayInputStream(byteFile);
             String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
-            String [] tokens = mimeType.split("[/]");
+            String[] tokens = mimeType.split("[/]");
             return tokens[0];
         } catch(IOException io) {
             throw new BadRequestException("You've submitted an unsupported file type.");
         }
-        catch(Exception e){
+        catch(NullPointerException npe){
             throw new BadRequestException("Mime type failing");
         }
     }
