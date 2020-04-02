@@ -12,6 +12,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -167,7 +168,11 @@ public class FileBusiness {
             File file = jsonObjectToFileObject(jsonObject);
 
             //Check that file exists and user has access to file
-            this.getFile(Integer.toString(file.getFileID()), uuid);
+            try {
+                    this.getFile(Integer.toString(file.getFileID()), uuid);
+            }catch(Exception e){
+                throw new BadRequestException("getFileNotWorking");
+            }
 
             fileDB.updateFile(file);
 
@@ -221,6 +226,7 @@ public class FileBusiness {
             if(!jsonObject.has("file")){
                 throw new BadRequestException("File data must be provided");
             }
+
             String base64String = jsonObject.get("file").getAsString();
             if(base64String == null || base64String.isEmpty()){
                 throw new BadRequestException("A file must be provided.");
@@ -237,8 +243,7 @@ public class FileBusiness {
             throw new BadRequestException("fileID must be a valid Integer");
         }
         catch(Exception e) {
-            throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(jsonObject));
-            //throw new BadRequestException("File json in incorrect format.");
+            throw new BadRequestException("File json in incorrect format.");
         }
     }
 
