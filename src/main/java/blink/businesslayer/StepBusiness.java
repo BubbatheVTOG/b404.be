@@ -111,7 +111,7 @@ public class StepBusiness {
         try {
             List<Step> stepList = this.jsonToStepList(steps, workflowID);
 
-            this.validateSteps(stepList);
+            stepList = this.validateSteps(stepList);
 
             numInsertedSteps = this.stepDB.insertSteps(stepList, conn);
         } catch(SQLException ex) {
@@ -140,7 +140,7 @@ public class StepBusiness {
     public int updateSteps(List<Step> stepList, Connection conn) {
         int numUpdatedSteps;
         try {
-            this.validateSteps(stepList);
+            stepList = this.validateSteps(stepList);
 
             numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
 
@@ -206,7 +206,7 @@ public class StepBusiness {
         return steps;
     }
 
-    private void validateSteps(List<Step> steps) throws SQLException{
+    private List<Step> validateSteps(List<Step> steps) throws SQLException{
         try {
             for (Step step : steps) {
 
@@ -231,9 +231,11 @@ public class StepBusiness {
                 }
 
                 if (step.hasChildren()) {
-                    this.validateSteps(step.getChildren());
+                    step.setChildren(this.validateSteps(step.getChildren()));
                 }
             }
+
+            return steps;
         }
         catch(NullPointerException npe){
             throw new BadRequestException("error validating steps");
