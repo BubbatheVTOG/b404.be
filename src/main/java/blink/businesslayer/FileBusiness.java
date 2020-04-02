@@ -134,9 +134,6 @@ public class FileBusiness {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
-            //Check that file exists and user has access to file
-            this.getFile(Integer.toString(file.getFileID()), uuid);
-
             int fileID = fileDB.insertFile(file);
 
             if(jsonObject.has("stepID")){
