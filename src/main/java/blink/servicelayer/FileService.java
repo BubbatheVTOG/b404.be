@@ -5,7 +5,9 @@ import blink.businesslayer.Authorization;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
+import blink.businesslayer.StepBusiness;
 import blink.utility.objects.File;
+import blink.utility.objects.Step;
 import blink.utility.security.JWTUtility;
 import com.google.gson.*;
 import io.swagger.annotations.Api;
@@ -30,6 +32,7 @@ import java.util.List;
 @Api(value = "/file")
 public class FileService {
     private FileBusiness fileBusiness = new FileBusiness();
+    private StepBusiness stepBusiness = new StepBusiness();
     private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
@@ -123,6 +126,51 @@ public class FileService {
     }
 
     /**
+     * Get all files by companyID from the database
+     * @Param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for file returned
+     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                        500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/company/{companyID}")
+    @GET
+    @Operation(summary = "getAllFilesByCompany", description = "Gets all files by companyID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File object containing fileID, name, file, confidential and stepID"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllFilesByCompany(@Parameter(in = ParameterIn.PATH, description = "companyID", required = true) @PathParam("companyID") String companyID,
+                                           @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<File> files = fileBusiness.getAllFilesByCompany(companyID, JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Insert a file into the database
      * @Param file json object containing name, file and confidential
      * @Param jwt JSON web token for authorization
@@ -140,6 +188,7 @@ public class FileService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) String json,
+                               @RequestBody(description = "optional stepID that file is associated with", required = false) String stepID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
@@ -147,6 +196,12 @@ public class FileService {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
+
+            if(!stepID.isBlank()) {
+                Step step = stepBusiness.getStep(stepID);
+                step.setFileID(file.getFileID());
+                stepBusiness.updateStep(step);
+            }
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -180,6 +235,7 @@ public class FileService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateFile(@RequestBody(description = "json object containing fileID, name, file, confidential", required = true) String json,
+                               @RequestBody(description = "optional stepID that file is associated with", required = false) String stepID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
@@ -188,6 +244,14 @@ public class FileService {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
+
+            if(!stepID.isBlank()) {
+                Step step = stepBusiness.getStep(stepID);
+                if(step.getFileID() != file.getFileID()) {
+                    step.setFileID(file.getFileID());
+                    stepBusiness.updateStep(step);
+                }
+            }
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));

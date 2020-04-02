@@ -11,7 +11,6 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,6 +90,31 @@ public class FileBusiness {
             }
 
             return fileDB.getAllFilesByMilestone(Integer.parseInt(milestoneID));
+
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
+     * Get all files by companyID
+     * @param companyID to retrieve files by
+     * @param uuid id of requester
+     * @return list of files
+     */
+    public List<File> getAllFilesByCompany(String companyID, String uuid) {
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(companyID).getMileStoneID())){
+                    throw new NotAuthorizedException("You do not have access to this file.");
+                }
+            }
+
+            return fileDB.getAllFilesByCompany(Integer.parseInt(companyID));
 
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
@@ -179,7 +203,7 @@ public class FileBusiness {
             }
 
             if(jsonObject.has("fileID")){
-                return new File(jsonObject.get("fileID").getAsInt(),jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
             }
             else {
                 return new File(jsonObject.get("name").getAsString(), base64String, confidential);

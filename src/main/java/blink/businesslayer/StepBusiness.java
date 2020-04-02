@@ -120,6 +120,18 @@ public class StepBusiness {
     }
 
     /**
+     * Update a single step and replace template fileID with the actual fileID
+     * @param step
+     */
+    public void updateStep(Step step) {
+        try {
+            this.stepDB.updateStep(step);
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
      * Deletes existing steps by workflowID and adds updated step list
      * @param stepList Updated list of step objects
      * @return Success Message
