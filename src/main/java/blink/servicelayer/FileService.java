@@ -32,7 +32,6 @@ import java.util.List;
 @Api(value = "/file")
 public class FileService {
     private FileBusiness fileBusiness = new FileBusiness();
-    private StepBusiness stepBusiness = new StepBusiness();
     private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
@@ -188,7 +187,6 @@ public class FileService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertFile(@RequestBody(description = "json object containing name, file, confidential", required = true) String json,
-                               @RequestBody(description = "optional stepID that file is associated with", required = false) String stepID,
                                @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
@@ -196,12 +194,6 @@ public class FileService {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.insertFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
-
-            if(!(stepID == null) || !(stepID.isEmpty())) {
-                Step step = stepBusiness.getStep(stepID);
-                step.setFileID(file.getFileID());
-                stepBusiness.updateStep(step);
-            }
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
@@ -244,14 +236,6 @@ public class FileService {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
             File file = fileBusiness.updateFile(jsonObject, JWTUtility.getUUIDFromToken(jwt));
-
-            if(!(stepID == null) || !(stepID.isEmpty())) {
-                Step step = stepBusiness.getStep(stepID);
-                if(step.getFileID() != file.getFileID()) {
-                    step.setFileID(file.getFileID());
-                    stepBusiness.updateStep(step);
-                }
-            }
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(file));

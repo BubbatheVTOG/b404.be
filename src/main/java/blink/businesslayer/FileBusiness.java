@@ -4,6 +4,7 @@ import blink.datalayer.FileDB;
 import blink.utility.objects.Company;
 import blink.utility.objects.File;
 import blink.utility.objects.Person;
+import blink.utility.objects.Step;
 import com.google.gson.JsonObject;
 
 import javax.ws.rs.BadRequestException;
@@ -18,11 +19,13 @@ public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
+    private StepBusiness stepBusiness = new StepBusiness();
 
     public FileBusiness() {
         this.fileDB = new FileDB();
         this.personBusiness = new PersonBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
+        this.stepBusiness = new StepBusiness();
     }
 
     /**
@@ -136,6 +139,13 @@ public class FileBusiness {
 
             int fileID = fileDB.insertFile(file);
 
+            if(jsonObject.has("stepID")){
+                String stepID = jsonObject.get("stepID").getAsString();
+                Step step = stepBusiness.getStep(stepID);
+                step.setFileID(fileID);
+                stepBusiness.updateStep(step);
+            }
+
             return this.getFile(Integer.toString(fileID));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
@@ -156,6 +166,13 @@ public class FileBusiness {
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
             fileDB.updateFile(file);
+
+            if(jsonObject.has("stepID")){
+                String stepID = jsonObject.get("stepID").getAsString();
+                Step step = stepBusiness.getStep(stepID);
+                step.setFileID(file.getFileID());
+                stepBusiness.updateStep(step);
+            }
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
