@@ -157,10 +157,9 @@ public class FileBusiness {
      */
     public File updateFile(JsonObject jsonObject, String uuid) {
         try {
-            if(jsonObject == null){
-                throw new BadRequestException("Json object or stepID are null");
+            if(uuid == null){
+                throw new BadRequestException("uuid is null");
             }
-
             if(!jsonObject.has("fileID")){
                 throw new BadRequestException("A file ID must be provided.");
             }
