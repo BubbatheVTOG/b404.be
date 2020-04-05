@@ -2,6 +2,9 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
+import javax.validation.constraints.Null;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +26,8 @@ public class FileDB {
         //Prepare sql statement
         String query = "SELECT * FROM file WHERE file.fileID = ?;";
 
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute query
             preparedStatement.setInt(1, fileID);
@@ -169,8 +172,8 @@ public class FileDB {
         //Prepare sql statement
         String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
 
-        try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+        try (Connection conn = this.dbConn.connect();
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             //Set parameters and execute update
             preparedStatement.setString(1, file.getName());

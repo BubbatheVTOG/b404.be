@@ -5,14 +5,17 @@ import blink.utility.objects.Company;
 import blink.utility.objects.File;
 import blink.utility.objects.Person;
 import blink.utility.objects.Step;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class FileBusiness {
@@ -176,8 +179,15 @@ public class FileBusiness {
      * @param uuid id of requester
      * @return fileID of the updated file
      */
-    public File updateFile(JsonObject jsonObject, String stepID, String uuid) {
+    public File updateFile(JsonObject jsonObject, String uuid) {
         try {
+            if(uuid == null){
+                throw new BadRequestException("uuid is null");
+            }
+            if(!jsonObject.has("fileID")){
+                throw new BadRequestException("A file ID must be provided.");
+            }
+
             File file = jsonObjectToFileObject(jsonObject);
 
             //Check that file exists and user has access to file
@@ -185,8 +195,8 @@ public class FileBusiness {
 
             fileDB.updateFile(file);
 
-            if(!(stepID == null || stepID.isEmpty())){
-                Step step = stepBusiness.getStep(stepID);
+            if(jsonObject.has("stepID")){
+                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
 
                 if(step.getFileID() != file.getFileID()) {
                     step.setFileID(file.getFileID());
@@ -226,6 +236,7 @@ public class FileBusiness {
             if(!jsonObject.has("name")){
                 throw new BadRequestException("File name must be provided");
             }
+
             boolean confidential = false;
             if(jsonObject.has("confidential")){
                 confidential = jsonObject.get("confidential").getAsBoolean();
@@ -234,6 +245,7 @@ public class FileBusiness {
             if(!jsonObject.has("file")){
                 throw new BadRequestException("File data must be provided");
             }
+
             String base64String = jsonObject.get("file").getAsString();
             if(base64String == null || base64String.isEmpty()){
                 throw new BadRequestException("A file must be provided.");
@@ -245,6 +257,9 @@ public class FileBusiness {
             else {
                 return new File(jsonObject.get("name").getAsString(), base64String, confidential);
             }
+        }
+        catch(NumberFormatException nfe){
+            throw new BadRequestException("fileID must be a valid Integer");
         }
         catch(Exception e) {
             throw new BadRequestException("File json in incorrect format.");

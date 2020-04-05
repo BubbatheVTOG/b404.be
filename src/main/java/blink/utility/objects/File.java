@@ -25,7 +25,7 @@ public class File {
     public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = blobFile.getBytes(1, (int) blobFile.length());
+        this.byteFile = blobFile == null ? null : blobFile.getBytes(1, (int) blobFile.length());
         this.base64File = File.encodeBase64(this.byteFile);
         this.confidential = confidential;
         this.fileType = getMimeType(this.byteFile);
@@ -92,7 +92,12 @@ public class File {
      * @return base64 string
      */
     public static byte[] decodeBase64(String base64String) {
-        return base64String == null || base64String.isEmpty() ? null : Base64.getMimeDecoder().decode(base64String);
+        try {
+            return base64String == null || base64String.isEmpty() ? null : Base64.getMimeDecoder().decode(base64String);
+        }
+        catch(Exception e){
+            throw new BadRequestException("Base 64 file in incorrect format");
+        }
     }
 
     /**
@@ -117,15 +122,17 @@ public class File {
     public static String getMimeType(byte [] byteFile) {
         try {
             if(byteFile == null || byteFile.length == 0){
-                return "null";
+                return "N/A";
             }
             InputStream inputStream = new ByteArrayInputStream(byteFile);
             String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
-            String [] tokens = mimeType.split("[/]");
-            String fileType = tokens[0];
+            String[] tokens = mimeType.split("[/]");
             return tokens[0];
         } catch(Exception e) {
             return "null";
+        }
+        catch(NullPointerException npe){
+            throw new BadRequestException("Mime type failing");
         }
     }
 }
