@@ -129,10 +129,7 @@ public class File {
             String[] tokens = mimeType.split("[/]");
             return tokens[0];
         } catch(Exception e) {
-            return "null";
-        }
-        catch(NullPointerException npe){
-            throw new BadRequestException("Mime type failing");
+            return null;
         }
     }
 }
