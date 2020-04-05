@@ -123,8 +123,6 @@ public class File {
             return tokens[0];
         } catch(IOException io) {
             throw new BadRequestException("You've submitted an unsupported file type.");
-        } catch(NullPointerException npe) {
-            return "null";
         }
     }
 }
