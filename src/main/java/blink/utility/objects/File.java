@@ -116,6 +116,9 @@ public class File {
      */
     public static String getMimeType(byte [] byteFile) {
         try {
+            if(byteFile == null || byteFile.length == 0){
+                return "null";
+            }
             InputStream inputStream = new ByteArrayInputStream(byteFile);
             String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
             String [] tokens = mimeType.split("[/]");

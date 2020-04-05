@@ -111,16 +111,10 @@ public class FileDB {
 
             try(ResultSet result = preparedStatement.executeQuery()) {
                 while(result.next()) {
-                    int id = result.getInt("fileID");
-                    String name = result.getString("name");
-                    Blob blob;
-                    if(result.getBlob("file") == null) {
-                        blob = conn.createBlob();
-                    } else {
-                        blob = result.getBlob("file");
-                    }
-                    boolean confidential = result.getBoolean("confidential");
-                    files.add(new File(id, name, blob, confidential));
+                    files.add(new File(result.getInt("fileID"),
+                            result.getString("name"),
+                            result.getBlob("file"),
+                            result.getBoolean("confidential")));
                 }
                 return files;
             }
