@@ -35,10 +35,11 @@ public class FileDB {
                 while (result.next()) {
                     int id = result.getInt("fileID");
                     String name = result.getString("name");
-                    Blob blob = result.getBlob("file");
-                    if(result.wasNull()) {
+                    Blob blob;
+                    if(result.getBlob("file").equals(null))
                         blob = conn.createBlob();
-                    }
+                    else
+                        blob = result.getBlob("file");
                     boolean confidential = result.getBoolean("confidential");
                     file = new File(id, name, blob, confidential);
                 }
