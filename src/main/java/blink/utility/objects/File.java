@@ -121,8 +121,8 @@ public class File {
             String [] tokens = mimeType.split("[/]");
             String fileType = tokens[0];
             return tokens[0];
-        } catch(IOException io) {
-            throw new BadRequestException("You've submitted an unsupported file type.");
+        } catch(Exception e) {
+            return "null";
         }
     }
 }
