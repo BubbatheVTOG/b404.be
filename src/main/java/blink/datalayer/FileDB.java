@@ -97,6 +97,31 @@ public class FileDB {
     }
 
     /**
+     * Returns all template files without an ID of 0
+     * @return List<File> files
+     * @throws SQLException Error connecting to the database or executing the query
+     */
+    public List<File> getAllTemplateFiles() throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file WHERE file.fileID NOT IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    files.add(new File(result.getInt("fileID"),
+                            result.getString("name"),
+                            result.getBlob("file"),
+                            result.getBoolean("confidential")));
+                }
+                return files;
+            }
+        }
+    }
+
+    /**
      * Connect to database and add
      * @param file file to insert into the database
      * @throws SQLException Error connecting to database or executing update
