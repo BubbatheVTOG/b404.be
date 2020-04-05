@@ -2,7 +2,6 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
-import javax.sql.rowset.serial.SerialBlob;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +32,10 @@ public class FileDB {
 
                 File file = null;
                 while (result.next()) {
-                    int id = result.getInt("fileID");
-                    String name = result.getString("name");
-                    Blob blob;
-                    if(result.getBlob("file").equals(null))
-                        blob = conn.createBlob();
-                    else
-                        blob = result.getBlob("file");
-                    boolean confidential = result.getBoolean("confidential");
-                    file = new File(id, name, blob, confidential);
+                    file = new File(result.getInt("fileID"),
+                            result.getString("name"),
+                            result.getBlob("file"),
+                            result.getBoolean("confidential"));
                 }
                 return file;
             }
