@@ -35,10 +35,16 @@ public class FileDB {
 
                 File file = null;
                 while (result.next()) {
-                    file = new File(result.getInt("fileID"),
-                            result.getString("name"),
-                            result.getBlob("file"),
-                            result.getBoolean("confidential"));
+                    int id = result.getInt("fileID");
+                    String name = result.getString("name");
+                    Blob blob;
+                    if(result.getBlob("file") == null) {
+                        blob = conn.createBlob();
+                    } else {
+                        blob = result.getBlob("file");
+                    }
+                    boolean confidential = result.getBoolean("confidential");
+                    file = new File(id, name, blob, confidential);
                 }
                 return file;
             }
@@ -93,6 +99,37 @@ public class FileDB {
                             result.getString("name"),
                             result.getBlob("file"),
                             result.getBoolean("confidential")));
+                }
+                return files;
+            }
+        }
+    }
+
+    /**
+     * Returns all template files without an ID of 0
+     * @return List<File> files
+     * @throws SQLException Error connecting to the database or executing the query
+     */
+    public List<File> getAllTemplateFiles() throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file WHERE file.fileID NOT IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    int id = result.getInt("fileID");
+                    String name = result.getString("name");
+                    Blob blob;
+                    if(result.getBlob("file") == null) {
+                        blob = conn.createBlob();
+                    } else {
+                        blob = result.getBlob("file");
+                    }
+                    boolean confidential = result.getBoolean("confidential");
+                    files.add(new File(id, name, blob, confidential));
                 }
                 return files;
             }

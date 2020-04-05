@@ -425,7 +425,7 @@ public class WorkflowService {
     @Path("/concrete")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "updateConc/reteWorkflow", description = "Update an existing concrete workflow")
+    @Operation(summary = "updateConcreteWorkflow", description = "Update an existing concrete workflow")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Workflow object which each contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
             @ApiResponse(code = 400, message = "{error: specific error message.} (invalid parameters provided)"),

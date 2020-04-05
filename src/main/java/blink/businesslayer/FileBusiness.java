@@ -128,8 +128,31 @@ public class FileBusiness {
     }
 
     /**
+     * Get all template files
+     * @param uuid of the requester
+     * @return List<File>
+     */
+    public List<File> getAllTemplateFiles(String uuid) {
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                throw new NotAuthorizedException("You do not have access to these files.");
+            }
+
+            return fileDB.getAllTemplateFiles();
+
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+
+    /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
+     * @param stepID of the step
      * @return generated fileID
      */
     public File insertFile(JsonObject jsonObject, String stepID) {

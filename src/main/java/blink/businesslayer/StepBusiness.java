@@ -6,6 +6,7 @@ import blink.utility.objects.File;
 import blink.utility.objects.Step;
 import com.google.gson.*;
 
+import javax.validation.constraints.Null;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
@@ -110,7 +111,7 @@ public class StepBusiness {
         try {
             List<Step> stepList = this.jsonToStepList(steps, workflowID);
 
-            this.validateSteps(stepList);
+            stepList = this.validateSteps(stepList);
 
             numInsertedSteps = this.stepDB.insertSteps(stepList, conn);
         } catch(SQLException ex) {
@@ -139,7 +140,7 @@ public class StepBusiness {
     public int updateSteps(List<Step> stepList, Connection conn) {
         int numUpdatedSteps;
         try {
-            this.validateSteps(stepList);
+            stepList = this.validateSteps(stepList);
 
             numUpdatedSteps = this.stepDB.updateSteps(stepList, conn);
 
@@ -205,18 +206,26 @@ public class StepBusiness {
         return steps;
     }
 
-    private void validateSteps(List<Step> steps) throws SQLException{
+    private List<Step> validateSteps(List<Step> steps) throws SQLException{
         for (Step step : steps) {
 
             //Validate template file exists and copy template file to link to step
-            if (step.getFileID() != 0) {
-                //TODO add this check once file has workflowID added
-                //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                //if(oldFile.getWorkflow() != 0) {
-                File newFile = this.fileDB.getFileByID(step.getFileID());
+            if (step.getFileID() != 0) { //&& !this.fileDB.getTemplateFiles.contains(oldFile)) {
+                File newFile = null;
+                try {
+                    //TODO add this check once file has workflowID added
+                    //File oldFile = this.fileDB.getFileByID(step.getFileID());
+                    newFile = this.fileDB.getFileByID(step.getFileID());
+                }
+                catch(NullPointerException npe){
+                    throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(step));
+                }
+                if(newFile == null){
+                    throw new NotFoundException("The file you assigned does not exist.");
+                }
+
                 int newFileID = this.fileDB.insertFile(newFile);
                 step.setFileID(newFileID);
-                //}
             }
 
             //validate that person exists
@@ -229,8 +238,10 @@ public class StepBusiness {
             }
 
             if (step.hasChildren()) {
-                this.validateSteps(step.getChildren());
+                step.setChildren(this.validateSteps(step.getChildren()));
             }
         }
+
+        return steps;
     }
 }
