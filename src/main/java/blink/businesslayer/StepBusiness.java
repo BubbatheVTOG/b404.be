@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Business layer service for step related logic
@@ -209,22 +210,16 @@ public class StepBusiness {
     private List<Step> validateSteps(List<Step> steps) throws SQLException{
         for (Step step : steps) {
 
-            //Validate template file exists and copy template file to link to step
-            if (step.getFileID() != 0) { //&& !this.fileDB.getTemplateFiles.contains(oldFile)) {
-                File newFile = null;
-                try {
-                    //TODO add this check once file has workflowID added
-                    //File oldFile = this.fileDB.getFileByID(step.getFileID());
-                    newFile = this.fileDB.getFileByID(step.getFileID());
-                }
-                catch(NullPointerException npe){
-                    throw new BadRequestException(new GsonBuilder().serializeNulls().create().toJson(step));
-                }
-                if(newFile == null){
-                    throw new NotFoundException("The file you assigned does not exist.");
-                }
+            //Check that fileID exists
+            File linkedFile = this.fileDB.getFileByID(step.getFileID());
+            if(linkedFile == null){
+                throw new NotFoundException("A file you assigned does not exist.");
+            }
 
-                int newFileID = this.fileDB.insertFile(newFile);
+            //If fileID points to template file, duplicate file and reassign step to duplicate file
+            List<Integer> templateIDList = fileDB.getAllTemplateFiles().stream().map(File::getFileID).collect(Collectors.toList());
+            if (templateIDList.contains(step.getFileID())) {
+                int newFileID = this.fileDB.insertFile(linkedFile);
                 step.setFileID(newFileID);
             }
 
