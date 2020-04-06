@@ -59,7 +59,7 @@ public class FileDB {
     public List<File> getAllConcreteFiles() throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file WHERE file.fileID IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+        String query = "SELECT DISTINCT * FROM file WHERE file.fileID IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -90,7 +90,7 @@ public class FileDB {
     public List<File> getAllTemplateFiles() throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file WHERE file.fileID NOT IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+        String query = "SELECT DISTINCT * FROM file WHERE file.fileID NOT IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
