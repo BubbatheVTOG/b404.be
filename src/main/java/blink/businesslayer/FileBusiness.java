@@ -107,6 +107,27 @@ public class FileBusiness {
     }
 
     /**
+     * Get all template files
+     * @param uuid of the requester
+     * @return List<File>
+     */
+    public List<File> getAllTemplateFiles(String uuid) {
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            //Check that user has access to this milestone
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                throw new NotAuthorizedException("You do not have access to these files.");
+            }
+
+            return fileDB.getAllTemplateFiles();
+
+        } catch(SQLException sqle) {
+            throw new InternalServerErrorException(sqle.getMessage());
+        }
+    }
+
+    /**
      * Get all files by milestoneID
      * @param milestoneID to retrieve files by
      * @param uuid id of requester
@@ -150,27 +171,6 @@ public class FileBusiness {
             }
 
             return fileDB.getAllFilesByCompany(Integer.parseInt(companyID));
-
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
-
-    /**
-     * Get all template files
-     * @param uuid of the requester
-     * @return List<File>
-     */
-    public List<File> getAllTemplateFiles(String uuid) {
-        try {
-            Person requester = this.personBusiness.getPersonByUUID(uuid);
-
-            //Check that user has access to this milestone
-            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                throw new NotAuthorizedException("You do not have access to these files.");
-            }
-
-            return fileDB.getAllTemplateFiles();
 
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
