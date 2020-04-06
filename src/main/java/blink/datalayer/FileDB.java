@@ -51,6 +51,37 @@ public class FileDB {
         }
     }
 
+    /**
+     * Returns all concrete files
+     * @return List<File> files
+     * @throws SQLException Error connecting to the database or executing the query
+     */
+    public List<File> getAllConcreteFiles() throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file WHERE file.fileID IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    int id = result.getInt("fileID");
+                    String name = result.getString("name");
+                    Blob blob;
+                    if(result.getBlob("file") == null) {
+                        blob = conn.createBlob();
+                    } else {
+                        blob = result.getBlob("file");
+                    }
+                    boolean confidential = result.getBoolean("confidential");
+                    files.add(new File(id, name, blob, confidential));
+                }
+                return files;
+            }
+        }
+    }
+
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 

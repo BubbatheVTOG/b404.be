@@ -80,6 +80,83 @@ public class FileService {
     }
 
     /**
+     * Get all concrete files from the database
+     * @Param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for file returned
+     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                        500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/concrete")
+    @GET
+    @Operation(summary = "getAllConcreteFiles", description = "Gets all concrete files relevant to the user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of File objects containing fileID, name, file, confidential and stepID"),
+            @ApiResponse(code = 400, message = "{error: No user with that userID exists.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllConcreteFiles(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<File> files = fileBusiness.getAllConcreteFiles(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Get all template files from the database
+     * @Param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for file returned
+     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                        500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/template")
+    @GET
+    @Operation(summary = "getAllTemplateFiles", description = "Gets all template files")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File object containing fileID, name, file, confidential and stepID"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllTemplateFiles(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            List<File> files = fileBusiness.getAllTemplateFiles(JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Get all files by milestoneID from the database
      * @Param jwt JSON web token for authorization
      * @return HTTP Response: 200 OK for file returned
@@ -147,50 +224,6 @@ public class FileService {
 
             //Send parameters to business layer and store response
             List<File> files = fileBusiness.getAllFilesByCompany(companyID, JWTUtility.getUUIDFromToken(jwt));
-
-            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
-            return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
-        }
-        //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
-        catch(ForbiddenException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
-        }
-        catch(NotFoundException nfe){
-            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
-        }
-        catch(NotAuthorizedException nae){
-            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
-        }
-        catch(Exception e){
-            return ResponseBuilder.buildInternalServerErrorResponse();
-        }
-    }
-
-    /**
-     * Get all template files from the database
-     * @Param jwt JSON web token for authorization
-     * @return HTTP Response: 200 OK for file returned
-     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
-     *                        500 INTERNAL SERVER ERROR for backend error
-     */
-    @Path("/templateFiles")
-    @GET
-    @Operation(summary = "getAllTemplateFiles", description = "Gets all template files")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "File object containing fileID, name, file, confidential and stepID"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
-            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
-    })
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllTemplateFiles(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
-        try {
-            Authorization.isLoggedIn(jwt);
-
-            //Send parameters to business layer and store response
-            List<File> files = fileBusiness.getAllTemplateFiles(JWTUtility.getUUIDFromToken(jwt));
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(files));
