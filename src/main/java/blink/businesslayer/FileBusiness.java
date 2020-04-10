@@ -200,11 +200,11 @@ public class FileBusiness {
             int fileID = fileDB.insertFile(file);
 
             if(step != null) {
+                step.setFileID(fileID);
+                stepBusiness.updateStep(step);
                 if(step.getFileID() != 0) {
                     fileDB.deleteFileByFileID(step.getFileID());
                 }
-                step.setFileID(fileID);
-                stepBusiness.updateStep(step);
             }
 
             return this.getFile(Integer.toString(fileID));
@@ -239,11 +239,11 @@ public class FileBusiness {
                 Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
 
                 if(step.getFileID() != file.getFileID()) {
+                    step.setFileID(file.getFileID());
+                    stepBusiness.updateStep(step);
                     if(step.getFileID() != 0) {
                         fileDB.deleteFileByFileID(step.getFileID());
                     }
-                    step.setFileID(file.getFileID());
-                    stepBusiness.updateStep(step);
                 }
             }
 
