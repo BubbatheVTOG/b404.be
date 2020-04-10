@@ -2,9 +2,6 @@ package blink.datalayer;
 
 import blink.utility.objects.File;
 
-import javax.validation.constraints.Null;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +40,7 @@ public class FileDB {
                     } else {
                         blob = result.getBlob("file");
                     }
+
                     boolean confidential = result.getBoolean("confidential");
                     file = new File(id, name, blob, confidential);
                 }
@@ -179,9 +177,12 @@ public class FileDB {
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
+            Blob blob = conn.createBlob();
+            blob.setBytes(1, file.getEncodedString().getBytes());
+
             //Set parameters and execute update
             preparedStatement.setString(1, file.getName());
-            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBlob(2, blob);
             preparedStatement.setBoolean(3, file.getConfidential());
 
             preparedStatement.executeUpdate();
@@ -206,9 +207,12 @@ public class FileDB {
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
+            Blob blob = conn.createBlob();
+            blob.setBytes(1, file.getEncodedString().getBytes());
+
             //Set parameters and execute update
             preparedStatement.setString(1, file.getName());
-            preparedStatement.setBlob(2, file.getBlobFile());
+            preparedStatement.setBlob(2, blob);
             preparedStatement.setBoolean(3, file.getConfidential());
             preparedStatement.setInt(4, file.getFileID());
 
@@ -263,5 +267,18 @@ public class FileDB {
             }
         }
         return companyID;
+    }
+
+    /**
+     * Converts an encoded base64 String into a blob
+     * @param encodedString
+     * @param conn
+     * @return
+     * @throws SQLException
+     */
+    public Blob encodedStringToBlob(String encodedString, Connection conn) throws SQLException {
+        Blob blob = conn.createBlob();
+        blob.setBytes(1, encodedString.getBytes());
+        return blob;
     }
 }

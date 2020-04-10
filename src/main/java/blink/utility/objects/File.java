@@ -2,13 +2,7 @@ package blink.utility.objects;
 
 import com.google.gson.annotations.SerializedName;
 
-import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
@@ -16,36 +10,32 @@ import java.util.Base64;
 public class File {
     private int fileID;
     private String name;
-    private transient byte[] byteFile;
     @SerializedName("file")
-    private String base64File;
+    private String decodedString;
+    private transient String encodedString;
     private boolean confidential;
-    private String fileType;
 
-    public File(int fileID, String name, Blob blobFile, boolean confidential) throws SQLException {
+    public File(int fileID, String name, Blob blob, boolean confidential) throws SQLException {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = blobFile == null ? null : blobFile.getBytes(1, (int) blobFile.length());
-        this.base64File = File.encodeBase64(this.byteFile);
+        this.encodedString = blobToEncodedString(blob);
+        this.decodedString = decodeBase64(encodedString);
         this.confidential = confidential;
-        this.fileType = getMimeType(this.byteFile);
     }
 
-    public File(String name, String base64String, boolean confidential) {
-        this.name = name;
-        this.byteFile = File.decodeBase64(base64String);
-        this.base64File = File.encodeBase64(byteFile);
-        this.confidential = confidential;
-        this.fileType = getMimeType(this.byteFile);
-    }
-
-    public File(int fileID, String name, String base64String, boolean confidential) {
+    public File(int fileID, String name, String decodedString, boolean confidential) {
         this.fileID = fileID;
         this.name = name;
-        this.byteFile = File.decodeBase64(base64String);
-        this.base64File = File.encodeBase64(byteFile);
+        this.decodedString = decodedString;
+        this.encodedString = File.encodeBase64(decodedString);
         this.confidential = confidential;
-        this.fileType = getMimeType(this.byteFile);
+    }
+
+    public File(String name, String decodedString, boolean confidential) {
+        this.name = name;
+        this.decodedString = decodedString;
+        this.encodedString = File.encodeBase64(decodedString);
+        this.confidential = confidential;
     }
 
     public File(String name) { this.name = name; }
@@ -58,56 +48,26 @@ public class File {
 
     public void setName(String name) { this.name = name; }
 
-    public Blob getBlobFile() {
-        return this.byteFile.length == 0 ? null : this.convertFileToBlob(byteFile);
-    }
+    public String getDecodedString() { return decodedString; }
 
-    public String getBase64File() { return base64File; }
+    public void setDecodedString(String decodedString) { this.decodedString = decodedString; }
 
-    public void setBase64File(String base64File) { this.base64File = base64File; }
+    public String getEncodedString() { return encodedString; }
 
-    public byte[] getByteFile() { return byteFile; }
-
-    public void setByteFile(byte[] byteFile) { this.byteFile = byteFile; }
+    public void setEncodedString(String encodedString) { this.encodedString = encodedString; }
 
     public boolean getConfidential() { return confidential; }
 
     public void setConfidential(boolean confidential) { this.confidential = confidential; }
 
     /**
-     * Converts byte[] File to blob
-     * @param byteFile the byte array to convert to a blob
-     * @return blob
-     */
-    private Blob convertFileToBlob(byte[] byteFile) {
-        try {
-            return byteFile.length == 0 ? null : new SerialBlob(byteFile);
-        } catch(SQLException sqle) {
-            throw new InternalServerErrorException(sqle.getMessage());
-        }
-    }
-    /**
-     * Converts base 64 String to byte array
-     * @param base64String base64 string representation of a file
-     * @return base64 string
-     */
-    public static byte[] decodeBase64(String base64String) {
-        try {
-            return base64String == null || base64String.isEmpty() ? null : Base64.getMimeDecoder().decode(base64String);
-        }
-        catch(Exception e){
-            throw new BadRequestException("Base 64 file in incorrect format");
-        }
-    }
-
-    /**
      * Converts byte[] File into Base64 string
-     * @param byteFile byte array to convert to base64
+     * @param decodedString byte array to convert to base64
      * @return base64 string
      */
-    public static String encodeBase64(byte[] byteFile) {
+    public static String encodeBase64(String decodedString) {
         try{
-            return byteFile == null || byteFile.length == 0  ? null : Base64.getUrlEncoder().encodeToString(byteFile);
+            return decodedString == null || decodedString.length() == 0  ? null : Base64.getEncoder().encodeToString(decodedString.getBytes());
         }
         catch(Exception e){
             throw new BadRequestException("File is invalid format.");
@@ -115,21 +75,27 @@ public class File {
     }
 
     /**
-     * Obtains fileType from the mimeType of the file
-     * @param byteFile byte array to extract mimeType
-     * @return fileType String
+     * Converts base 64 String to byte array
+     * @param encodedString base64 string representation of a file
+     * @return base64 string
      */
-    public static String getMimeType(byte [] byteFile) {
+    public static String decodeBase64(String encodedString) {
         try {
-            if(byteFile == null || byteFile.length == 0){
-                return "N/A";
-            }
-            InputStream inputStream = new ByteArrayInputStream(byteFile);
-            String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
-            String[] tokens = mimeType.split("[/]");
-            return tokens[0];
-        } catch(Exception e) {
-            return null;
+            return encodedString == null || encodedString.isEmpty() ? null : new String(Base64.getDecoder().decode(encodedString.getBytes()));
         }
+        catch(Exception e){
+            throw new BadRequestException("Base 64 file in incorrect format");
+        }
+    }
+
+    /**
+     * Converts a blob into an encoded base64 String
+     * @param blob
+     * @return
+     * @throws SQLException
+     */
+    public static String blobToEncodedString(Blob blob) throws  SQLException {
+        String encodedString = new String(blob.getBytes(1, (int) blob.length()));
+        return encodedString;
     }
 }
