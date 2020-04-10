@@ -23,7 +23,7 @@ public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
-    private StepBusiness stepBusiness = new StepBusiness();
+    private StepBusiness stepBusiness;
 
     public FileBusiness() {
         this.fileDB = new FileDB();
