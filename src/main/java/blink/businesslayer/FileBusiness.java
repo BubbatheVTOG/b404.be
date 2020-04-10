@@ -200,7 +200,9 @@ public class FileBusiness {
             int fileID = fileDB.insertFile(file);
 
             if(step != null) {
-                fileDB.deleteFileByFileID(step.getFileID());
+                if(step.getFileID() != 0) {
+                    fileDB.deleteFileByFileID(step.getFileID());
+                }
                 step.setFileID(fileID);
                 stepBusiness.updateStep(step);
             }
@@ -237,7 +239,9 @@ public class FileBusiness {
                 Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
 
                 if(step.getFileID() != file.getFileID()) {
-                    fileDB.deleteFileByFileID(step.getFileID());
+                    if(step.getFileID() != 0) {
+                        fileDB.deleteFileByFileID(step.getFileID());
+                    }
                     step.setFileID(file.getFileID());
                     stepBusiness.updateStep(step);
                 }
