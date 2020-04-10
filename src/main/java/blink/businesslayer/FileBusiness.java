@@ -25,6 +25,7 @@ public class FileBusiness {
     private MilestoneBusiness milestoneBusiness;
     private StepBusiness stepBusiness;
 
+
     public FileBusiness() {
         this.fileDB = new FileDB();
         this.personBusiness = new PersonBusiness();
@@ -181,17 +182,19 @@ public class FileBusiness {
     /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
-     * @param stepID of the step
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject, String stepID) {
+    public File insertFile(JsonObject jsonObject) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
             Step step = null;
 
-            if(!(stepID == null || stepID.isEmpty())){
-                step = stepBusiness.getStep(stepID);
+            if(jsonObject.has("stepID")) {
+                String stepID = jsonObject.get("stepID").getAsString();
+                if (!(stepID == null || stepID.isEmpty())) {
+                    step = stepBusiness.getStep(stepID);
+                }
             }
 
             int fileID = fileDB.insertFile(file);
