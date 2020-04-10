@@ -236,19 +236,6 @@ public class FileBusiness {
 
             fileDB.updateFile(file);
 
-            if(jsonObject.has("stepID")){
-                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
-
-                if(step.getFileID() != file.getFileID()) {
-                    int oldFileID = step.getFileID();
-                    step.setFileID(file.getFileID());
-                    stepBusiness.updateStep(step);
-                    if(oldFileID != 0) {
-                        fileDB.deleteFileByFileID(oldFileID);
-                    }
-                }
-            }
-
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());
