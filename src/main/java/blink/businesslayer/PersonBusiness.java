@@ -179,21 +179,12 @@ public class PersonBusiness {
             //Ensure that accessLevel exists in database; accessLevelBusiness will throw relevant custom exceptions
             AccessLevel accessLevel = accessLevelBusiness.getAccessLevelByID(accessLevelID);
 
-            Blob signatureBlob;
-            try {
-                byte[] signatureBytes = File.decodeBase64(signature);
-                signatureBlob = signatureBytes == null || signature.length() == 0 ? null : new SerialBlob(signatureBytes);
-            }
-            catch(Exception e){
-                throw new BadRequestException("Invalid base64 syntax on signature.");
-            }
-
             //Get new salt and hash password with new salt
             String salt = PasswordEncryption.getSalt();
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID(), signatureBlob);
+            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID(), signature);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);
@@ -256,23 +247,17 @@ public class PersonBusiness {
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
-            Blob signatureBlob;
-            try {
-                byte[] signatureBytes;
-                if(signature == null || signature.isEmpty()){
-                    signatureBytes = File.decodeBase64(person.getSignature());
-                }
-                else{
-                    signatureBytes = File.decodeBase64(signature);
-                }
-                signatureBlob = signatureBytes == null || signatureBytes.length == 0 ? null : new SerialBlob(signatureBytes);
+            String signatureEncoding;
+
+            if(signature == null || signature.isEmpty()){
+                signatureEncoding = File.encodeBase64(person.getSignature());
             }
-            catch(Exception e){
-                throw new BadRequestException("Invalid base64 syntax on signature.");
+            else{
+                signatureEncoding = File.encodeBase64(signature);
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signatureBlob);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signatureEncoding);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);

@@ -200,7 +200,7 @@ public class PersonDB {
                 while (result.next()) {
 
                     //Pull response content and map into a Person object
-                    person.setSignature(File.encodeBase64(result.getBytes("signature")));
+                    person.setSignature(File.decodeBase64(File.blobToEncodedString(result.getBlob("signature"))));
                 }
 
                 return person;
@@ -219,12 +219,17 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID, final Blob signature) throws SQLException {
+    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID, final String signature) throws SQLException {
         //Prepare sql statement
         String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID, signature) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            Blob blob = conn.createBlob();
+            if(signature != null || signature.length() != 0) {
+                blob.setBytes(1, signature.getBytes());
+            }
 
             //Set parameters and execute query
             preparedStatement.setString(1, UUID);
@@ -236,7 +241,7 @@ public class PersonDB {
             preparedStatement.setString(7, email);
             preparedStatement.setString(8, title);
             preparedStatement.setInt(9, accessLevelID);
-            preparedStatement.setBlob(10, signature);
+            preparedStatement.setBlob(10, blob);
 
             preparedStatement.executeUpdate();
         }
@@ -252,12 +257,15 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID, final Blob signature) throws SQLException {
+    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID, final String signature) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ?, signature = ? WHERE UUID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            Blob blob = conn.createBlob();
+            blob.setBytes(1, signature.getBytes());
 
             //Set parameters and execute query
             preparedStatement.setString(1, username);
@@ -267,7 +275,7 @@ public class PersonDB {
             preparedStatement.setString(5, email);
             preparedStatement.setString(6, title);
             preparedStatement.setInt(7, accessLevelID);
-            preparedStatement.setBlob(8, signature);
+            preparedStatement.setBlob(8, blob);
             preparedStatement.setString(9, UUID);
 
             preparedStatement.executeUpdate();
@@ -291,5 +299,18 @@ public class PersonDB {
             preparedStatement.setString(1, UUID);
             return preparedStatement.executeUpdate();
         }
+    }
+
+    /**
+     * Converts an encoded base64 String into a blob
+     * @param signature
+     * @param conn
+     * @return
+     * @throws SQLException
+     */
+    public Blob encodedStringToBlob(String signature, Connection conn) throws SQLException {
+        Blob blob = conn.createBlob();
+        blob.setBytes(1, signature.getBytes());
+        return blob;
     }
 }

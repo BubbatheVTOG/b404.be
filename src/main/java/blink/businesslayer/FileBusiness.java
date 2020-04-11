@@ -23,7 +23,8 @@ public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
     private MilestoneBusiness milestoneBusiness;
-    private StepBusiness stepBusiness = new StepBusiness();
+    private StepBusiness stepBusiness;
+
 
     public FileBusiness() {
         this.fileDB = new FileDB();
@@ -181,19 +182,30 @@ public class FileBusiness {
     /**
      * Insert a new file into the database
      * @param jsonObject containing all file elements
-     * @param stepID of the step
      * @return generated fileID
      */
-    public File insertFile(JsonObject jsonObject, String stepID) {
+    public File insertFile(JsonObject jsonObject) {
         try {
             File file = jsonObjectToFileObject(jsonObject);
 
+            Step step = null;
+
+            if(jsonObject.has("stepID")) {
+                String stepID = jsonObject.get("stepID").getAsString();
+                if (!(stepID == null || stepID.isEmpty())) {
+                    step = stepBusiness.getStep(stepID);
+                }
+            }
+
             int fileID = fileDB.insertFile(file);
 
-            if(!(stepID == null || stepID.isEmpty())){
-                Step step = stepBusiness.getStep(stepID);
+            if(step != null) {
+                int oldFileID = step.getFileID();
                 step.setFileID(fileID);
                 stepBusiness.updateStep(step);
+                if(oldFileID != 0) {
+                    fileDB.deleteFileByFileID(oldFileID);
+                }
             }
 
             return this.getFile(Integer.toString(fileID));
@@ -223,15 +235,6 @@ public class FileBusiness {
             this.getFile(Integer.toString(file.getFileID()), uuid);
 
             fileDB.updateFile(file);
-
-            if(jsonObject.has("stepID")){
-                Step step = stepBusiness.getStep(jsonObject.get("stepID").getAsString());
-
-                if(step.getFileID() != file.getFileID()) {
-                    step.setFileID(file.getFileID());
-                    stepBusiness.updateStep(step);
-                }
-            }
 
             return this.getFile(Integer.toString(file.getFileID()));
         } catch(SQLException sqle) {
