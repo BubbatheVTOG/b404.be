@@ -23,7 +23,7 @@ CREATE TABLE `person` (
   `email` varchar(30) DEFAULT NULL,
   `title` varchar(30) DEFAULT NULL,
   `accessLevelID` int(11) NOT NULL,
-  `signature` blob DEFAULT NULL,
+  `signature` longblob DEFAULT NULL,
   PRIMARY KEY (`UUID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -47,9 +47,8 @@ DROP TABLE IF EXISTS `file`;
 CREATE TABLE `file` (
   `fileID` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(30) DEFAULT NULL,
-  `file` blob DEFAULT NULL,
+  `file` longblob DEFAULT NULL,
   `confidential` boolean NOT NULL,
-  `stepID` int DEFAULT NULL,
   PRIMARY KEY (`fileID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -192,12 +191,12 @@ INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), /* Customer2 to Sample Company1 */
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
-INSERT INTO DB_DATABASE.file (fileID, name, file, confidential, stepID) VALUES
-  (0, "No File Linked", null, 0, null),
-  (1, "Document.docx", null, 0, null),
-  (2, "Image.jpg", null, 0, null),
-  (3, "Video.mp4", null, 0, null),
-  (4, "No Linked File", null, 0, null);
+INSERT INTO DB_DATABASE.file (fileID, name, file, confidential) VALUES
+  (0, "No File Linked", null, 0),
+  (1, "Document.docx", null, 0),
+  (2, "Image.jpg", null, 0),
+  (3, "Video.mp4", null, 0),
+  (4, "No Linked File", null, 0);
 
 INSERT INTO DB_DATABASE.verb (verbID, name) VALUES
   (0, "No Action Required"),
