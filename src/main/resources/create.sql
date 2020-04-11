@@ -192,11 +192,11 @@ INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
 INSERT INTO DB_DATABASE.file (fileID, name, file, confidential) VALUES
-  (0, "No File Linked", null, 0),
-  (1, "Document.docx", null, 0),
-  (2, "Image.jpg", null, 0),
-  (3, "Video.mp4", null, 0),
-  (4, "No Linked File", null, 0);
+  (0, "No File Linked", "", 0),
+  (1, "Document.docx", "", 0),
+  (2, "Image.jpg", "", 0),
+  (3, "Video.mp4", "", 0),
+  (4, "No Linked File", "", 0);
 
 INSERT INTO DB_DATABASE.verb (verbID, name) VALUES
   (0, "No Action Required"),
