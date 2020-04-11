@@ -88,7 +88,10 @@ public class FileDB {
     public List<File> getAllTemplateFiles() throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT * FROM file WHERE file.fileID NOT IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+        String query = "SELECT DISTINCT * FROM file WHERE file.fileID NOT IN " +
+                            "(SELECT step.fileID FROM step " +
+                                "JOIN workflow ON (step.workflowID = workflow.workflowID) " +
+                                "JOIN milestone ON (workflow.milestoneID = milestone.milestoneID));";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
