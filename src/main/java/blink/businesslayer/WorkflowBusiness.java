@@ -424,7 +424,8 @@ public class WorkflowBusiness {
             //Get passed in steps or pre-existing steps
             List<Step> steps = existingWorkflow.getSteps();
             if(workflowJson.has("steps") && !workflowJson.get("steps").isJsonNull()){
-                steps = stepBusiness.jsonToStepList(workflowJson.getAsJsonArray("steps"), workflowID);
+                //Parse steps from json object and recalculate completion statuses
+                steps = findStepCompletions(stepBusiness.jsonToStepList(workflowJson.getAsJsonArray("steps"), workflowID));
             }
 
             //Insert workflow template
@@ -628,6 +629,21 @@ public class WorkflowBusiness {
         }
     }
 
+    /**
+     * Wrapper function for findStepCompletions that does not require a specific stepID
+     * @param steps List of steps to calculate step completion
+     * @return Updated step list will calculated step completions
+     */
+    private List<Step> findStepCompletions(List<Step> steps){
+        return findStepCompletions(steps, 0);
+    }
+
+    /**
+     * Goes through steps and sets specific step as complete and calculates completions across the step list
+     * @param steps List of highest level steps
+     * @param stepID Step to mark complete
+     * @return Updated step list will calculated step completions
+     */
     private List<Step> findStepCompletions(List<Step> steps, int stepID){
         for(Step step : steps) {
             if(step.getStepID() == stepID){
