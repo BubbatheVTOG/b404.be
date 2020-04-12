@@ -87,19 +87,13 @@ public class FileBusiness {
         try {
             Person requester = this.personBusiness.getPersonByUUID(uuid);
 
-            ArrayList<File> userFiles = new ArrayList<>();
             //Check that user has access to this milestone
             if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                for(Integer companyID : companyIDList){
-                    userFiles.addAll(this.getAllFilesByCompany(Integer.toString(companyID), requester.getUuid()));
-                }
+                return this.fileDB.getAllConcreteFiles(uuid);
             }
             else{
-                userFiles.addAll(this.fileDB.getAllConcreteFiles());
+                return this.fileDB.getAllConcreteFiles();
             }
-
-            return userFiles;
 
         } catch(SQLException sqle) {
             throw new InternalServerErrorException(sqle.getMessage());

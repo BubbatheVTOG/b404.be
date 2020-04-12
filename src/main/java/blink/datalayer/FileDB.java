@@ -81,6 +81,40 @@ public class FileDB {
     }
 
     /**
+     *
+     * Returns all concrete files
+     * @param uuid
+     * @return List<File> files
+     * @throws SQLException Error connecting to the database or executing the query
+     */
+    public List<File> getAllConcreteFiles(String uuid) throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file JOIN step ON step.fileID = file.fileID JOIN workflow ON workflow.workflowID = step.workflowID JOIN milestone ON milestone.milestoneID = workflow.milestoneID JOIN personcompany ON personcompany.companyID = milestone.companyID WHERE personCompany.uuid = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, uuid);
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    int id = result.getInt("fileID");
+                    String name = result.getString("name");
+                    Blob blob;
+                    if(result.getBlob("file") == null) {
+                        blob = conn.createBlob();
+                    } else {
+                        blob = result.getBlob("file");
+                    }
+                    boolean confidential = result.getBoolean("confidential");
+                    files.add(new File(id, name, blob, confidential));
+                }
+                return files;
+            }
+        }
+    }
+
+    /**
      * Returns all template files without an ID of 0
      * @return List<File> files
      * @throws SQLException Error connecting to the database or executing the query
