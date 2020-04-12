@@ -47,7 +47,7 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByUsername(user);
+            Person person = this.getPersonSignature(user);
 
             if(person == null){
                 throw new NotAuthorizedException("Invalid login credentials.");
@@ -66,7 +66,7 @@ public class PersonBusiness {
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException If the password encryption process fails
-        catch(SQLException | ArithmeticException ex){
+        catch(ArithmeticException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
     }
