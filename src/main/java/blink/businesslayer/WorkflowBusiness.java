@@ -634,7 +634,7 @@ public class WorkflowBusiness {
      * @return Updated step list will calculated step completions
      */
     private List<Step> findStepCompletions(List<Step> steps){
-        return findStepCompletions(steps, 0);
+        return findStepCompletions(steps, -1);
     }
 
     /**
