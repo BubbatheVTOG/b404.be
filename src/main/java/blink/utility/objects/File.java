@@ -95,6 +95,9 @@ public class File {
      * @throws SQLException
      */
     public static String blobToEncodedString(Blob blob) throws  SQLException {
+        if(blob == null){
+            return "";
+        }
         String encodedString = new String(blob.getBytes(1, (int) blob.length()));
         return encodedString;
     }
