@@ -333,7 +333,7 @@ public class WorkflowBusiness {
     /**
      * Update a template workflow
      * @param workflowJsonString String representation of workflow json object
-     * @return Inserted workflow
+     * @return Updated workflow
      */
     public Workflow updateTemplateWorkflow(String workflowJsonString){
         try{
@@ -381,9 +381,9 @@ public class WorkflowBusiness {
     }
 
     /**
-     * Update a template workflow
+     * Update a concrete workflow
      * @param workflowJsonString String representation of workflow json object
-     * @return Inserted workflow
+     * @return Updated workflow
      */
     public Workflow updateConcreteWorkflow(String workflowJsonString){
         try{
@@ -577,10 +577,9 @@ public class WorkflowBusiness {
     /**
      * Marks a given step as complete and updates the workflow accordingly
      * @param stepID ID of step to mark as complete
-     * @return
+     * @return Json object of workflow with completed step
      */
     public String markStepComplete(String stepID, String uuid){
-        Workflow workflow = null;
         try {
             //Mark the step as complete
             Person requester = this.personBusiness.getPersonByUUID(uuid);
@@ -593,7 +592,7 @@ public class WorkflowBusiness {
                 throw new ForbiddenException("This step is not assigned to you and cannot be marked as completed");
             }
 
-            workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
+            Workflow workflow = this.getWorkflowByID(Integer.toString(step.getWorkflowID()));
             if(workflow.getCompany() == null){
                 throw new BadRequestException("This step belongs to a template workflow and cannot be marked as complete");
             }
