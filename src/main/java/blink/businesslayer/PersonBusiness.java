@@ -244,6 +244,9 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger)){
+                    throw new NotAuthorizedException("You are not able to alter your access level.");
+                }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
@@ -264,7 +267,7 @@ public class PersonBusiness {
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
-            throw new InternalServerErrorException(ex.getMessage());
+            throw new InternalServerErrorException(signature);
         }
     }
 
