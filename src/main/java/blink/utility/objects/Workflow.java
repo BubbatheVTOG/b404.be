@@ -37,6 +37,9 @@ public class Workflow {
         if(this.percentComplete == 1 && this.completedDate == null){
             this.completedDate = new Date();
         }
+        else{
+            this.completedDate = null;
+        }
     }
 
     public int getWorkflowID() {
