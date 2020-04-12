@@ -266,7 +266,10 @@ public class PersonDB {
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
             Blob blob = conn.createBlob();
-            blob.setBytes(1, signature.getBytes());
+            String encodedSignature = File.encodeBase64(signature);
+            if(encodedSignature != null && encodedSignature.length() != 0) {
+                blob.setBytes(1, encodedSignature.getBytes());
+            }
 
             //Set parameters and execute query
             preparedStatement.setString(1, username);

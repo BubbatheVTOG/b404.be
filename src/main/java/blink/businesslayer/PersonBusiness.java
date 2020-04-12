@@ -244,20 +244,18 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger)){
+                    throw new ForbiddenException("You are not able to alter your access level.");
+                }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
-            String signatureEncoding;
-
             if(signature == null || signature.isEmpty()){
-                signatureEncoding = File.encodeBase64(person.getSignature());
-            }
-            else{
-                signatureEncoding = File.encodeBase64(signature);
+                signature = person.getSignature();
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signatureEncoding);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signature);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);
