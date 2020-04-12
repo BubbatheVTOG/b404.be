@@ -1,10 +1,7 @@
 package blink.businesslayer;
 
 import blink.datalayer.FileDB;
-import blink.utility.objects.Company;
-import blink.utility.objects.File;
-import blink.utility.objects.Person;
-import blink.utility.objects.Step;
+import blink.utility.objects.*;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
@@ -22,6 +19,7 @@ import java.util.stream.Collectors;
 public class FileBusiness {
     private FileDB fileDB;
     private PersonBusiness personBusiness;
+    private CompanyBusiness companyBusiness;
     private MilestoneBusiness milestoneBusiness;
     private StepBusiness stepBusiness;
 
@@ -29,6 +27,7 @@ public class FileBusiness {
     public FileBusiness() {
         this.fileDB = new FileDB();
         this.personBusiness = new PersonBusiness();
+        this.companyBusiness = new CompanyBusiness();
         this.milestoneBusiness = new MilestoneBusiness();
         this.stepBusiness = new StepBusiness();
     }
@@ -137,11 +136,12 @@ public class FileBusiness {
     public List<File> getAllFilesByMilestone(String milestoneID, String uuid) {
         try {
             Person requester = this.personBusiness.getPersonByUUID(uuid);
+            Milestone milestone = milestoneBusiness.getMilestoneByID(milestoneID);
 
-            //Check that user has access to this milestone
+                //Check that user has access to this milestone
             if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID())){
+                if(!companyIDList.contains(milestone.getCompany().getCompanyID())){
                     throw new NotAuthorizedException("You do not have access to this file.");
                 }
             }
@@ -162,12 +162,14 @@ public class FileBusiness {
     public List<File> getAllFilesByCompany(String companyID, String uuid) {
         try {
             Person requester = this.personBusiness.getPersonByUUID(uuid);
+            Company company = this.companyBusiness.getCompanyByID(companyID);
 
-            //Check that user has access to this milestone
+
+            //Check that user has access to this company
             if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
-                if(!companyIDList.contains(milestoneBusiness.getMilestoneByID(companyID).getMileStoneID())){
-                    throw new NotAuthorizedException("You do not have access to this file.");
+                if(!companyIDList.contains(company.getCompanyID())){
+                    throw new NotAuthorizedException("You do not have access to files from these companies.");
                 }
             }
 
