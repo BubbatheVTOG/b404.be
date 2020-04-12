@@ -250,24 +250,19 @@ public class PersonBusiness {
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
-            String signatureEncoding;
-
             if(signature == null || signature.isEmpty()){
-                signatureEncoding = File.encodeBase64(person.getSignature());
-            }
-            else{
-                signatureEncoding = File.encodeBase64(signature);
+                signature = person.getSignature();
             }
 
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signatureEncoding);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signature);
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
-            throw new InternalServerErrorException(signature);
+            throw new InternalServerErrorException(ex.getMessage());
         }
     }
 
