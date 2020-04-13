@@ -173,7 +173,7 @@ INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName
   ("20809d5b-7989-4e48-bdde-74033e2f2672", "customer1", "1c6d9f0dacd79a80d18bad2c5c4d68e4ac9ace731d45a74c7388a5a856e97f1d2d07dae717d85ab7579dbfe32bafe930d9436f97e6c6f03465dacd338fe225d5", "3e3c056f0198d253dfb5770386540ef2", "Customer", "Number1", "Project Manager", 4, ""),
   ("1bdd74ae-2425-4501-a2d5-0a3039754606", "customer2", "27c5abc3b940a6bbb89395e1cfd5fb05784f82b75b097390f4f4ca421a58c782ba09394feae6229188a30db46499a9d55829eaf2240f8b1f3ed69429a84e2617", "89b627b172367d459f556f41142735a1", "Customer", "Number2", "DBA", 4, ""),
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", "customer3", "15fd55bc05e5d1f08fca598c790264187a9517efc87e4c170f89482473a20492e6d20e5c41a212ec59191086c9bb45b76543a1ae4689f5a87b4382d19b40ba80", "a51c135271c0b9aa2a18ab62d3bb19e0", "Customer", "Number2", "Back-End Engineer", 4, ""),
-  ("26c3edd3-f653-4843-b491-18e0e0a937c1", "provider", "9d3e80f867a7a4e2f9041b9d0459f02077bac59985a3ac4293c84a93882783b0b0892c1f7d32c21ac08cef7ee397f3212b49274e1670ff4e331cbb95005f33d1", "3f61b476bae6b35f9031e03f3279d4da", "Random", "Provider", "");
+  ("26c3edd3-f653-4843-b491-18e0e0a937c1", "provider", "9d3e80f867a7a4e2f9041b9d0459f02077bac59985a3ac4293c84a93882783b0b0892c1f7d32c21ac08cef7ee397f3212b49274e1670ff4e331cbb95005f33d1", "3f61b476bae6b35f9031e03f3279d4da", "Random", "", "Provider", 4, "");
 
 INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 1), /* Director to all companies */
