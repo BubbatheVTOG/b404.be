@@ -244,7 +244,7 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
-                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger) && Integer.parseInt(accessLevelID) != person.getAccessLevelID()){
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(person.getAccessLevelID()) && (Integer.parseInt(accessLevelID) != person.getAccessLevelID())){
                     throw new ForbiddenException("You are not able to alter your access level.");
                 }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
