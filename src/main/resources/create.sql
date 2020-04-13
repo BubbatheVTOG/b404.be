@@ -137,10 +137,6 @@ FOREIGN KEY (`fileID`) REFERENCES `file`(`fileID`),
 ADD CONSTRAINT `fk_step_4`
 FOREIGN KEY (`workflowID`) REFERENCES `workflow`(`workflowID`) ON DELETE CASCADE;
 
-ALTER TABLE `file`
-ADD CONSTRAINT `fk_file_1`
-FOREIGN KEY (`stepID`) REFERENCES `step` (`stepID`);
-
 INSERT INTO DB_DATABASE.accessLevel (accessLevelID, accessLevelName) VALUES
   (1, "Administrator"),
   (2, "Director"),
