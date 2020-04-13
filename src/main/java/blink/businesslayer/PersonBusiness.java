@@ -209,14 +209,12 @@ public class PersonBusiness {
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String requesterID, String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
             Person person = this.getPersonSignature(uuid);
-            if(person == null){
-                throw new NotFoundException("No user with that id exists.");
-            }
+            Person requester = this.getPersonByUUID(requesterID);
 
             //Check if new username is unique or use old username if new username is null
             if(username == null || username.isEmpty()){
@@ -244,7 +242,7 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
-                if(!Authorization.INTERNAL_USER_LEVELS.contains(person.getAccessLevelID()) && (Integer.parseInt(accessLevelID) != person.getAccessLevelID())){
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID()) && (Integer.parseInt(accessLevelID) != person.getAccessLevelID())){
                     throw new ForbiddenException("You are not able to alter your access level.");
                 }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
