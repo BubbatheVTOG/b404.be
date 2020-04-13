@@ -1,2 +1,15 @@
 # Default ignored files
 /workspace.xml
+/compiler.xml
+/encodings.xml
+/misc.xml
+/uiDesigner.xml
+/vcs.xml
+/discord.xml
+/sqldialects.xml
+/sonarlint
+# Datasource local storage ignored files
+/dataSources/
+
+# Datasource local storage ignored files
+/dataSources.local.xml

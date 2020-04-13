@@ -9,5 +9,8 @@
         <module name="b404.be" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="b404" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
