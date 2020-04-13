@@ -1,15 +1,20 @@
 package blink.businesslayer;
 
+import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
 import blink.datalayer.PersonDB;
 
+import javax.naming.InterruptedNamingException;
+import javax.sql.rowset.serial.SerialBlob;
 import javax.ws.rs.*;
 
 import blink.utility.exceptions.ConflictException;
 import blink.utility.objects.AccessLevel;
+import blink.utility.objects.File;
 import blink.utility.objects.Person;
 import blink.utility.security.PasswordEncryption;
 
@@ -42,12 +47,12 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByUsername(user);
+            Person person = this.personDB.getPersonByUsername(user);
 
             if(person == null){
                 throw new NotAuthorizedException("Invalid login credentials.");
             }
-          
+
             //Encrypt password that was passed in and compare to hash stored in database
             //Throw UnauthorizedException if they do not match
             String encryptedPassword = PasswordEncryption.hash(password, person.getSalt());
@@ -57,7 +62,7 @@ public class PersonBusiness {
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return person;
+            return this.getPersonSignature(person.getUuid());
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException If the password encryption process fails
@@ -113,6 +118,34 @@ public class PersonBusiness {
     }
 
     /**
+     * Get a person's signature from the database by UUID
+     * @param uuid Person UUID
+     * @return Person object of person found in database
+     * @throws NotFoundException UUID does not exist in database
+     * @throws BadRequestException UUID was either null or invalid integer
+     * @throws InternalServerErrorException Error in data layer
+     */
+    public Person getPersonSignature(String uuid) throws NotFoundException, BadRequestException, InternalServerErrorException {
+        try{
+            Person person = this.personDB.getPersonByUUID(uuid);
+
+            //If null is returned, no user was found with given UUID
+            if(person == null){
+                throw new NotFoundException("No user with that UUID exists.");
+            }
+
+            person = this.personDB.getPersonSignature(person);
+
+            //Reaching this indicates no issues have been met and a success message can be returned
+            return person;
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(SQLException ex){
+            throw new InternalServerErrorException(ex.getMessage());
+        }
+    }
+
+    /**
      * Insert a new person into the database
      * @param username New person's username
      * @param password New person's password
@@ -121,12 +154,13 @@ public class PersonBusiness {
      * @param email New person's email; can be null
      * @param title New person's title; can be null
      * @param accessLevelID New person's accessLevelID
+     * @param signature Base64 string of signature pdf
      * @return Person object containing inserted data
      * @throws NotFoundException Company name does not exist in the database
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person insertPerson(String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person insertPerson(String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             //Initial parameter validation; throws BadRequestException if there is an issue
             if(username == null || username.isEmpty()){ throw new BadRequestException("A username must be provided"); }
@@ -150,10 +184,10 @@ public class PersonBusiness {
             String passwordHash = PasswordEncryption.hash(password, salt);
 
             //Retrieve the person from the database by UUID
-            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
+            personDB.insertPerson(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID(), signature);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, passwordHash, salt, fName, lName, email, title, accessLevel.getAccessLevelID());
+            return this.getPersonSignature(uuid);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
@@ -175,11 +209,11 @@ public class PersonBusiness {
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
-            Person person = personDB.getPersonByUUID(uuid);
+            Person person = this.getPersonSignature(uuid);
             if(person == null){
                 throw new NotFoundException("No user with that id exists.");
             }
@@ -210,14 +244,21 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger)){
+                    throw new ForbiddenException("You are not able to alter your access level.");
+                }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
 
+            if(signature == null || signature.isEmpty()){
+                signature = person.getSignature();
+            }
+
             //Retrieve the person from the database by UUID
-            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger);
+            personDB.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelIDInteger, signature);
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return new Person(uuid, username, password, person.getSalt(), fName, lName, email, title, accessLevelIDInteger);
+            return this.getPersonSignature(uuid);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

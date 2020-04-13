@@ -37,6 +37,9 @@ public class Workflow {
         if(this.percentComplete == 1 && this.completedDate == null){
             this.completedDate = new Date();
         }
+        else{
+            this.completedDate = null;
+        }
     }
 
     public int getWorkflowID() {
@@ -132,7 +135,7 @@ public class Workflow {
 
     private int[] calcPercentComplete(List<Step> steps, int totalSteps, int completeSteps) {
         for(Step step : steps){
-            if(!step.getChildren().isEmpty()){
+            if(step.hasChildren()){
                 int[] updatedCounts = this.calcPercentComplete(step.getChildren(), totalSteps, completeSteps);
                 totalSteps = updatedCounts[0];
                 completeSteps = updatedCounts[1];
@@ -155,11 +158,9 @@ public class Workflow {
         this.company = company;
     }
 
-    public List<Step> getSteps() {
-        return this.steps;
-    }
+    public List<Step> getSteps() { return this.steps; }
 
-    public void setCompany(List<Step> steps) {
-        this.steps = steps;
-    }
+    public void setSteps(List<Step> steps) { this.steps = steps; }
+
+    public void setCompany(List<Step> steps) { this.steps = steps; }
 }

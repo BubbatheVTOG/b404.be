@@ -153,7 +153,6 @@ public class Step {
     }
 
     public boolean hasChildren() {
-        boolean fdsa = children == null;
         return !(children == null || children.isEmpty()); }
 
 }

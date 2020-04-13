@@ -62,6 +62,10 @@ public class MilestoneDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Milestone> getAllMilestones(List<Integer> companyIDList) throws SQLException {
+        if(companyIDList.isEmpty()){
+            return new ArrayList();
+        }
+
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
@@ -287,10 +291,10 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-            preparedStatement.setDate(4, new java.sql.Date(createdDate.getTime()));
-            preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
-            preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
+            preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+            preparedStatement.setTimestamp(4, new java.sql.Timestamp(createdDate.getTime()));
+            preparedStatement.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+            preparedStatement.setTimestamp(6, new java.sql.Timestamp(deliveryDate.getTime()));
             preparedStatement.setInt(7, companyID);
 
             preparedStatement.executeUpdate();
@@ -322,9 +326,9 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, description);
-            preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
-            preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
-            preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
+            preparedStatement.setTimestamp(3, new java.sql.Timestamp(lastUpdatedDate.getTime()));
+            preparedStatement.setTimestamp(4, new java.sql.Timestamp(startDate.getTime()));
+            preparedStatement.setTimestamp(5, new java.sql.Timestamp(deliveryDate.getTime()));
             preparedStatement.setInt(6, companyID);
             preparedStatement.setInt(7, milestoneID);
 

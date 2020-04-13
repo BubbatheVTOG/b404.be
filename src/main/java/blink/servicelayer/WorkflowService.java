@@ -25,7 +25,7 @@ import java.util.List;
 @Api(value = "/workflow")
 public class WorkflowService {
     private WorkflowBusiness workflowBusiness = new WorkflowBusiness();
-    private static Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all workflows
@@ -466,8 +466,7 @@ public class WorkflowService {
     }
 
     /**
-     *
-     * Delete a person from the database
+     * Delete a workflow from the database
      * @param id ID of workflow to delete
      * @param jwt JSON Web Token for authorizing request
      * @return HTTP Response: 200 OK for workflow deleted successfully
@@ -516,7 +515,7 @@ public class WorkflowService {
     }
 
     /**
-     * Gets a Person by UUID
+     * Gets all pending tasks for a specific user
      * @return - HTTP Response: 200 OK for pending tasks returned
      *                         401 UNAUTHORIZED for invalid JSON Web Token in header
      *                         404 NOT FOUND if no user with that UUID exists
@@ -526,7 +525,7 @@ public class WorkflowService {
     @GET
     @Operation(summary = "getPendingTasks", description = "Gets all pending tasks for a user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of Step objects"),
+            @ApiResponse(code = 200, message = "List of pending Step objects"),
             @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
@@ -543,19 +542,13 @@ public class WorkflowService {
             return ResponseBuilder.buildSuccessResponse(gson.toJson(pendingTasks));
         }
         //Catch error exceptions and return relevant Response using ResponseBuilder
-        catch(BadRequestException bre){
-            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
-        }
         catch(NotFoundException nfe){
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         }
-        catch(Exception e){
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //TODO:Revert this
-            // return ResponseBuilder.buildInternalServerErrorResponse();
+        catch(Exception e){return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -655,6 +648,57 @@ public class WorkflowService {
         }
         catch(NotAuthorizedException nae){
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Mark an individual step as complete
+     * @param stepID ID of step to mark complete
+     * @return HTTP Response: 200 OK for step marked complete successfully
+     *                          400 BAD REQUEST for invalid parameters
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          403 FORBIDDEN if requester does not have access to the endpoint
+     *                          404 NOT FOUND for non-existent workflowID
+     *                          500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/step/complete")
+    @PUT
+    @Operation(summary = "MarkStepComplete", description = "Mark a step as complete")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Workflow object which contains keys (workflowID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, milestoneID, company, percentComplete, steps)"),
+            @ApiResponse(code = 400, message = "{error: Step ID must be a valid integer for a step in a concrete workflow.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 403, message = "{error: This step is not assigned to you and cannot be marked as completed.}"),
+            @ApiResponse(code = 404, message = "{error: No step with that ID exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response markStepComplete(@RequestBody(description = "id", required = true) @QueryParam("id") String stepID,
+                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            JsonObject returnObject = new JsonObject();
+            returnObject.addProperty("success", workflowBusiness.markStepComplete(stepID, JWTUtility.getUUIDFromToken(jwt)));
+            return ResponseBuilder.buildSuccessResponse(returnObject.toString());
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(ForbiddenException fe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, fe.getMessage());
         }
         catch(Exception e){
             return ResponseBuilder.buildInternalServerErrorResponse();

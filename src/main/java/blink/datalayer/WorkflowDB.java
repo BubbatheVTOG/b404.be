@@ -4,11 +4,15 @@ import blink.businesslayer.CompanyBusiness;
 import blink.businesslayer.StepBusiness;
 import blink.utility.objects.Step;
 import blink.utility.objects.Workflow;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -286,8 +290,8 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(lastUpdatedDate.getTime()));
 
                 preparedStatement.executeUpdate();
 
@@ -305,7 +309,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -337,10 +341,10 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(createdDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(lastUpdatedDate.getTime()));
-                preparedStatement.setDate(5, new java.sql.Date(startDate.getTime()));
-                preparedStatement.setDate(6, new java.sql.Date(deliveryDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(createdDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(5, new java.sql.Timestamp(startDate.getTime()));
+                preparedStatement.setTimestamp(6, new java.sql.Timestamp(deliveryDate.getTime()));
                 preparedStatement.setInt(7, milestoneID);
 
                 preparedStatement.executeUpdate();
@@ -358,7 +362,7 @@ public class WorkflowDB {
                 catch (Exception e) {
                     conn.rollback();
                     conn.close();
-                    throw new SQLException(e.getMessage());
+                    throw e;
                 }
                 finally {
                     conn.commit();
@@ -379,7 +383,7 @@ public class WorkflowDB {
      * @param lastUpdatedDate The date to set the lastUpdatedDate to
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, JsonArray steps) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, List<Step> steps) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE workflow " +
                        "SET name = ?, description = ?, lastUpdatedDate = ? " +
@@ -393,17 +397,17 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(lastUpdatedDate.getTime()));
                 preparedStatement.setInt(4, workflowID);
 
                 preparedStatement.executeUpdate();
 
-                this.stepBusiness.updateSteps(steps, workflowID, conn);
+                this.stepBusiness.updateSteps(steps, conn);
             }
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -426,7 +430,7 @@ public class WorkflowDB {
      * @param completedDate The updated completed date
      * @throws SQLException Error connecting to database or executing update
      */
-    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, JsonArray steps) throws SQLException {
+    public void updateWorkflow(final int workflowID, final String name, final String description, final Date lastUpdatedDate, final Date startDate, final Date deliveryDate, final Date completedDate, List<Step> steps) throws SQLException {
         //Prepare sql statement
         String query = "UPDATE workflow " +
                        "SET name = ?, description = ?, lastUpdatedDate = ?, startDate = ?, deliveryDate = ?, completedDate = ? " +
@@ -439,20 +443,20 @@ public class WorkflowDB {
                 //Set parameters and execute update
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, description);
-                preparedStatement.setDate(3, new java.sql.Date(lastUpdatedDate.getTime()));
-                preparedStatement.setDate(4, new java.sql.Date(startDate.getTime()));
-                preparedStatement.setDate(5, new java.sql.Date(deliveryDate.getTime()));
-                preparedStatement.setDate(6, new java.sql.Date(completedDate.getTime()));
+                preparedStatement.setTimestamp(3, new java.sql.Timestamp(lastUpdatedDate.getTime()));
+                preparedStatement.setTimestamp(4, new java.sql.Timestamp(startDate.getTime()));
+                preparedStatement.setTimestamp(5, new java.sql.Timestamp(deliveryDate.getTime()));
+                preparedStatement.setTimestamp(6, completedDate == null ? null : new java.sql.Timestamp(completedDate.getTime()));
                 preparedStatement.setInt(7, workflowID);
 
                 preparedStatement.executeUpdate();
 
-                this.stepBusiness.updateSteps(steps, workflowID, conn);
+                this.stepBusiness.updateSteps(steps, conn);
             }
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();
@@ -490,7 +494,7 @@ public class WorkflowDB {
             catch (Exception e) {
                 conn.rollback();
                 conn.close();
-                throw new SQLException(e.getMessage());
+                throw e;
             }
             finally {
                 conn.commit();

@@ -1,5 +1,4 @@
 package blink.utility.objects;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,8 +14,9 @@ public class Person {
 	private String lName;
 	private String email;
 	private String title;
-	private ArrayList<Company> companies;
+	private List<Company> companies;
 	private int accessLevelID;
+	private String signature;
 
 	//Fully parameterised constructor
 	public Person(String uuid, String username, String passwordHash, String salt, String fName, String lName, String email, String title, int accessLevelID) {
@@ -24,6 +24,7 @@ public class Person {
 		this.username = username;
 		this.passwordHash = passwordHash;
 		this.salt = salt;
+		this.signature = null;
 		this.fName = fName;
 		this.lName = lName;
 		this.email = email;
@@ -31,17 +32,13 @@ public class Person {
 		this.accessLevelID = accessLevelID;
 	}
 
-	public String getUuid() {
-		return this.uuid;
-	}
+	public String getUuid() { return this.uuid; }
 
-	public String getPasswordHash() {
-		return this.passwordHash;
-	}
+	public String getPasswordHash() { return this.passwordHash; }
 
-	public String getSalt() {
-		return this.salt;
-	}
+	public String getSalt() { return this.salt; }
+
+	public String getSignature() { return this.signature; }
 
 	public String getFName() { return this.fName; }
 
@@ -51,27 +48,19 @@ public class Person {
 
 	public String getEmail() { return this.email; }
 
-	public String getTitle() {
-		return this.title;
-	}
+	public String getTitle() { return this.title; }
 
 	public List<Company> getCompanies() {return companies;}
 
-	public int getAccessLevelID() {
-		return this.accessLevelID;
-	}
+	public int getAccessLevelID() { return this.accessLevelID; }
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+	public void setUuid(String uuid) { this.uuid = uuid; }
 
-	public void setPasswordHash(String passwordHash) {
-		this.passwordHash = passwordHash;
-	}
+	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+	public void setSalt(String salt) { this.salt = salt; }
+
+	public void setSignature(String signature) { this.signature = signature; }
 
 	public void setFName(String fName) { this.fName = fName; }
 
@@ -81,11 +70,9 @@ public class Person {
 
 	public void setEmail(String email) { this.email = email; }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+	public void setTitle(String title) { this.title = title; }
 
-	public void setCompanies(ArrayList<Company> companies) { this.companies = companies; }
+	public void setCompanies(List<Company> companies) { this.companies = companies; }
 
 	public void setAccessLevelID(int accessLevelID) { this.accessLevelID = accessLevelID; }
 }

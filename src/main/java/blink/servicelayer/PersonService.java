@@ -31,7 +31,7 @@ import java.util.List;
 @Api(value = "/person")
 public class PersonService {
     private PersonBusiness personBusiness = new PersonBusiness();
-    private Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all people from database
@@ -86,12 +86,56 @@ public class PersonService {
     })
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPersonByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
             Person person = personBusiness.getPersonByUUID(uuid);
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
+     * Gets a Person by UUID including signature pdf
+     * @param uuid username from POST request body
+     * @return HTTP Response: 200 OK for person found and returned
+     *                         401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                         404 NOT FOUND if no user with that UUID exists
+     *                         500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/signature/id/{id}")
+    @GET
+    @Operation(summary = "getPersonSignature", description = "Gets a user's information by UUID including their signature pdf")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Person object which contains keys (UUID, name, email, title, companyID, accessLevelID, signature)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No user with that id exists.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPersonSignatureByUUID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String uuid,
+                                    @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            Person person = personBusiness.getPersonSignature(uuid);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
@@ -148,13 +192,14 @@ public class PersonService {
                                  @RequestBody(description = "email")                          @FormParam("email") String email,
                                  @RequestBody(description = "title")                          @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID", required = true) @FormParam("accessLevelID") String accessLevelID,
-                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+                                 @RequestBody(description = "signature")                      @FormParam("signature") String signature,
+                                 @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdmin(jwt);
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID);
+            Person person = personBusiness.insertPerson(username, password, fName, lName, email, title, accessLevelID, signature);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));
@@ -219,19 +264,14 @@ public class PersonService {
                                  @RequestBody(description = "email")         @FormParam("email") String email,
                                  @RequestBody(description = "title")         @FormParam("title") String title,
                                  @RequestBody(description = "accessLevelID") @FormParam("accessLevelID") String accessLevelID,
+                                 @RequestBody(description = "signature") @FormParam("signature") String signature,
                                  @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
             Authorization.isAdminOrSelf(jwt, uuid);
 
-            //Check that this user has the authority to access this endpoint
-            Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
-            if(requester.getAccessLevelID() > 1){
-                return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, ResponseBuilder.FORBIDDEN_MESSAGE);
-            }
-
             //Send parameters to business layer and store response
-            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID);
+            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID, signature);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));

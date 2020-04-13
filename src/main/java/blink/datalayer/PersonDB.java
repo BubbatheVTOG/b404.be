@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import blink.utility.objects.Company;
+import blink.utility.objects.File;
 import blink.utility.objects.Person;
 
 public class PersonDB {
@@ -179,6 +180,35 @@ public class PersonDB {
     }
 
     /**
+     * Connect to database and retrieve entry by UUID
+     * @param person existing person object to append signature information to
+     * @return Person object with signature information or null if not found
+     * @throws SQLException Error connecting to database or executing query
+     */
+    public Person getPersonSignature(final Person person) throws SQLException {
+        //Prepare sql statement
+        String getPersonSignatureQuery = "SELECT signature FROM person " +
+                                            "WHERE person.UUID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(getPersonSignatureQuery)) {
+
+            preparedStatement.setString(1, person.getUuid());
+
+            try (ResultSet result = preparedStatement.executeQuery()){
+
+                while (result.next()) {
+
+                    //Pull response content and map into a Person object
+                    person.setSignature(File.decodeBase64(File.blobToEncodedString(result.getBlob("signature"))));
+                }
+
+                return person;
+            }
+        }
+    }
+
+    /**
      * Connect to database and add a new person
      * @param UUID new Person UUID
      * @param username new person username
@@ -189,12 +219,18 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
+    public void insertPerson(final String UUID, final String username, final String password, final String salt, final String fName, final String lName, final String email, final String title, final int accessLevelID, final String signature) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES (?,?,?,?,?,?,?,?,?);";
+        String query = "INSERT INTO person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID, signature) VALUES (?,?,?,?,?,?,?,?,?,?);";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            Blob blob = conn.createBlob();
+            String encodedSignature = File.encodeBase64(signature);
+            if(encodedSignature != null && encodedSignature.length() != 0) {
+                blob.setBytes(1, encodedSignature.getBytes());
+            }
 
             //Set parameters and execute query
             preparedStatement.setString(1, UUID);
@@ -206,6 +242,7 @@ public class PersonDB {
             preparedStatement.setString(7, email);
             preparedStatement.setString(8, title);
             preparedStatement.setInt(9, accessLevelID);
+            preparedStatement.setBlob(10, blob);
 
             preparedStatement.executeUpdate();
         }
@@ -221,12 +258,18 @@ public class PersonDB {
      * @param accessLevelID new person accessLevelID
      * @throws SQLException error connecting to database or executing query
      */
-    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID) throws SQLException {
+    public void updatePerson(final String UUID, final String username, final String password, final String fName, final String lName, final String email, final String title, final int accessLevelID, final String signature) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ? WHERE UUID = ?;";
+        String query = "UPDATE person SET username = ?, passwordHash = ?, fName = ?, lName = ?,  email = ?, title = ?, accessLevelID = ?, signature = ? WHERE UUID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            Blob blob = conn.createBlob();
+            String encodedSignature = File.encodeBase64(signature);
+            if(encodedSignature != null && encodedSignature.length() != 0) {
+                blob.setBytes(1, encodedSignature.getBytes());
+            }
 
             //Set parameters and execute query
             preparedStatement.setString(1, username);
@@ -236,7 +279,8 @@ public class PersonDB {
             preparedStatement.setString(5, email);
             preparedStatement.setString(6, title);
             preparedStatement.setInt(7, accessLevelID);
-            preparedStatement.setString(8, UUID);
+            preparedStatement.setBlob(8, blob);
+            preparedStatement.setString(9, UUID);
 
             preparedStatement.executeUpdate();
         }
@@ -259,5 +303,18 @@ public class PersonDB {
             preparedStatement.setString(1, UUID);
             return preparedStatement.executeUpdate();
         }
+    }
+
+    /**
+     * Converts an encoded base64 String into a blob
+     * @param signature
+     * @param conn
+     * @return
+     * @throws SQLException
+     */
+    public Blob encodedStringToBlob(String signature, Connection conn) throws SQLException {
+        Blob blob = conn.createBlob();
+        blob.setBytes(1, signature.getBytes());
+        return blob;
     }
 }
