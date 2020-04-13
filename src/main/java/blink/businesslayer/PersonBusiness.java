@@ -244,7 +244,7 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
-                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger)){
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger) && Integer.parseInt(accessLevelID) != person.getAccessLevelID()){
                     throw new ForbiddenException("You are not able to alter your access level.");
                 }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
@@ -259,6 +259,10 @@ public class PersonBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(NumberFormatException ex){
+            throw new BadRequestException("AccessLevelID must be a valid integer.");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
