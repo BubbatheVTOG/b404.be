@@ -62,6 +62,10 @@ public class MilestoneDB {
      * @throws SQLException Error connecting to database or executing query
      */
     public List<Milestone> getAllMilestones(List<Integer> companyIDList) throws SQLException {
+        if(companyIDList.isEmpty()){
+            return new ArrayList();
+        }
+
         try(Connection conn = this.dbConn.connect()) {
 
             //Prepare sql statement
