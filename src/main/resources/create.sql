@@ -20,6 +20,7 @@ CREATE TABLE `person` (
   `salt` char(32) NOT NULL,
   `fName` varchar(255) NOT NULL,
   `lName` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `accessLevelID` int(11) NOT NULL,
   `signature` longblob DEFAULT NULL,
