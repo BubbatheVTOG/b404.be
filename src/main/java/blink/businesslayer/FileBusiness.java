@@ -279,11 +279,16 @@ public class FileBusiness {
                 throw new BadRequestException("A file must be provided.");
             }
 
+            Boolean form = false;
+            if(jsonObject.has("form")){
+                form = jsonObject.get("form").getAsBoolean();
+            }
+
             if(jsonObject.has("fileID")){
-                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential, form);
             }
             else {
-                return new File(jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("name").getAsString(), base64String, confidential, form);
             }
         }
         catch(NumberFormatException nfe){
