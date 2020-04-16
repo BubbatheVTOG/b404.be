@@ -49,6 +49,7 @@ CREATE TABLE `file` (
   `name` varchar(255) DEFAULT NULL,
   `file` longblob DEFAULT NULL,
   `confidential` boolean NOT NULL,
+  `form` boolean NOT NULL,
   PRIMARY KEY (`fileID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
