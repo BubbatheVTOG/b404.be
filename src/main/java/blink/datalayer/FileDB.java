@@ -42,7 +42,8 @@ public class FileDB {
                     }
 
                     boolean confidential = result.getBoolean("confidential");
-                    file = new File(id, name, blob, confidential);
+                    boolean form = result.getBoolean("form");
+                    file = new File(id, name, blob, confidential, form);
                 }
                 return file;
             }
@@ -57,7 +58,7 @@ public class FileDB {
     public List<File> getAllConcreteFiles() throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT * FROM file WHERE file.fileID IN (SELECT step.fileID FROM step) AND file.fileID != 0;";
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential, file.form FROM file JOIN step ON step.fileID = file.fileID JOIN workflow ON workflow.workflowID = step.workflowID JOIN milestone ON milestone.milestoneID = workflow.milestoneID AND file.fileID != 0;";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -73,7 +74,43 @@ public class FileDB {
                         blob = result.getBlob("file");
                     }
                     boolean confidential = result.getBoolean("confidential");
-                    files.add(new File(id, name, blob, confidential));
+                    boolean form = result.getBoolean("form");
+                    files.add(new File(id, name, blob, confidential, form));
+                }
+                return files;
+            }
+        }
+    }
+
+    /**
+     *
+     * Returns all concrete files
+     * @param uuid
+     * @return List<File> files
+     * @throws SQLException Error connecting to the database or executing the query
+     */
+    public List<File> getAllConcreteFiles(String uuid) throws SQLException {
+        List<File> files = new ArrayList<>();
+
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential, file.form FROM file JOIN step ON step.fileID = file.fileID JOIN workflow ON workflow.workflowID = step.workflowID JOIN milestone ON milestone.milestoneID = workflow.milestoneID JOIN personCompany ON personCompany.companyID = milestone.companyID WHERE personCompany.uuid = ? AND file.fileID != 0;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, uuid);
+
+            try(ResultSet result = preparedStatement.executeQuery()) {
+                while(result.next()) {
+                    int id = result.getInt("fileID");
+                    String name = result.getString("name");
+                    Blob blob;
+                    if(result.getBlob("file") == null) {
+                        blob = conn.createBlob();
+                    } else {
+                        blob = result.getBlob("file");
+                    }
+                    boolean confidential = result.getBoolean("confidential");
+                    boolean form = result.getBoolean("form");
+                    files.add(new File(id, name, blob, confidential, form));
                 }
                 return files;
             }
@@ -107,7 +144,8 @@ public class FileDB {
                         blob = result.getBlob("file");
                     }
                     boolean confidential = result.getBoolean("confidential");
-                    files.add(new File(id, name, blob, confidential));
+                    boolean form = result.getBoolean("form");
+                    files.add(new File(id, name, blob, confidential, form));
                 }
                 return files;
             }
@@ -117,7 +155,7 @@ public class FileDB {
     public List<File> getAllFilesByMilestone(int milestoneID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file " +
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential, file.form FROM file " +
                           "JOIN step on step.fileID = file.fileID " +
                           "JOIN workflow on workflow.workflowID = step.workflowID " +
                           "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
@@ -134,7 +172,8 @@ public class FileDB {
                     files.add(new File(result.getInt("fileID"),
                                     result.getString("name"),
                                     result.getBlob("file"),
-                                    result.getBoolean("confidential")));
+                                    result.getBoolean("confidential"),
+                                    result.getBoolean("form")));
                 }
                 return files;
             }
@@ -144,7 +183,7 @@ public class FileDB {
     public List<File> getAllFilesByCompany(int companyID) throws SQLException {
         List<File> files = new ArrayList<>();
 
-        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential FROM file " +
+        String query = "SELECT DISTINCT file.fileID, file.name, file.file, file.confidential, file.form FROM file " +
                 "JOIN step on step.fileID = file.fileID " +
                 "JOIN workflow on workflow.workflowID = step.workflowID " +
                 "JOIN milestone on workflow.milestoneID = milestone.milestoneID " +
@@ -161,7 +200,8 @@ public class FileDB {
                     files.add(new File(result.getInt("fileID"),
                             result.getString("name"),
                             result.getBlob("file"),
-                            result.getBoolean("confidential")));
+                            result.getBoolean("confidential"),
+                            result.getBoolean("form")));
                 }
                 return files;
             }
@@ -175,7 +215,7 @@ public class FileDB {
      */
     public int insertFile(File file) throws SQLException {
         //Prepare sql statement
-        String query = "INSERT INTO file (name, file, confidential) VALUES (?, ?, ?);";
+        String query = "INSERT INTO file (name, file, confidential, form) VALUES (?, ?, ?, ?);";
 
         try(Connection conn = this.dbConn.connect();
             PreparedStatement preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -187,6 +227,7 @@ public class FileDB {
             preparedStatement.setString(1, file.getName());
             preparedStatement.setBlob(2, blob);
             preparedStatement.setBoolean(3, file.getConfidential());
+            preparedStatement.setBoolean(4, file.getForm());
 
             preparedStatement.executeUpdate();
 
@@ -205,7 +246,7 @@ public class FileDB {
      */
     public void updateFile(File file) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ? WHERE file.fileID = ?;";
+        String query = "UPDATE file SET file.name = ?, file.file = ?, file.confidential = ?, file.form = ? WHERE file.fileID = ?;";
 
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -217,7 +258,8 @@ public class FileDB {
             preparedStatement.setString(1, file.getName());
             preparedStatement.setBlob(2, blob);
             preparedStatement.setBoolean(3, file.getConfidential());
-            preparedStatement.setInt(4, file.getFileID());
+            preparedStatement.setBoolean(4, file.getForm());
+            preparedStatement.setInt(5, file.getFileID());
 
             preparedStatement.executeUpdate();
         }
@@ -272,16 +314,4 @@ public class FileDB {
         return companyID;
     }
 
-    /**
-     * Converts an encoded base64 String into a blob
-     * @param encodedString
-     * @param conn
-     * @return
-     * @throws SQLException
-     */
-    public Blob encodedStringToBlob(String encodedString, Connection conn) throws SQLException {
-        Blob blob = conn.createBlob();
-        blob.setBytes(1, encodedString.getBytes());
-        return blob;
-    }
 }

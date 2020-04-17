@@ -47,7 +47,7 @@ public class PersonBusiness {
 
         try{
             //Retrieve the person from the database by name
-            Person person = personDB.getPersonByUsername(user);
+            Person person = this.personDB.getPersonByUsername(user);
 
             if(person == null){
                 throw new NotAuthorizedException("Invalid login credentials.");
@@ -62,7 +62,7 @@ public class PersonBusiness {
             }
 
             //Reaching this indicates no issues have been met and a success message can be returned
-            return person;
+            return this.getPersonSignature(person.getUuid());
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         //ArithmeticException If the password encryption process fails
@@ -209,14 +209,12 @@ public class PersonBusiness {
      * @throws BadRequestException Paramaters are null, empty or inconvertible into integer
      * @throws InternalServerErrorException Error creating a salt, hashing password or connecting to database
      */
-    public Person updatePerson(String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
+    public Person updatePerson(String requesterID, String uuid, String username, String password, String fName, String lName, String email, String title, String accessLevelID, String signature) throws ConflictException, NotFoundException, BadRequestException, InternalServerErrorException {
         try{
             if(uuid == null || uuid.isEmpty()) { throw new BadRequestException("Must provide a valid UUID for updating a person."); }
 
             Person person = this.getPersonSignature(uuid);
-            if(person == null){
-                throw new NotFoundException("No user with that id exists.");
-            }
+            Person requester = this.getPersonByUUID(requesterID);
 
             //Check if new username is unique or use old username if new username is null
             if(username == null || username.isEmpty()){
@@ -244,8 +242,8 @@ public class PersonBusiness {
             //AccessLevelBusiness handles exceptions with invalid accessLevels
             int accessLevelIDInteger = person.getAccessLevelID();
             if(accessLevelID != null && !accessLevelID.isEmpty()) {
-                if(!Authorization.INTERNAL_USER_LEVELS.contains(accessLevelIDInteger)){
-                    throw new NotAuthorizedException("You are not able to alter your access level.");
+                if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID()) && (Integer.parseInt(accessLevelID) != person.getAccessLevelID())){
+                    throw new ForbiddenException("You are not able to alter your access level.");
                 }
                 accessLevelIDInteger = accessLevelBusiness.getAccessLevelByID(accessLevelID).getAccessLevelID();
             }
@@ -259,6 +257,10 @@ public class PersonBusiness {
 
             //Reaching this indicates no issues have been met and a success message can be returned
             return this.getPersonSignature(uuid);
+        }
+        //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        catch(NumberFormatException ex){
+            throw new BadRequestException("AccessLevelID must be a valid integer.");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

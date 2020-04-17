@@ -7,7 +7,7 @@ SET SESSION sql_mode='NO_AUTO_VALUE_ON_ZERO';
 DROP TABLE IF EXISTS `accessLevel`;
 CREATE TABLE `accessLevel` (
   `accessLevelID` int(11) NOT NULL AUTO_INCREMENT,
-  `accessLevelName` varchar(20) NOT NULL,
+  `accessLevelName` varchar(255) NOT NULL,
   PRIMARY KEY (`accessLevelID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -18,10 +18,10 @@ CREATE TABLE `person` (
   `username` varchar(30) NOT NULL,
   `passwordHash` char(128) NOT NULL,
   `salt` char(32) NOT NULL,
-  `fName` varchar(30) NOT NULL,
-  `lName` varchar(30) NOT NULL,
-  `email` varchar(30) DEFAULT NULL,
-  `title` varchar(30) DEFAULT NULL,
+  `fName` varchar(255) NOT NULL,
+  `lName` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
   `accessLevelID` int(11) NOT NULL,
   `signature` longblob DEFAULT NULL,
   PRIMARY KEY (`UUID`)
@@ -30,7 +30,7 @@ CREATE TABLE `person` (
 DROP TABLE IF EXISTS `company`;
 CREATE TABLE `company` (
   `companyID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`companyID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -46,9 +46,10 @@ CREATE TABLE `personCompany` (
 DROP TABLE IF EXISTS `file`;
 CREATE TABLE `file` (
   `fileID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `file` longblob DEFAULT NULL,
   `confidential` boolean NOT NULL,
+  `form` boolean NOT NULL,
   PRIMARY KEY (`fileID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -56,7 +57,7 @@ CREATE TABLE `file` (
 DROP TABLE IF EXISTS `verb`;
 CREATE TABLE `verb` (
   `verbID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
   PRIMARY KEY (`verbID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -65,7 +66,7 @@ DROP TABLE IF EXISTS `step`;
 CREATE TABLE `step` (
   `stepID` int(11) NOT NULL AUTO_INCREMENT,
   `orderNumber` int(11) NOT NULL,
-  `description` varchar(60) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `parentStepID` int(11) DEFAULT NULL,
   `UUID` char(36) DEFAULT NULL,
   `verbID` int(11) DEFAULT NULL,
@@ -80,8 +81,8 @@ CREATE TABLE `step` (
 DROP TABLE IF EXISTS `milestone`;
 CREATE TABLE `milestone` (
   `milestoneID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL,
-  `description` varchar(60) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `createdDate` date NOT NULL,
   `lastUpdatedDate` date NOT NULL,
   `startDate` date DEFAULT NULL,
@@ -96,8 +97,8 @@ CREATE TABLE `milestone` (
 DROP TABLE IF EXISTS `workflow`;
 CREATE TABLE `workflow` (
   `workflowID` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL,
-  `description` varchar(60) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `createdDate` date NOT NULL,
   `lastUpdatedDate` date NOT NULL,
   `startDate` date DEFAULT NULL,
@@ -138,10 +139,6 @@ FOREIGN KEY (`fileID`) REFERENCES `file`(`fileID`),
 ADD CONSTRAINT `fk_step_4`
 FOREIGN KEY (`workflowID`) REFERENCES `workflow`(`workflowID`) ON DELETE CASCADE;
 
-ALTER TABLE `file`
-ADD CONSTRAINT `fk_file_1`
-FOREIGN KEY (`stepID`) REFERENCES `step` (`stepID`);
-
 INSERT INTO DB_DATABASE.accessLevel (accessLevelID, accessLevelName) VALUES
   (1, "Administrator"),
   (2, "Director"),
@@ -171,32 +168,32 @@ INSERT INTO DB_DATABASE.workflow (workflowID, name, createdDate, lastUpdatedDate
   (8, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-08-01", "2020-10-01", null,         0, 3),      /* Not started workflow to milestone 3 */
   (9, "Milestone 3 Workflow 1", "2020-01-01", "2020-01-01", "2020-10-01", "2020-12-01", null,         0, 3);      /* Not started workflow to milestone 3 */
 
-INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName, email, title, accessLevelID) VALUES
-  ("c5877b03-ac76-4e71-9a88-1c2d9122d474", "admin", "f42b201639a6a0c5d251b266e4468f44fec5f0f02f7b931f9de2ea512b31ec4471018103f4c0780f8276378e50169ec57c04fb9e31e46d2e7368cb40b610c3a7", "a760a131668ad5883b50e5b78aa53b27", "The", "Admin", "Admin@boss.com", "ADMIN", 1),
-  ("164e2c50-c280-459e-800c-7168e75f4fe3", "director", "6a2cdb18e51914b59d624a5d8370504996d14ad5dc1ac3f260f8892bf5f87f75f5608cb7e0c7478bafa481097809a414836b2fba486d64ba5af7b07e35638ac3", "0f3e136e699f57976bca04de7547e645", "A", "Director", "Director@rit.edu", "CEO", 2),
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", "coach", "65bed94fdd574cd4609cbd4cfd9db28f7e41d8a62dd35e92f5de30e5f34cd25dd96c38cef55fad04f24f895bcf42f32f649f5142878a278dde0ef560650d3eb6", "e53962d306da29d9249791652af8ceed", "A", "Coach", "Coach@rit.edu", "Coach", 3),
-  ("20809d5b-7989-4e48-bdde-74033e2f2672", "customer1", "1c6d9f0dacd79a80d18bad2c5c4d68e4ac9ace731d45a74c7388a5a856e97f1d2d07dae717d85ab7579dbfe32bafe930d9436f97e6c6f03465dacd338fe225d5", "3e3c056f0198d253dfb5770386540ef2", "Customer", "Number1", "Customer1@rit.edu", "Project Manager", 4),
-  ("1bdd74ae-2425-4501-a2d5-0a3039754606", "customer2", "27c5abc3b940a6bbb89395e1cfd5fb05784f82b75b097390f4f4ca421a58c782ba09394feae6229188a30db46499a9d55829eaf2240f8b1f3ed69429a84e2617", "89b627b172367d459f556f41142735a1", "Customer", "Number2", "Customer2@rit.edu", "DBA", 4),
-  ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", "customer3", "15fd55bc05e5d1f08fca598c790264187a9517efc87e4c170f89482473a20492e6d20e5c41a212ec59191086c9bb45b76543a1ae4689f5a87b4382d19b40ba80", "a51c135271c0b9aa2a18ab62d3bb19e0", "Customer", "Number2", "Customer3@rit.edu", "Back-End Engineer", 4),
-  ("26c3edd3-f653-4843-b491-18e0e0a937c1", "provider", "9d3e80f867a7a4e2f9041b9d0459f02077bac59985a3ac4293c84a93882783b0b0892c1f7d32c21ac08cef7ee397f3212b49274e1670ff4e331cbb95005f33d1", "3f61b476bae6b35f9031e03f3279d4da", "Random", "Provider", "Provider@rit.edu", "Third-Party Provider", 5);
+INSERT INTO DB_DATABASE.person (UUID, username, passwordHash, salt, fName, lName, title, accessLevelID, signature) VALUES
+  ("c5877b03-ac76-4e71-9a88-1c2d9122d474", "admin", "f42b201639a6a0c5d251b266e4468f44fec5f0f02f7b931f9de2ea512b31ec4471018103f4c0780f8276378e50169ec57c04fb9e31e46d2e7368cb40b610c3a7", "a760a131668ad5883b50e5b78aa53b27", "The", "Admin", "ADMIN", 1, ""),
+  ("164e2c50-c280-459e-800c-7168e75f4fe3", "director", "6a2cdb18e51914b59d624a5d8370504996d14ad5dc1ac3f260f8892bf5f87f75f5608cb7e0c7478bafa481097809a414836b2fba486d64ba5af7b07e35638ac3", "0f3e136e699f57976bca04de7547e645", "A", "Director", "CEO", 2, ""),
+  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", "coach", "65bed94fdd574cd4609cbd4cfd9db28f7e41d8a62dd35e92f5de30e5f34cd25dd96c38cef55fad04f24f895bcf42f32f649f5142878a278dde0ef560650d3eb6", "e53962d306da29d9249791652af8ceed", "A", "Coach", "Coach", 3, ""),
+  ("20809d5b-7989-4e48-bdde-74033e2f2672", "customer1", "1c6d9f0dacd79a80d18bad2c5c4d68e4ac9ace731d45a74c7388a5a856e97f1d2d07dae717d85ab7579dbfe32bafe930d9436f97e6c6f03465dacd338fe225d5", "3e3c056f0198d253dfb5770386540ef2", "Customer", "Number1", "Project Manager", 4, ""),
+  ("1bdd74ae-2425-4501-a2d5-0a3039754606", "customer2", "27c5abc3b940a6bbb89395e1cfd5fb05784f82b75b097390f4f4ca421a58c782ba09394feae6229188a30db46499a9d55829eaf2240f8b1f3ed69429a84e2617", "89b627b172367d459f556f41142735a1", "Customer", "Number2", "DBA", 4, ""),
+  ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", "customer3", "15fd55bc05e5d1f08fca598c790264187a9517efc87e4c170f89482473a20492e6d20e5c41a212ec59191086c9bb45b76543a1ae4689f5a87b4382d19b40ba80", "a51c135271c0b9aa2a18ab62d3bb19e0", "Customer", "Number2", "Back-End Engineer", 4, ""),
+  ("26c3edd3-f653-4843-b491-18e0e0a937c1", "provider", "9d3e80f867a7a4e2f9041b9d0459f02077bac59985a3ac4293c84a93882783b0b0892c1f7d32c21ac08cef7ee397f3212b49274e1670ff4e331cbb95005f33d1", "3f61b476bae6b35f9031e03f3279d4da", "Random", "Provider", "Third-Party Vendor", 5, "");
 
 INSERT INTO DB_DATABASE.personCompany (UUID, companyID) VALUES
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 1), /* Director to all companies */
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 2),
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 3),
   ("164e2c50-c280-459e-800c-7168e75f4fe3", 4),
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 1), /* Coach to DB_DATABASE and RIT */
+  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 1), /* Coach to venture_creations and RIT */
   ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 2),
   ("20809d5b-7989-4e48-bdde-74033e2f2672", 2), /* Customer1 to Rochester Institute of Technology */
-  ("7d3c0693-fe83-46bf-b878-dc76a61feb06", 3), /* Customer2 to Sample Company1 */
+  ("1bdd74ae-2425-4501-a2d5-0a3039754606", 3), /* Customer2 to Sample Company1 */
   ("3b47a671-45d6-4769-a1dd-c1aa9f8f8cab", 4); /* Customer3 to Sample Company2 */
 
 INSERT INTO DB_DATABASE.file (fileID, name, file, confidential) VALUES
-  (0, "No File Linked", null, 0),
-  (1, "Document.docx", null, 0),
-  (2, "Image.jpg", null, 0),
-  (3, "Video.mp4", null, 0),
-  (4, "No Linked File", null, 0);
+  (0, "No File Linked", "", 0),
+  (1, "Document.docx", "", 0),
+  (2, "Image.jpg", "", 0),
+  (3, "Video.mp4", "", 0),
+  (4, "No Linked File", "", 0);
 
 INSERT INTO DB_DATABASE.verb (verbID, name) VALUES
   (0, "No Action Required"),

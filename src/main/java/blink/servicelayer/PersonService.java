@@ -271,7 +271,7 @@ public class PersonService {
             Authorization.isAdminOrSelf(jwt, uuid);
 
             //Send parameters to business layer and store response
-            Person person = personBusiness.updatePerson(uuid, username, password, fName, lName, email, title, accessLevelID, signature);
+            Person person = personBusiness.updatePerson(JWTUtility.getUUIDFromToken(jwt), uuid, username, password, fName, lName, email, title, accessLevelID, signature);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(person));

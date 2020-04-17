@@ -14,28 +14,32 @@ public class File {
     private String decodedString;
     private transient String encodedString;
     private boolean confidential;
+    private boolean form;
 
-    public File(int fileID, String name, Blob blob, boolean confidential) throws SQLException {
+    public File(int fileID, String name, Blob blob, boolean confidential, boolean form) throws SQLException {
         this.fileID = fileID;
         this.name = name;
         this.encodedString = blobToEncodedString(blob);
         this.decodedString = decodeBase64(encodedString);
         this.confidential = confidential;
+        this.form = form;
     }
 
-    public File(int fileID, String name, String decodedString, boolean confidential) {
+    public File(int fileID, String name, String decodedString, boolean confidential, boolean form) {
         this.fileID = fileID;
         this.name = name;
         this.decodedString = decodedString;
         this.encodedString = File.encodeBase64(decodedString);
         this.confidential = confidential;
+        this.form = form;
     }
 
-    public File(String name, String decodedString, boolean confidential) {
+    public File(String name, String decodedString, boolean confidential, boolean form) {
         this.name = name;
         this.decodedString = decodedString;
         this.encodedString = File.encodeBase64(decodedString);
         this.confidential = confidential;
+        this.form = form;
     }
 
     public File(String name) { this.name = name; }
@@ -59,6 +63,14 @@ public class File {
     public boolean getConfidential() { return confidential; }
 
     public void setConfidential(boolean confidential) { this.confidential = confidential; }
+
+    public boolean getForm() {
+        return form;
+    }
+
+    public void setForm(boolean form) {
+        this.form = form;
+    }
 
     /**
      * Converts byte[] File into Base64 string
