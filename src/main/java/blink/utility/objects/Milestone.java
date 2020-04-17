@@ -150,6 +150,10 @@ public class Milestone {
         WorkflowBusiness workflowBusiness = new WorkflowBusiness();
         List<Workflow> workflowList = workflowBusiness.getWorkflowsByMilestoneID(uuid, Integer.toString(milestoneID));
 
+        if(workflowList.size() == 0){
+            return 0.0;
+        }
+
         double completion = 0;
 
         for(Workflow workflow : workflowList) {
