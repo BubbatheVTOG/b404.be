@@ -154,7 +154,7 @@ public class Milestone {
             return 0.0;
         }
 
-        double completion = 0;
+        double completion = 0.0;
 
         for(Workflow workflow : workflowList) {
             completion += workflow.getPercentComplete();
