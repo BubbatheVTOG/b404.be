@@ -117,7 +117,7 @@ public class Milestone {
     }
 
     public boolean isCompleted() {
-        return this.deliveryDate == null;
+        return this.percentComplete == 1.0;
     }
 
     public boolean isArchived() {
