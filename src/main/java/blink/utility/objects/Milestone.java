@@ -136,7 +136,9 @@ public class Milestone {
         this.company = company;
     }
 
-    public double getPercentComplete() { return this.percentComplete; }
+    public double getPercentComplete() {
+        return this.percentComplete;
+    }
 
     public void setPercentComplete(String uuid) {
         this.percentComplete = calculateCompletion(uuid, this.mileStoneID);

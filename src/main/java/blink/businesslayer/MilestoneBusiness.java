@@ -54,9 +54,11 @@ public class MilestoneBusiness {
 
             for(Milestone milestone : milestoneList) {
                 milestone.setPercentComplete(uuid);
+                /*
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }
+                */
             }
 
             return milestoneList;
@@ -92,11 +94,9 @@ public class MilestoneBusiness {
 
             for(Milestone milestone : milestoneList) {
                 milestone.setPercentComplete(requester.getUuid());
-                /*
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }
-                */
             }
 
             return milestoneList;
