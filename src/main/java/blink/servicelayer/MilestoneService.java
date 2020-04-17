@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,7 +50,8 @@ public class MilestoneService {
             Authorization.isLoggedIn(jwt);
 
             //Send parameters to business layer and store response
-            List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
+            //List<Milestone> milestoneList = milestoneBusiness.getAllMilestones(JWTUtility.getUUIDFromToken(jwt));
+            List<Milestone> milestoneList = new ArrayList<>();
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             return ResponseBuilder.buildSuccessResponse(gson.toJson(milestoneList));
