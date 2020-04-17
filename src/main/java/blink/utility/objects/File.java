@@ -107,7 +107,6 @@ public class File {
      * @throws SQLException
      */
     public static String blobToEncodedString(Blob blob) throws  SQLException {
-        String encodedString = new String(blob.getBytes(1, (int) blob.length()));
-        return encodedString;
+        return new String(blob.getBytes(1, (int) blob.length()));
     }
 }

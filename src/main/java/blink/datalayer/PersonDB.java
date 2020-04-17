@@ -265,6 +265,7 @@ public class PersonDB {
         try (Connection conn = this.dbConn.connect();
              PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
+
             Blob blob = conn.createBlob();
             String encodedSignature = File.encodeBase64(signature);
             if(encodedSignature != null && encodedSignature.length() != 0) {
