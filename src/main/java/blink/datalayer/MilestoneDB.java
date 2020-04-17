@@ -371,4 +371,25 @@ public class MilestoneDB {
             return preparedStatement.executeUpdate();
         }
     }
+
+    /**
+     * Connect to db and update milestone completion date
+     * @param completeDate
+     * @param milestoneID
+     * @throws SQLException
+     */
+    public void markMilestoneComplete(Date completeDate, int milestoneID) throws SQLException {
+        //Prepare sql statement
+        String query = "UPDATE milestone SET milestone.completedDate = ? WHERE milestone.milestoneID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setTimestamp(1, new java.sql.Timestamp(completeDate.getTime()));
+            preparedStatement.setInt(2, milestoneID);
+
+            preparedStatement.executeUpdate();
+        }
+    }
 }
