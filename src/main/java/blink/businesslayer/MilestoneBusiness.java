@@ -44,6 +44,7 @@ public class MilestoneBusiness {
             Person requester = personBusiness.getPersonByUUID(uuid);
 
             List<Milestone> milestoneList = new ArrayList<>();
+            /*
             if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
                 milestoneList = milestoneDB.getAllMilestones();
             }
@@ -52,7 +53,6 @@ public class MilestoneBusiness {
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
             }
 
-            /*
             for(Milestone milestone : milestoneList) {
                 milestone.setPercentComplete(uuid);
                 if(milestone.isCompleted()) {
@@ -68,9 +68,11 @@ public class MilestoneBusiness {
             throw new NotAuthorizedException("Requesting UUID was not found.");
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
+        /*
         catch(SQLException ex){
             throw new InternalServerErrorException(ex.getMessage());
         }
+        */
     }
 
     /**
