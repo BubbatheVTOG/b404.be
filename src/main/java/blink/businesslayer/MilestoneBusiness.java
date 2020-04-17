@@ -52,14 +52,14 @@ public class MilestoneBusiness {
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
             }
 
+            /*
             for(Milestone milestone : milestoneList) {
                 milestone.setPercentComplete(uuid);
-                /*
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }
-                */
             }
+            */
 
             return milestoneList;
         }
