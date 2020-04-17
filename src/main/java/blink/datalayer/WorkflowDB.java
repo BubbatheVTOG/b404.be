@@ -530,7 +530,7 @@ public class WorkflowDB {
         }
     }
 
-    private Workflow parseWorkflow(ResultSet result) throws SQLException{
+    private Workflow parseWorkflow(ResultSet result){
         try {
             String workflowID = result.getString("workflowID");
             return new Workflow(Integer.parseInt(workflowID),
