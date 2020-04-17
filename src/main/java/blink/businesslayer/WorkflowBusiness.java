@@ -212,10 +212,7 @@ public class WorkflowBusiness {
             Integer milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
 
             //Retrieve a list of workflow ID's belonging to this milestone
-            List<Workflow> workflowList = this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
-
-            //Reaching this indicates no issues have been met and a success message can be returned
-            return workflowList;
+            return this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){
