@@ -91,7 +91,7 @@ public class MilestoneBusiness {
             }
 
             for(Milestone milestone : milestoneList) {
-                milestone.setPercentComplete(uuid);
+                milestone.setPercentComplete(requester.getUuid());
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }
@@ -128,7 +128,7 @@ public class MilestoneBusiness {
             }
 
             for(Milestone milestone : milestoneList) {
-                milestone.setPercentComplete(uuid);
+                milestone.setPercentComplete(requester.getUuid());
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }
@@ -166,7 +166,7 @@ public class MilestoneBusiness {
         }
         else{
             if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompany().getCompanyID())){
-                milestone.setPercentComplete(uuid);
+                milestone.setPercentComplete(requester.getUuid());
                 if(milestone.isCompleted()) {
                     this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
                 }

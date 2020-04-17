@@ -141,7 +141,7 @@ public class Milestone {
     public void setPercentComplete(String uuid) {
         this.percentComplete = calculateCompletion(uuid, this.mileStoneID);
         //If completed and not already marked as complete, mark complete
-        if(this.percentComplete == 1 && this.completedDate == null){
+        if(this.percentComplete == 1.0 && this.completedDate == null){
             this.completedDate = new Date();
         }
     }
