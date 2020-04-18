@@ -213,11 +213,13 @@ public class WorkflowBusiness {
 
             Integer milestoneIDInteger;
             //Checks that milestoneID exists and user has access
-            if (Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
-                milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID();
-            }
-            else{
-                milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+            milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID();
+
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if (companyIDList.contains(milestoneIDInteger)) {
+                    throw new NotAuthorizedException("You do not have access to this milestone.");
+                }
             }
 
             //Retrieve a list of workflow ID's belonging to this milestone
