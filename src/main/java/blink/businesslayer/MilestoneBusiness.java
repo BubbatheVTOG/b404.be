@@ -161,17 +161,16 @@ public class MilestoneBusiness {
         Milestone milestone = this.getMilestoneByID(milestoneID);
 
         Person requester = personBusiness.getPersonByUUID(uuid);
-
-        milestone.setPercentComplete(requester.getUuid());
-        if(milestone.isCompleted()) {
-            this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
-        }
-
         if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
             return milestone;
         }
         else{
             if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompany().getCompanyID())){
+                milestone.setPercentComplete(requester.getUuid());
+                if(milestone.isCompleted()) {
+                    this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
+                }
+
                 return milestone;
             }
             else{
