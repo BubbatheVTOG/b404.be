@@ -3,6 +3,7 @@ package blink.businesslayer;
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
 import com.google.gson.*;
+import io.swagger.v3.core.util.AnnotationsUtils;
 
 import javax.ws.rs.*;
 import java.sql.SQLException;
@@ -207,9 +208,17 @@ public class WorkflowBusiness {
      * @throws InternalServerErrorException Error in data layer
      */
     public List<Workflow> getWorkflowsByMilestoneID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
-        try{
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            Integer milestoneIDInteger;
             //Checks that milestoneID exists and user has access
-            Integer milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+            if (Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+                milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID();
+            }
+            else{
+                milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+            }
 
             //Retrieve a list of workflow ID's belonging to this milestone
             return this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
