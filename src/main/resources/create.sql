@@ -197,10 +197,10 @@ INSERT INTO DB_DATABASE.file (fileID, name, file, confidential) VALUES
 
 INSERT INTO DB_DATABASE.verb (verbID, name) VALUES
   (0, "No Action Required"),
-  (1, "Sign"),
+  (1, "Approve"),
   (2, "Submit"),
-  (3, "Send"),
-  (4, "Approve");
+  (3, "Complete"),
+  (4, "Form/Sign");
 
 INSERT INTO DB_DATABASE.step (stepID, orderNumber, description, parentStepID, UUID, verbID, fileID, workflowID, asynchronous, completed) VALUES
   (1, 1, "This is a higher level step.", null, null, 1, 1, 1, 0, 0),
