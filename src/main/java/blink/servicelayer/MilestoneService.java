@@ -58,8 +58,7 @@ public class MilestoneService {
         catch (NotAuthorizedException nae) {
             return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
         } catch (Exception e) {
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -170,8 +169,7 @@ public class MilestoneService {
         } catch (NotFoundException nfe) {
             return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
         } catch (Exception e) {
-            return ResponseBuilder.buildErrorResponse(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-            //return ResponseBuilder.buildInternalServerErrorResponse();
+            return ResponseBuilder.buildInternalServerErrorResponse();
         }
     }
 
@@ -209,7 +207,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.insertMilestone(name, description, startDate, deliveryDate, companyID);
@@ -270,7 +268,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.updateMilestone(milestoneID, name, description, startDate, deliveryDate, companyID);
@@ -321,7 +319,7 @@ public class MilestoneService {
     public Response deleteMilestoneByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -372,7 +370,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -423,7 +421,7 @@ public class MilestoneService {
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
