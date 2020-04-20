@@ -81,7 +81,7 @@ public class WorkflowService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTemplateWorkflows(@Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             List<Workflow> workflowList = workflowBusiness.getTemplateWorkflows(JWTUtility.getUUIDFromToken(jwt));
@@ -278,7 +278,7 @@ public class WorkflowService {
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Workflow workflow = workflowBusiness.insertTemplateWorkflow(workflowJson);
@@ -331,7 +331,7 @@ public class WorkflowService {
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization")  @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Workflow workflow = workflowBusiness.insertWorkflow(workflowJson);
@@ -385,7 +385,7 @@ public class WorkflowService {
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Workflow workflow = workflowBusiness.updateTemplateWorkflow(workflowJson);
@@ -439,7 +439,7 @@ public class WorkflowService {
                                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Workflow workflow = workflowBusiness.updateConcreteWorkflow(workflowJson);
@@ -489,7 +489,7 @@ public class WorkflowService {
     public Response deleteWorkflowByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
                                         @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -578,7 +578,7 @@ public class WorkflowService {
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -629,7 +629,7 @@ public class WorkflowService {
                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();

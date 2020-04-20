@@ -47,6 +47,22 @@ public class Authorization {
     }
 
     /**
+     * Checks that a user is logged in and is an internal user
+     * @param jwt JSON Web Token
+     * @throws NotAuthorizedException User provided invalid or expired JWT
+     * @throws ForbiddenException User is not an administrator
+     */
+    public static void isInternal(String jwt) throws NotAuthorizedException, ForbiddenException {
+        isLoggedIn(jwt);
+
+        //Check that this user has the authority to access this endpoint
+        Person requester = personBusiness.getPersonByUUID(JWTUtility.getUUIDFromToken(jwt));
+        if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
+            throw new ForbiddenException("You do not have access to this functionality");
+        }
+    }
+
+    /**
      * Checks that a user is logged in and is either an administrator or changing their own information
      * @param jwt JSON Web Token
      * @param targetUUID The UUID of person information that is trying to be altered
