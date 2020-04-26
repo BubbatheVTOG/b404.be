@@ -304,23 +304,33 @@ public class MilestoneDB {
     }
 
     /**
-     * Update archive status of an existing milestone
+     * Update archive status of an existing milestone and all relevant workflows
      * @param milestoneID ID of milestone to update
      * @param archiveStatus boolean to set archive status to
      * @throws SQLException Error connecting to database or executing statement
      */
     public void updateMilestoneArchiveStatus(final int milestoneID, boolean archiveStatus) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE milestone SET archived = ? WHERE milestoneID = ?;";
+        String milestoneQuery = "UPDATE milestone SET archived = ? WHERE milestoneID = ?;";
+        String workflowQuery = "UPDATE workflow SET archived = ? WHERE milestoneID = ?;";
 
         try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            PreparedStatement milestonePS = conn.prepareStatement(milestoneQuery);
+            PreparedStatement workflowPS = conn.prepareStatement(workflowQuery)) {
+            conn.setAutoCommit(false);
 
             //Set parameters and execute update
-            preparedStatement.setBoolean(1, archiveStatus);
-            preparedStatement.setInt(2, milestoneID);
+            milestonePS.setBoolean(1, archiveStatus);
+            milestonePS.setInt(2, milestoneID);
 
-            preparedStatement.executeUpdate();
+            workflowPS.setBoolean(1, archiveStatus);
+            workflowPS.setInt(2, milestoneID);
+
+            milestonePS.executeUpdate();
+            workflowPS.executeUpdate();
+
+            conn.commit();
+            conn.setAutoCommit(true);
         }
     }
 
