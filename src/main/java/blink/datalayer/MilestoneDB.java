@@ -240,39 +240,6 @@ public class MilestoneDB {
     }
 
     /**
-     * Get milestone information based on the milestoneID
-     * @param milestoneID milestoneID to retrieve milestone from
-     * @return milestone object or null if not found
-     * @throws SQLException Error connecting to database or executing query
-     */
-    public List<Integer> getWorkflowsByMilestoneID(final int milestoneID) throws SQLException {
-        try(Connection conn = this.dbConn.connect()) {
-
-            //Prepare sql statement
-            String query = "SELECT workflowID FROM milestone " +
-                            "JOIN workflow ON (milestone.milestoneID = workflow.milestoneID) " +
-                            "WHERE milestone.milestoneID = ?;";
-
-            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
-
-                //Set parameters and execute query
-                preparedStatement.setInt(1, milestoneID);
-                try (ResultSet result = preparedStatement.executeQuery()) {
-
-                    List<Integer> workflowIDList = new ArrayList<>();
-
-                    while (result.next()) {
-                        workflowIDList.add(result.getInt("workflowID"));
-                    }
-
-                    //Return milestone
-                    return workflowIDList;
-                }
-            }
-        }
-    }
-
-    /**
      * Connect to database and add a new concrete milestone
      * @param name name of new milestone to be added
      * @param description description of new milestone to be added
@@ -337,23 +304,33 @@ public class MilestoneDB {
     }
 
     /**
-     * Update archive status of an existing milestone
+     * Update archive status of an existing milestone and all relevant workflows
      * @param milestoneID ID of milestone to update
      * @param archiveStatus boolean to set archive status to
      * @throws SQLException Error connecting to database or executing statement
      */
     public void updateMilestoneArchiveStatus(final int milestoneID, boolean archiveStatus) throws SQLException {
         //Prepare sql statement
-        String query = "UPDATE milestone SET archived = ? WHERE milestoneID = ?;";
+        String milestoneQuery = "UPDATE milestone SET archived = ? WHERE milestoneID = ?;";
+        String workflowQuery = "UPDATE workflow SET archived = ? WHERE milestoneID = ?;";
 
         try(Connection conn = this.dbConn.connect();
-            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            PreparedStatement milestonePS = conn.prepareStatement(milestoneQuery);
+            PreparedStatement workflowPS = conn.prepareStatement(workflowQuery)) {
+            conn.setAutoCommit(false);
 
             //Set parameters and execute update
-            preparedStatement.setBoolean(1, archiveStatus);
-            preparedStatement.setInt(2, milestoneID);
+            milestonePS.setBoolean(1, archiveStatus);
+            milestonePS.setInt(2, milestoneID);
 
-            preparedStatement.executeUpdate();
+            workflowPS.setBoolean(1, archiveStatus);
+            workflowPS.setInt(2, milestoneID);
+
+            milestonePS.executeUpdate();
+            workflowPS.executeUpdate();
+
+            conn.commit();
+            conn.setAutoCommit(true);
         }
     }
 
@@ -373,6 +350,27 @@ public class MilestoneDB {
             //Set parameters and execute update
             preparedStatement.setInt(1, milestoneID);
             return preparedStatement.executeUpdate();
+        }
+    }
+
+    /**
+     * Connect to db and update milestone completion date
+     * @param completeDate
+     * @param milestoneID
+     * @throws SQLException
+     */
+    public void markMilestoneComplete(Date completeDate, int milestoneID) throws SQLException {
+        //Prepare sql statement
+        String query = "UPDATE milestone SET milestone.completedDate = ? WHERE milestone.milestoneID = ?;";
+
+        try(Connection conn = this.dbConn.connect();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            //Set parameters and execute update
+            preparedStatement.setTimestamp(1, new java.sql.Timestamp(completeDate.getTime()));
+            preparedStatement.setInt(2, milestoneID);
+
+            preparedStatement.executeUpdate();
         }
     }
 }

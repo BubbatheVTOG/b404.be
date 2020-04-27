@@ -3,6 +3,7 @@ package blink.businesslayer;
 import blink.datalayer.WorkflowDB;
 import blink.utility.objects.*;
 import com.google.gson.*;
+import io.swagger.v3.core.util.AnnotationsUtils;
 
 import javax.ws.rs.*;
 import java.sql.SQLException;
@@ -207,15 +208,22 @@ public class WorkflowBusiness {
      * @throws InternalServerErrorException Error in data layer
      */
     public List<Workflow> getWorkflowsByMilestoneID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
-        try{
+        try {
+            Person requester = this.personBusiness.getPersonByUUID(uuid);
+
+            Integer milestoneIDInteger;
             //Checks that milestoneID exists and user has access
-            Integer milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(uuid, milestoneID).getMileStoneID();
+            milestoneIDInteger = this.milestoneBusiness.getMilestoneByID(milestoneID).getMileStoneID();
+
+            if(!Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())) {
+                List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
+                if (companyIDList.contains(milestoneIDInteger)) {
+                    throw new NotAuthorizedException("You do not have access to this milestone.");
+                }
+            }
 
             //Retrieve a list of workflow ID's belonging to this milestone
-            List<Workflow> workflowList = this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
-
-            //Reaching this indicates no issues have been met and a success message can be returned
-            return workflowList;
+            return this.workflowDB.getWorkflowsByMilestoneID(milestoneIDInteger);
         }
         //SQLException If the data layer throws an SQLException; throw a custom Internal Server Error
         catch(SQLException ex){

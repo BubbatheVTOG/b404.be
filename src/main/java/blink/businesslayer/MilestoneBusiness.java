@@ -52,6 +52,13 @@ public class MilestoneBusiness {
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList));
             }
 
+            for(Milestone milestone : milestoneList) {
+                milestone.setPercentComplete(uuid);
+                if(milestone.isCompleted()) {
+                    this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
+                }
+            }
+
             return milestoneList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
@@ -81,6 +88,13 @@ public class MilestoneBusiness {
             else{
                 List<Integer> companyIDList = requester.getCompanies().stream().map(Company::getCompanyID).collect(Collectors.toList());
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, false));
+            }
+
+            for(Milestone milestone : milestoneList) {
+                milestone.setPercentComplete(requester.getUuid());
+                if(milestone.isCompleted()) {
+                    this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
+                }
             }
 
             return milestoneList;
@@ -113,6 +127,13 @@ public class MilestoneBusiness {
                 milestoneList.addAll(milestoneDB.getAllMilestones(companyIDList, true));
             }
 
+            for(Milestone milestone : milestoneList) {
+                milestone.setPercentComplete(requester.getUuid());
+                if(milestone.isCompleted()) {
+                    this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
+                }
+            }
+
             return milestoneList;
         }
         //If requester uuid does not exist then they were deleted and should not have access anymore
@@ -136,15 +157,22 @@ public class MilestoneBusiness {
      * @throws BadRequestException MilestoneID was either null or invalid integer
      * @throws InternalServerErrorException Error in data layer
      */
-    public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException {
+    public Milestone getMilestoneByID(String uuid, String milestoneID) throws NotFoundException, BadRequestException, InternalServerErrorException, SQLException {
         Milestone milestone = this.getMilestoneByID(milestoneID);
 
         Person requester = personBusiness.getPersonByUUID(uuid);
+
+        milestone.setPercentComplete(requester.getUuid());
+        if(milestone.isCompleted()) {
+            this.milestoneDB.markMilestoneComplete(milestone.getCompletedDate(), milestone.getMileStoneID());
+        }
+
         if(Authorization.INTERNAL_USER_LEVELS.contains(requester.getAccessLevelID())){
             return milestone;
         }
         else{
             if(requester.getCompanies().stream().anyMatch(company -> company.getCompanyID() == milestone.getCompany().getCompanyID())){
+
                 return milestone;
             }
             else{

@@ -4,17 +4,23 @@ import blink.datalayer.FileDB;
 import blink.utility.objects.*;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import eu.medsea.mimeutil.MimeUtil;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class FileBusiness {
     private FileDB fileDB;
@@ -279,11 +285,16 @@ public class FileBusiness {
                 throw new BadRequestException("A file must be provided.");
             }
 
+            Boolean form = false;
+            if(jsonObject.has("form")){
+                form = jsonObject.get("form").getAsBoolean();
+            }
+
             if(jsonObject.has("fileID")){
-                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("fileID").getAsInt(), jsonObject.get("name").getAsString(), base64String, confidential, form);
             }
             else {
-                return new File(jsonObject.get("name").getAsString(), base64String, confidential);
+                return new File(jsonObject.get("name").getAsString(), base64String, confidential, form);
             }
         }
         catch(NumberFormatException nfe){
@@ -315,4 +326,39 @@ public class FileBusiness {
             }
         }
     }
+
+    public File zipAllFilesByMilestone(String milestoneID, String uuid) {
+        //Retrieves all files to be zipped
+        List<File> files = this.getAllFilesByMilestone(milestoneID, uuid);
+
+        //Processes each file and adds it to the archive
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+
+            for(File file: files) {
+                //Removes the MimeType from the file for archiving
+                String split = file.getDecodedString().split("base64,")[1];
+
+                //Converts the file into bytes
+                byte[] bytes = Base64.getDecoder().decode(split.getBytes());
+
+                //Creates a new entry for the file we are archiving
+                zipOutputStream.putNextEntry(new ZipEntry(file.getName()));
+                zipOutputStream.write(bytes);
+                zipOutputStream.closeEntry();
+            }
+            //Closes the zip stream to finalize the archive
+            zipOutputStream.close();
+
+            //Converts the archive into a base64 format for the front end, appending the MimeType
+            String base64 = new String(Base64.getEncoder().encode(byteArrayOutputStream.toByteArray()));
+            base64 = new String("data:" + MimeUtil.getMimeTypes(base64) + ";base64," + base64);
+
+            return new File("Milestone_" + milestoneID + "_Archive.zip", base64, true, false);
+        } catch(IOException ioException) {
+            throw new InternalServerErrorException(ioException.getMessage());
+        }
+    }
+
 }

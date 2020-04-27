@@ -1,6 +1,9 @@
 package blink.utility.objects;
 
+import blink.businesslayer.WorkflowBusiness;
+
 import java.util.Date;
+import java.util.List;
 
 public class Milestone {
     private int mileStoneID;
@@ -13,6 +16,7 @@ public class Milestone {
     private Date completedDate;
     private boolean archived;
     private Company company;
+    private double percentComplete;
 
     /**
      * Construct a milestone and provide all information necessary
@@ -113,7 +117,7 @@ public class Milestone {
     }
 
     public boolean isCompleted() {
-        return this.deliveryDate == null;
+        return this.percentComplete == 1.0;
     }
 
     public boolean isArchived() {
@@ -130,5 +134,34 @@ public class Milestone {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public double getPercentComplete() {
+        return this.percentComplete;
+    }
+
+    public void setPercentComplete(String uuid) {
+        this.percentComplete = calculateCompletion(uuid, this.mileStoneID);
+        //If completed and not already marked as complete, mark complete
+        if(this.percentComplete == 1.0 && this.completedDate == null){
+            this.completedDate = new Date();
+        }
+    }
+
+    public static double calculateCompletion(String uuid, int milestoneID) {
+        WorkflowBusiness workflowBusiness = new WorkflowBusiness();
+        List<Workflow> workflowList = workflowBusiness.getWorkflowsByMilestoneID(uuid, Integer.toString(milestoneID));
+
+        if(workflowList.isEmpty()){
+            return 0.0;
+        }
+
+        double completion = 0.0;
+
+        for(Workflow workflow : workflowList) {
+            completion += workflow.getPercentComplete();
+        }
+
+        return (completion / (double) workflowList.size());
     }
 }

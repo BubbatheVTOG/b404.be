@@ -80,6 +80,51 @@ public class FileService {
     }
 
     /**
+     * Construct archive from files retrieved by milestoneID
+     * @Param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for file returned
+     *                        401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                        500 INTERNAL SERVER ERROR for backend error
+     */
+    @Path("/archive/{milestoneID}")
+    @GET
+    @Operation(summary = "getArchive", description = "Gets all files from the specified milestone in zip format")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "File object containing the file name and archive"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time.}")
+    })
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getArchive(@Parameter(in = ParameterIn.PATH, description = "milestoneID", required = true) @PathParam("milestoneID") String milestoneID,
+                            @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
+        try {
+            Authorization.isLoggedIn(jwt);
+
+            //Send parameters to business layer and store response
+            File file = fileBusiness.zipAllFilesByMilestone(milestoneID, JWTUtility.getUUIDFromToken(jwt));
+
+            //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
+            return ResponseBuilder.buildSuccessResponse(gson.toJson(file));
+        }
+        //Catch error exceptions and return relevant Response using ResponseBuilder
+        catch(BadRequestException bre){
+            return ResponseBuilder.buildErrorResponse(Response.Status.BAD_REQUEST, bre.getMessage());
+        }
+        catch(ForbiddenException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.FORBIDDEN, nfe.getMessage());
+        }
+        catch(NotFoundException nfe){
+            return ResponseBuilder.buildErrorResponse(Response.Status.NOT_FOUND, nfe.getMessage());
+        }
+        catch(NotAuthorizedException nae){
+            return ResponseBuilder.buildErrorResponse(Response.Status.UNAUTHORIZED, nae.getMessage());
+        }
+        catch(Exception e){
+            return ResponseBuilder.buildInternalServerErrorResponse();
+        }
+    }
+
+    /**
      * Get all concrete files from the database
      * @Param jwt JSON web token for authorization
      * @return HTTP Response: 200 OK for file returned

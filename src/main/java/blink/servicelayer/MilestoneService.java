@@ -3,7 +3,6 @@ package blink.servicelayer;
 import blink.businesslayer.Authorization;
 import blink.businesslayer.MilestoneBusiness;
 import blink.utility.objects.Milestone;
-import blink.utility.objects.Workflow;
 import blink.utility.security.JWTUtility;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -208,7 +207,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.insertMilestone(name, description, startDate, deliveryDate, companyID);
@@ -269,7 +268,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.updateMilestone(milestoneID, name, description, startDate, deliveryDate, companyID);
@@ -320,7 +319,7 @@ public class MilestoneService {
     public Response deleteMilestoneByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -371,7 +370,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -422,7 +421,7 @@ public class MilestoneService {
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();

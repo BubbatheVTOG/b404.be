@@ -217,11 +217,8 @@ public class StepBusiness {
             }
 
             //If fileID points to template file, duplicate file and reassign step to duplicate file
-            List<Integer> templateIDList = fileDB.getAllTemplateFiles().stream().map(File::getFileID).collect(Collectors.toList());
-            if (templateIDList.contains(step.getFileID())) {
-                int newFileID = this.fileDB.insertFile(linkedFile);
-                step.setFileID(newFileID);
-            }
+            int newFileID = this.fileDB.insertFile(linkedFile);
+            step.setFileID(newFileID);
 
             //validate that person exists
             if (step.getUUID() != null) {
