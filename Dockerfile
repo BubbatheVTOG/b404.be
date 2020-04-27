@@ -1,5 +1,5 @@
 # Grab the latest wildfly image
-FROM jboss/wildfly
+FROM jboss/wildfly:18.0.1.Final
 
 # Add our war file to the deployment
 ADD ./target/blink.war /opt/jboss/wildfly/standalone/deployments/
