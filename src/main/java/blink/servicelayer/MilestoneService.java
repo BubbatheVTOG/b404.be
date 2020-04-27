@@ -27,12 +27,12 @@ import java.util.List;
 @Api(value = "/milestone")
 public class MilestoneService {
     private MilestoneBusiness milestoneBusiness = new MilestoneBusiness();
-    private static Gson gson =  new GsonBuilder().serializeNulls().create();
+    private Gson gson = new GsonBuilder().setDateFormat("MMM d, yyy HH:mm:ss").serializeNulls().create();
 
     /**
      * Get all milestones
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for milestones returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for milestones returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -40,7 +40,7 @@ public class MilestoneService {
     @Operation(summary = "getAllMilestones", description = "Gets all milestones in the system")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,8 +64,8 @@ public class MilestoneService {
 
     /**
      * Get active milestones
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for active milestones returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for active milestones returned
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -74,7 +74,7 @@ public class MilestoneService {
     @Operation(summary = "getActiveMilestones", description = "Gets all active milestones")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of active milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -98,8 +98,8 @@ public class MilestoneService {
 
     /**
      * Get archived milestones
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived milestones returned
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for archived milestones returned
     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          500 INTERNAL SERVER ERROR for backend error
      */
@@ -108,7 +108,7 @@ public class MilestoneService {
     @Operation(summary = "getArchivedMilestones", description = "Gets all archived milestones")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of archived milestone objects which each contain keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -132,10 +132,11 @@ public class MilestoneService {
 
     /**
      * Get a milestone by milestoneID
-     * @param milestoneID - ID of milestone to retrieve
-     * @param jwt - JSON web token for authorization
-     * @return - HTTP Response: 200 OK for archived milestones returned
-     *                           401 UNAUTHORIZED for invalid JSON Web Token in header
+     * @param milestoneID ID of milestone to retrieve
+     * @param jwt JSON web token for authorization
+     * @return HTTP Response: 200 OK for milestone returned
+     *                          401 UNAUTHORIZED for invalid JSON Web Token in header
+     *                          404 NOT_FOUND for MilestoneID not found
      *                          500 INTERNAL SERVER ERROR for backend error
      */
     @Path("/{id}")
@@ -143,9 +144,9 @@ public class MilestoneService {
     @Operation(summary = "getMilestoneByID", description = "Gets a specific milestone by ID")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Milestone object which contains keys (milestoneID, name, description, createdDate, lastUpdatedDate, startDate, deliveryDate, completedDate, archived, companyID)"),
-            @ApiResponse(code = 400, message = "{error: MilestoneID must be a valid integer.)"),
-            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.)"),
-            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.)"),
+            @ApiResponse(code = 400, message = "{error: MilestoneID must be a valid integer.}"),
+            @ApiResponse(code = 401, message = "{error: Invalid JSON Web Token provided.}"),
+            @ApiResponse(code = 404, message = "{error: No milestone with that ID exists.}"),
             @ApiResponse(code = 500, message = "{error: Sorry, cannot process your request at this time}")
     })
     @Produces(MediaType.APPLICATION_JSON)
@@ -174,13 +175,13 @@ public class MilestoneService {
 
     /**
      * Insert a milestone into the database
-     * @param name - New milestone's name
-     * @param description - New milestone's description
-     * @param startDate - New milestone's start date
-     * @param deliveryDate - New milestone's delivery date
-     * @param companyID - Company to assign the milestone to
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for milestone inserted successfully
+     * @param name New milestone's name
+     * @param description New milestone's description
+     * @param startDate New milestone's start date
+     * @param deliveryDate New milestone's delivery date
+     * @param companyID Company to assign the milestone to
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for milestone inserted successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -206,7 +207,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.insertMilestone(name, description, startDate, deliveryDate, companyID);
@@ -234,13 +235,13 @@ public class MilestoneService {
 
     /**
      * Update a milestone into the database
-     * @param name - New milestone name
-     * @param description - New milestone description
-     * @param startDate - New milestone start date
-     * @param deliveryDate - New milestone delivery date
-     * @param companyID - Company to assign the milestone to
-     * @param jwt - JSON Web Token for authorization; must be valid and not expired
-     * @return - HTTP Response: 200 OK for milestone updated successfully
+     * @param name New milestone name
+     * @param description New milestone description
+     * @param startDate New milestone start date
+     * @param deliveryDate New milestone delivery date
+     * @param companyID Company to assign the milestone to
+     * @param jwt JSON Web Token for authorization; must be valid and not expired
+     * @return HTTP Response: 200 OK for milestone updated successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -267,7 +268,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //Send parameters to business layer and store response
             Milestone milestone = milestoneBusiness.updateMilestone(milestoneID, name, description, startDate, deliveryDate, companyID);
@@ -296,9 +297,9 @@ public class MilestoneService {
     /**
      *
      * Delete a person from the database
-     * @param id - ID of milestone to delete
-     * @param jwt - JSON Web Token for authorizing request
-     * @return - HTTP Response: 200 OK for milestone deleted successfully
+     * @param id ID of milestone to delete
+     * @param jwt JSON Web Token for authorizing request
+     * @return HTTP Response: 200 OK for milestone deleted successfully
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
      *                          404 NOT FOUND when no user with provided UUID exists
@@ -318,7 +319,7 @@ public class MilestoneService {
     public Response deleteMilestoneByID(@Parameter(in = ParameterIn.PATH, description = "id", required = true) @PathParam("id") String id,
                                        @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -345,8 +346,8 @@ public class MilestoneService {
 
     /**
      * Archive a milestone
-     * @param milestoneID - ID of milestone to archive
-     * @return - HTTP Response: 200 OK for milestone archived successfully
+     * @param milestoneID ID of milestone to archive
+     * @return HTTP Response: 200 OK for milestone archived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -369,7 +370,7 @@ public class MilestoneService {
                                     @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();
@@ -396,8 +397,8 @@ public class MilestoneService {
 
     /**
      * Unarchive a milestone
-     * @param milestoneID - ID of milestone to unarchive
-     * @return - HTTP Response: 200 OK for milestone unarchived successfully
+     * @param milestoneID ID of milestone to unarchive
+     * @return HTTP Response: 200 OK for milestone unarchived successfully
      *                          400 BAD REQUEST for invalid parameters
      *                          401 UNAUTHORIZED for invalid JSON Web Token in header
      *                          403 FORBIDDEN if requester does not have access to the endpoint
@@ -406,7 +407,7 @@ public class MilestoneService {
      */
     @Path("/unarchive")
     @PUT
-    @Operation(summary = "archiveMilestone", description = "Unarchive an existing milestone")
+    @Operation(summary = "unarchiveMilestone", description = "Unarchive an existing milestone")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "{success: successfully unarchived milestone}"),
             @ApiResponse(code = 400, message = "{error: Milestone ID must be a valid integer.}"),
@@ -420,7 +421,7 @@ public class MilestoneService {
                                      @Parameter(in = ParameterIn.HEADER, name = "Authorization") @HeaderParam("Authorization") String jwt) {
 
         try {
-            Authorization.isAdmin(jwt);
+            Authorization.isInternal(jwt);
 
             //If no errors are thrown in the business layer, it was successful and OK response can be sent with message
             JsonObject returnObject = new JsonObject();

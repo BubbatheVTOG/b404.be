@@ -1,20 +1,26 @@
 package blink.utility.objects;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Step {
     private int stepID;
     private int orderNumber;
+    @SerializedName("subtitle")
     private String description;
     private int parentStepID;
-    private int uuid;
+    private String uuid;
+    @SerializedName("title")
     private int verbID;
     private int fileID;
     private int workflowID;
+    private boolean asynchronous;
     private boolean completed;
-    private List<Step> childSteps;
+    private boolean expanded;
+    private List<Step> children;
 
-    private  Step(StepBuilder stepBuilder) {
+    private Step(StepBuilder stepBuilder) {
         this.stepID = stepBuilder.stepID;
         this.orderNumber = stepBuilder.orderNumber;
         this.description = stepBuilder.description;
@@ -23,8 +29,10 @@ public class Step {
         this.verbID = stepBuilder.verbID;
         this.fileID = stepBuilder.fileID;
         this.workflowID = stepBuilder.workflowID;
+        this.asynchronous = stepBuilder.asynchronous;
         this.completed = stepBuilder.completed;
-        this.childSteps = stepBuilder.childSteps;
+        this.expanded = stepBuilder.expanded;
+        this.children = stepBuilder.childSteps;
     }
 
     public static class StepBuilder {
@@ -32,21 +40,29 @@ public class Step {
         private int orderNumber;
         private String description;
         private int parentStepID;
-        private int uuid;
+        private String uuid;
         private int verbID;
         private int fileID;
         private int workflowID;
+        private boolean asynchronous;
         private boolean completed;
+        private boolean expanded;
         private List<Step> childSteps;
 
-        public StepBuilder(int stepID, int orderNumber, int verbID, int fileID, int workflowID, boolean completed) {
-            this.stepID = stepID;
-            this.orderNumber = orderNumber;
-            this.parentStepID = 0;
-            this.verbID = verbID;
-            this.fileID = fileID;
+        public StepBuilder(int workflowID, boolean asynchronous, boolean completed) {
             this.workflowID = workflowID;
+            this.asynchronous = asynchronous;
             this.completed = completed;
+        }
+
+        public StepBuilder stepID(int stepID) {
+            this.stepID = stepID;
+            return this;
+        }
+
+        public StepBuilder orderNumber(int orderNumber) {
+            this.orderNumber = orderNumber;
+            return this;
         }
 
         public StepBuilder description(String description) {
@@ -59,13 +75,24 @@ public class Step {
             return this;
         }
 
-        public StepBuilder uuid(int uuid) {
+        public StepBuilder uuid(String uuid) {
             this.uuid = uuid;
+            return this;
+        }
+
+        public StepBuilder verbID(int verbID) {
+            this.verbID = verbID;
+            return this;
+        }
+
+        public StepBuilder fileID(int fileID) {
+            this.fileID = fileID;
             return this;
         }
 
         public StepBuilder childSteps(List<Step> childSteps) {
             this.childSteps = childSteps;
+            this.expanded = !this.childSteps.isEmpty();
             return this;
         }
 
@@ -90,9 +117,9 @@ public class Step {
 
     public void setParentStepID(int parentStepID) { this.parentStepID = parentStepID; }
 
-    public int getUUID() { return uuid; }
+    public String getUUID() { return uuid; }
 
-    public void setUUID(int uuid) { this.uuid = uuid; }
+    public void setUUID(String uuid) { this.uuid = uuid; }
 
     public int getVerbID() { return verbID; }
 
@@ -110,8 +137,22 @@ public class Step {
 
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    public List<Step> getChildSteps() { return childSteps; }
+    public boolean isCompleted() { return completed; }
 
-    public void setChildSteps(List<Step> childSteps) { this.childSteps = childSteps; }
+    public boolean getExpanded() { return expanded; }
+
+    public boolean getAsynchronous() { return asynchronous; }
+
+    public void setAsynchronous(boolean asynchronous) { this.asynchronous = asynchronous; }
+
+    public List<Step> getChildren() { return children; }
+
+    public void setChildren(List<Step> children) {
+        this.children = children;
+        this.expanded = this.hasChildren();
+    }
+
+    public boolean hasChildren() {
+        return !(children == null || children.isEmpty()); }
 
 }
